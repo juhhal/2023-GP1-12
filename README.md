@@ -1,7 +1,6 @@
 # 2023-GP1-12
-<p align='center'>
- ![learniverselogo](https://github.com/juhhal/2023-GP1-12/assets/112511693/41f3b582-f270-4ced-b8e3-49ad6487fb5f)
-</p>
+
+<img src="/learniverselogo.png" width='500'>
 <h1>Learniverse</h1>
 <h3>Introduction</h3>
 There's a pressing demand for a unified learning platform: "Learniverse." Learniverse aims to simplify the studying process, enhance collaboration, and centralize educational resources. Offering such a comprehensive study tool not only benefits students but also has the potential to level the educational playing field worldwide. By making quality resources seamlessly accessible, Learniverse seeks to be invaluable to learners everywhere.
