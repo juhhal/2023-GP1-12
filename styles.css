@@ -1,0 +1,92 @@
+html {
+    font-size: 100%;
+    width: 99%;
+    height: 99%;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', Verdana, sans-serif;
+}
+
+@media only screen and (max-width: 991px){
+    .nav__menu{
+        visibility: hidden;
+    }
+}
+body {
+    width: 100%;
+    height: fit-content;
+    background-color: #Faf7ff;
+}
+
+.header-container {
+    display: block;
+    box-shadow: 0 1px 6px rgba(61, 65, 84, 0.15);
+}
+
+.flex-parent {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header_logo {
+    width: 25%;
+    display: flex;
+    align-items: center;
+}
+
+.header_logo img {
+    width: 30%;
+    display: block;
+    margin: 5%;
+}
+
+.header_logo div {
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+    font-size: 2rem;
+    margin: auto;
+}
+
+.nav__menu li {
+    display: inline-block;
+    margin-right: 3rem;
+}
+
+.nav__menu a {
+    text-decoration: none;
+    color: #000e23;
+}
+
+.nav__menu a:hover {
+    color: #fdae9b;
+}
+
+.active a {
+    color: #fdae9b;
+}
+
+.loginBTN {
+    float: right;
+    margin-left: auto;
+    margin-right: 5%;
+    width: 10%;
+}
+
+.loginBTN a {
+    text-decoration: none;
+    width: 5rem;
+    height: 3rem;
+    background-color: #fdae9b;
+    border-radius: 0.5rem;
+    border: 2px solid #fdae9b;
+    padding: 10px 20px;
+    color: black;
+    cursor: pointer;
+    box-shadow: 0 1px 6px rgba(61, 65, 84, 0.15);
+    font-size: 1rem;
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+}
+
+.loginBTN button:hover{
+    background-color: #Faf7ff;
+    color: #fdae9b;
+}
