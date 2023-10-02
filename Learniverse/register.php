@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="register.css">
-        <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css">
 
     <title>Register</title>
 </head>
+
 <body>
     <header>
         <div class="header-container">
@@ -24,9 +26,6 @@
                             </li>
                             <li>
                                 <a href="#">Community</a>
-                            </li>
-                            <li>
-                                <a href="#">Subscriptions</a>
                             </li>
                             <li>
                                 <a href="#">My Workspace</a>
@@ -68,26 +67,21 @@
 </body>
 <script src="./jquery.js"></script>
 <script>
-
     document.querySelector('form').addEventListener('submit', (e) => {
         e.preventDefault();
         $.ajax({
-        type: "POST",
-        url: "adduser.php",
-        data: $('form').serialize(),
-        success: function (response) {
-            if(JSON.parse(response)) {
-                document.querySelector('p').innerText = 'Successfully Registered'
+            type: "POST",
+            url: "adduser.php",
+            data: $('form').serialize(),
+            success: function(response) {
+                if (JSON.parse(response)) {
+                    document.querySelector('p').innerText = 'Successfully Registered'
+                } else {
+                    document.querySelector('p').innerText = 'You are already Registered'
+                }
             }
-            else {
-                document.querySelector('p').innerText = 'You are already Registered'
-            }
-        }
-    });
+        });
     })
-
-
-
-    
 </script>
+
 </html>
