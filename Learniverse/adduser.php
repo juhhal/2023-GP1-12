@@ -5,7 +5,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 $query = new MongoDB\Driver\Query(array('email' => $_POST['email']));
 
 // Output of the executeQuery will be object of MongoDB\Driver\Cursor class
-$cursor = $manager->executeQuery('test.users', $query);
+$cursor = $manager->executeQuery('Learniverse.users', $query);
 
 // Convert cursor to Array and print result
 $emailCount = count($cursor->toArray());
@@ -17,7 +17,7 @@ if($emailCount == 0) {
     
     $_id1 = $bulk->insert($document1);
     
-    $result = $manager->executeBulkWrite('test.users', $bulk);
+    $result = $manager->executeBulkWrite('Learniverse.users', $bulk);
     
     $data = [ 'message' => true ];
     echo json_encode($data);
