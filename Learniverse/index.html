@@ -1,19 +1,26 @@
+<!DOCTYPE html>
 <html>
 
 <head>
     <link rel="stylesheet" href="styles.css">
+    <title>Learniverse | Homepage</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
 </head>
 
 <body>
     <header>
         <div class="header-container">
             <div class="flex-parent">
-                <div class="header_logo">
+                <div class="header_logo" onclick="window.location.href=index.html">
                     <img src="LOGO.png">
                     <div>Learniverse</div>
                 </div>
                 <div class="header_nav">
-                    <nav id="navbar" class="nav__wrap collapse navbar-collapse">
+                    <nav id="navbar">
                         <ul class="nav__menu">
                             <li class="active">
                                 <a href="index.html">Home</a>
@@ -22,22 +29,61 @@
                                 <a href="#">Community</a>
                             </li>
                             <li>
-                                <a href="#">Subscriptions</a>
-                            </li>
-                            <li>
-                                <a href="#">My Workspace</a>
+                                <a href="workspace.html">My Workspace</a>
                             </li>
                         </ul> <!-- end menu -->
                     </nav>
                 </div>
-                <div class="loginBTN"><a href="register.php">Register</a></div>
-                <div class="loginBTN"><a href="#">Login</a></div>
+                <div class="BTN"><a href="register.php">Register</a></div>
+                <div class="BTN"><a href="login.php">Login</a></div>
             </div>
         </div>
+        <h1>Learniverse</h1>
+        <p>Your All-in-One Learning Companion</p>
     </header>
     <main>
+        <div class="homepage_div">
+            <div class="homepage_image">
+                <img src="images/hc1.png">
+            </div>
+            <div class="homepage_content">
+                <h4> Embark on a Transformative Learning Journey</h4>
+                <p>Discover a world of innovation at Learniverse, where learning becomes an exhilarating journey.
+                    Experience AI-generated tools that challenge and engage you. <br> <a href="register.php"
+                        style="text-decoration: none; color: #fdae9b;">Join Learniverse</a> today and unlock your
+                    true learning potential like never before.</p>
+            </div>
+        </div>
+        <div class="homepage_div">
+            <div class="homepage_content">
+                <h4> Revolutionize Your Learning Experience</h4>
+                <p>Seamlessly manage your study schedule with our intuitive calendar and stay organized with our
+                    note-taking features.
+                    Collaborate in shared spaces and online meeting rooms to exchange ideas, and learn from others in
+                    the community.</p>
+            </div>
+            <div class="homepage_image">
+                <img src="images/hc2.png">
+            </div>
+        </div>
     </main>
     <footer>
+        <img id="footerLogo" src="LOGO.png" alt="LivingWell">
+        <div class="footer-div" id="socials">
+            <h4>Follow Us on Social Media</h4>
+            <ul>
+                <li><a href="https://twitter.com/learniversewebsite" target="_blank"><img src="images/twitter.png"
+                            alt="@Learniverse"></a></li>
+            </ul>
+        </div>
+        <div class="footer-div" id="contacts">
+            <h4>Contact Us</h4>
+            <ul>
+                <li><a href="mailto:learniverse.website@gmail.com" target="_blank"><img src="images/gmail.png"
+                            alt="learniverse.website@gmail.com"></a></li>
+            </ul>
+        </div>
+        <div id="copyright">Learniverse &copy; 2023</div>
     </footer>
 </body>
 
