@@ -26,3 +26,4 @@ if($emailCount == 0) {
     $data = [ 'message' => false ];
     echo json_encode($data);
 }
+
