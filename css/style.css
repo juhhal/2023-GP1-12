@@ -1,0 +1,27 @@
+html, body {
+    /*overflow: hidden; /* don't do scrollbars */
+    font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+    font-size: 14px;
+}
+.container{
+    padding: 10px;
+}
+.wrapper{
+    width: 90%;
+    height: 650px;
+    margin: 0 auto;
+}
+
+.swal2-input{
+    width: 100% !important;
+    margin-left: 0 !important;
+    height: 2.5em !important;
+    margin-right: 0 !important;
+}
+textarea.swal2-input{
+    height: 5em !important;
+    padding: 0.5em 0.5em !important;
+}
+.swal2-close{
+    outline: none;
+}
