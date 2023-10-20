@@ -263,7 +263,7 @@ error_reporting(0);
             <ul class="tool_list">
                 <li class="tool_item"><a href="workspace.php"><img src="images/calendar.png">
                         Calendar & To-Do </li>
-                <li class="tool_item"><a href="myFiles.php?q=My Files"><img src="images/file.png">
+                <li class="tool_item"><a href="theFiles.php?q=My Files"><img src="images/file.png">
                         My Files</a>
                 </li>
                 <li class="tool_item"><img src="images/quiz.png">
