@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
-<?php session_start();
-error_reporting(0);
+<?php 
+require 'session.php';
+
 
 ?>
 

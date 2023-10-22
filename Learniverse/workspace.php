@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    echo "<script>alert('Session Expired. Please Log in again.');</script>";
-    header("Location: index.html");
-    exit();
-}
+require 'session.php';
 
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
@@ -207,6 +202,11 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
         $(document).ready(function() {
+            var dropdownButton = document.querySelector('.dropdown-button');
+            var dropdownMenu = document.querySelector('.Pdropdown-menu');
+            dropdownButton.addEventListener('click', function() {
+            dropdownMenu.classList.toggle('show');
+        });
             $("#rename-form").hide();
             if ($("#rename-form").css("display") === "none" || $("#rename-form").is(":hidden"))
                 cancelRename();
@@ -293,7 +293,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
 
 
         // PROFILE DROPDOWN MENU
-
         function Rename() {
             $('#Pname').hide();
             $('#Puser-icon').hide();
@@ -481,6 +480,9 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
             document.getElementById("sidebar-tongue").style.marginLeft = '13.5%';
             document.getElementById("sidebar-tongue").textContent = "<";
             document.getElementById("sidebar-tongue").style.boxShadow = "none";
+            document.addEventListener('DOMContentLoaded', function() {
+                calendar.render();
+            });
         }
 
         function w3_close() {
@@ -490,6 +492,9 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
             document.getElementById("sidebar-tongue").textContent = ">";
             document.getElementById("tools_div").style.marginLeft = "-13.9%";
             document.getElementById("sidebar-tongue").style.marginLeft = '0';
+            document.addEventListener('DOMContentLoaded', function() {
+                calendar.render();
+            });
         }
     </script>
 </head>
