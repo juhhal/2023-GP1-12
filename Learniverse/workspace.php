@@ -313,25 +313,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
         };
 
         function validateForm(event) {
-            event.preventDefault(); // Prevent the form from submitting by default
-
-            var input = document.getElementById('PRename');
-            var value = input.value.trim(); // Trim whitespace from the input value
-
-            var errorSpan = document.getElementById('rename-error');
-
-            if (value === '') {
-                errorSpan.textContent = 'Please enter a valid name.'; // Display the error message
-                return false; // Cancel form submission
-            } else {
-                errorSpan.textContent = ''; // Clear the error message if it's not needed
-            }
-
-            // If the validation passes, you can proceed with form submission
-            document.getElementById('rename-form').submit();
-        }
-
-        function validateForm(event) {
     event.preventDefault(); // Prevent the form from submitting by default
 
     var input = document.getElementById('PRename');
@@ -518,7 +499,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                     <nav id="navbar" class="nav__wrap collapse navbar-collapse">
                         <ul class="nav__menu">
                             <li>
-                                <a href="index.html">Home</a>
+                                <a href="index.php">Home</a>
                             </li>
                             <li>
                                 <a href="#">Community</a>

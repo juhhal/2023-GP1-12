@@ -108,49 +108,38 @@ error_reporting(0);
         };
 
         function validateForm(event) {
-            event.preventDefault(); // Prevent the form from submitting by default
+    event.preventDefault(); // Prevent the form from submitting by default
 
-            var input = document.getElementById('PRename');
-            var value = input.value.trim(); // Trim whitespace from the input value
+    var input = document.getElementById('PRename');
+    var value = input.value.trim(); // Trim whitespace from the input value
 
-            var errorSpan = document.getElementById('rename-error');
+    var errorSpan = document.getElementById('rename-error');
 
-            if (value === '') {
-                errorSpan.textContent = 'Please enter a valid name.'; // Display the error message
-                return false; // Cancel form submission
-            } else {
-                errorSpan.textContent = ''; // Clear the error message if it's not needed
-            }
+    if (value === '') {
+        errorSpan.textContent = 'Please enter a valid name.'; // Display the error message
+        return false; // Cancel form submission
+    }
 
-            // If the validation passes, you can proceed with form submission
-            document.getElementById('rename-form').submit();
-        }
+    var nameParts = value.split(' ').filter(part => part !== ''); // Split on whitespace and remove empty parts
 
-        function validateForm(event) {
-            event.preventDefault(); // Prevent the form from submitting by default
+    if (nameParts.length < 2) {
+        errorSpan.textContent = 'Please enter both first name and last name.'; // Display the error message
+        return false; // Cancel form submission
+    }
 
-            var input = document.getElementById('PRename');
-            var value = input.value.trim(); // Trim whitespace from the input value
+    // Check if both names start with a letter
+    var isValid = nameParts.every(part => /^[A-Za-z]/.test(part));
 
-            var errorSpan = document.getElementById('rename-error');
+    if (!isValid) {
+        errorSpan.textContent = 'Names should start with a letter.'; // Display the error message
+        return false; // Cancel form submission
+    } else {
+        errorSpan.textContent = ''; // Clear the error message if it's not needed
+    }
 
-            if (value === '') {
-                errorSpan.textContent = 'Please enter a valid name.'; // Display the error message
-                return false; // Cancel form submission
-            }
-
-            var nameParts = value.split(' ').filter(part => part !== ''); // Split on whitespace and remove empty parts
-
-            if (nameParts.length < 2) {
-                errorSpan.textContent = 'Please enter both first name and last name.'; // Display the error message
-                return false; // Cancel form submission
-            } else {
-                errorSpan.textContent = ''; // Clear the error message if it's not needed
-            }
-
-            // If the validation passes, you can proceed with form submission
-            document.getElementById('rename-form').submit();
-        }
+    // If the validation passes, you can proceed with form submission
+    document.getElementById('rename-form').submit();
+}
 
         function w3_open() {
             document.getElementsByClassName("workarea")[0].style.marginLeft = "auto";
@@ -187,7 +176,7 @@ error_reporting(0);
                     <nav id="navbar" class="nav__wrap collapse navbar-collapse">
                         <ul class="nav__menu">
                             <li>
-                                <a href="index.html">Home</a>
+                                <a href="index.php">Home</a>
                             </li>
                             <li>
                                 <a href="#">Community</a>

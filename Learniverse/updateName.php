@@ -51,9 +51,11 @@ if ($result->getModifiedCount() > 0) {
 }
 
 // Redirect to the page
+// Redirect to the page
 if ($_GET['q'] === "thefiles.php") {
     header("Location: thefiles.php?q=My Files");
-} else {
+} else if ($_GET['q'] === "workspace.php") {
     header("Location: workspace.php");
-}
+} else header("Location: index.php");
+
 ?>
