@@ -73,6 +73,7 @@ body {
     height: 100%;
     margin: 0;
     background-color: #Faf7ff;
+    overflow-x: hidden;
 }
 
 .header-container {
