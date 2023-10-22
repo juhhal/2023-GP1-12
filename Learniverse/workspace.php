@@ -288,11 +288,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
 
 
         // PROFILE DROPDOWN MENU
-
-
-
-
-
         function Rename() {
             $('#Pname').hide();
             $('#Puser-icon').hide();
