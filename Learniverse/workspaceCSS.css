@@ -13,6 +13,9 @@ html {
     }
 }
 
+#calendar_area{
+    margin: 1em !important;
+}
 
 #sidebar-tongue {
     width: fit-content;
