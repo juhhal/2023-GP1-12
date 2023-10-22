@@ -79,7 +79,6 @@ session_start();
 
                 <h6> OR </h6>
 
-                <?php require 'config.php'; ?>
 
                 <br> <br>
                 <p>You don't have an account? <a href="register.php">Sign up</a></p>

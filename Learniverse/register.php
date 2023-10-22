@@ -134,7 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <h6> OR </h6>
 
-                <?php require 'config.php'; ?>
 
                 <br>
 
