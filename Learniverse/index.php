@@ -142,7 +142,7 @@ if (isset($_SESSION['email'])) {
                                     <button type="submit">Save</button> <button type="reset" onclick="cancelRename();">Cancel</button>
                                 </form>
                             </li>
-                            <li class="center">Username:' . $fetch['username'] . '</li>
+                            <li class="center">Username: ' . $fetch['username'] . '</li>
                             <li class="center">' . $fetch['email'] . '</li>
                             <hr>';
 
