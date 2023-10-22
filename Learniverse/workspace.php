@@ -208,7 +208,12 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
     <script type='text/javascript'>
         $(document).ready(function() {
             $("#rename-form").hide();
+            if ($("#rename-form").css("display") === "none" || $("#rename-form").is(":hidden"))
+                cancelRename();
 
+            document.querySelector(".Pdropdown-menu").addEventListener("mouseleave", function() {
+                cancelRename();
+            });
             $("#addtask-form").hide();
             $('.editTask-form').hide();
             $('.rescheduleDueDate').hide();
@@ -289,13 +294,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
 
         // PROFILE DROPDOWN MENU
 
-        var dropdownButton = document.querySelector('.dropdown-button');
-        var dropdownMenu = document.querySelector('.Pdropdown-menu');
-
-        dropdownButton.addEventListener('click', function() {
-            dropdownMenu.classList.toggle('show');
-        });
-
         function Rename() {
             $('#Pname').hide();
             $('#Puser-icon').hide();
@@ -307,6 +305,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
         };
 
         function cancelRename() {
+            $("#rename-form").get(0).reset();
             $("#rename-form").hide();
             $('#Pname').show();
             $('#Puser-icon').show();

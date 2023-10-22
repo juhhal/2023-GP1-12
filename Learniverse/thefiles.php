@@ -26,6 +26,13 @@ error_reporting(0);
     <script type='text/javascript'>
         $(document).ready(function() {
             $("#rename-form").hide();
+            if ($("#rename-form").css("display") === "none" || $("#rename-form").is(":hidden"))
+                cancelRename();
+
+            document.querySelector(".Pdropdown-menu").addEventListener("mouseleave", function() {
+                cancelRename();
+            });
+
 
             var isSidebarOpen = false;
             var isButtonClicked = false;
@@ -102,6 +109,7 @@ error_reporting(0);
         };
 
         function cancelRename() {
+            $("#rename-form").get(0).reset();
             $("#rename-form").hide();
             $('#Pname').show();
             $('#Puser-icon').show();

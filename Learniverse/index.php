@@ -47,6 +47,13 @@ if (isset($_SESSION['email'])) {
     <script>
         $(document).ready(function() {
             $("#rename-form").hide();
+
+            if ($("#rename-form").css("display") === "none" || $("#rename-form").is(":hidden"))
+                cancelRename();
+
+            document.querySelector(".Pdropdown-menu").addEventListener("mouseleave", function() {
+                cancelRename();
+            });
         });
 
         // PROFILE DROPDOWN MENU
@@ -61,6 +68,7 @@ if (isset($_SESSION['email'])) {
         };
 
         function cancelRename() {
+            $("#rename-form").get(0).reset();
             $("#rename-form").hide();
             $('#Pname').show();
             $('#Puser-icon').show();
