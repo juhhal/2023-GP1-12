@@ -7,10 +7,11 @@ require_once __DIR__ . '/vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
+
 // Create a MongoDB client
 $connection = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
-require_once 'dbConfig.php';
+$manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
 $command = new MongoDB\Driver\Command([
     'distinct' => 'calendar',
@@ -90,7 +91,7 @@ foreach ($user_ids as $user_id) {
                         $mail->setFrom('Learniverse.website@gmail.com');
                         $mail->addAddress($user['email']);
                         $mail->Subject = 'Upcoming Event Reminder!';
-                        $mail->Body = "Dear ".$user['firstname'].",\n\nWe wanted to remind you that you have ".$event->title." scheduled for tomorrow. Please be prepared and don't forget to attend.\n\nBest regards,\nLearniverse";
+                        $mail->Body = "Dear ".$user['firstname'].",\n\nWe wanted to remind you that you have '".$event->title."' scheduled for tomorrow. Please be prepared and don't forget to be prepared.\n\nBest regards,\nLearniverse";
                         // Send the email
                         if ($mail->send()) {
                             $data = ['message' => true];

@@ -188,7 +188,6 @@ if (isset($_SESSION['email'])) {
                 <img src="images/hc2.png">
             </div>
         </div>
-        <hr>
         <div id="finalwords">
             <img src="images/parashoot.png">
             <h4> <a href="register.php">Join </a>Learniverse and embrace the future of learning!</h4>
