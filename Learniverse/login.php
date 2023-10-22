@@ -73,15 +73,14 @@ session_start();
                 </div>
                 <div id="response" style="color:red;"></div>
                 <br>
-                <a href="reset.php">Forgot your password?</a>
+                <a class='forgot' href="reset.php">Forgot your password?</a>
                 <br><br>
                 <input class="button" id="login" type="submit" value="Login" name="login">
 
                 <h6> OR </h6>
 
 
-                <br> <br>
-                <p>You don't have an account? <a href="register.php">Sign up</a></p>
+                <p class='signup'>You don't have an account? <a href="register.php">Sign up</a></p>
             </form>
         </div>
     </div>

@@ -372,7 +372,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
             $("#addtask-form").show();
             var addTaskName = document.getElementById('taskDesc');
             var submitTaskBTN = document.getElementById('submitTaskBTN');
-
+            
             addTaskName.focus();
             addTaskName.addEventListener('input', function() {
                 if (addTaskName.value.trim() !== '') {
@@ -733,7 +733,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
 
                     <form id="addtask-form" method="post" action="addTask.php">
                         <input required type="text" id="taskDesc" name="taskDesc" placeholder="Task Name">
-                        <label for="taskDue">Due: </label>
                         <input id="taskDue" name="taskDue" type="datetime-local"><br>
                         <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="$('#addtask-form').hide();">Cancel</button>
                     </form>

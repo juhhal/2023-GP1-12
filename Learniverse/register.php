@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <br>
 
             <form id="form" action="" method="POST" onsubmit="validateForm(event)">
-                <h1>Create a New Account</h1>
+                <h2>Create a New Account</h2>
 
                 <br>
 
@@ -134,10 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <h6> OR </h6>
 
-
-                <br>
-
-                <p>Already have an account? <a href="login.php">Sign in</a></p>
+                <p class='login'>Already have an account? <a href="login.php">Sign in</a></p>
 
             </form>
 
