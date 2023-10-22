@@ -76,6 +76,7 @@ body {
     height: 100%;
     margin: 0;
     background-color: #Faf7ff;
+    overflow-x: hidden;
 }
 
 .header-container {
@@ -112,6 +113,10 @@ body {
 .header_logo div {
     font-size: 1.75rem;
     margin: auto;
+}
+
+.header_nav{
+    margin-right: auto;
 }
 
 .nav__menu li {

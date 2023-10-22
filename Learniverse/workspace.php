@@ -208,7 +208,12 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
             dropdownMenu.classList.toggle('show');
         });
             $("#rename-form").hide();
+            if ($("#rename-form").css("display") === "none" || $("#rename-form").is(":hidden"))
+                cancelRename();
 
+            document.querySelector(".Pdropdown-menu").addEventListener("mouseleave", function() {
+                cancelRename();
+            });
             $("#addtask-form").hide();
             $('.editTask-form').hide();
             $('.rescheduleDueDate').hide();
@@ -299,6 +304,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
         };
 
         function cancelRename() {
+            $("#rename-form").get(0).reset();
             $("#rename-form").hide();
             $('#Pname').show();
             $('#Puser-icon').show();
@@ -362,6 +368,8 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
 
         function addTask() {
             $("#addtask-form").show();
+            $("#addtaskBTN").hide();
+            $("#addtask-span").hide();
             var addTaskName = document.getElementById('taskDesc');
             var submitTaskBTN = document.getElementById('submitTaskBTN');
             
@@ -385,6 +393,12 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                 cancelEdit(number);
             }
         };
+
+        function resetAddTask() {
+            $("#addtask-form").hide();
+            $("#addtaskBTN").show();
+            $("#addtask-span").show();
+        }
 
         function cancelEdit(number) {
             $("#editTask-form" + number).hide();
@@ -732,7 +746,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                     <form id="addtask-form" method="post" action="addTask.php">
                         <input required type="text" id="taskDesc" name="taskDesc" placeholder="Task Name">
                         <input id="taskDue" name="taskDue" type="datetime-local"><br>
-                        <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="$('#addtask-form').hide();">Cancel</button>
+                        <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="resetAddTask()">Cancel</button>
                     </form>
                 </div>
             </div>
