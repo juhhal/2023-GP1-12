@@ -370,6 +370,8 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
 
         function addTask() {
             $("#addtask-form").show();
+            $("#addtaskBTN").hide();
+            $("#addtask-span").hide();
             var addTaskName = document.getElementById('taskDesc');
             var submitTaskBTN = document.getElementById('submitTaskBTN');
             
@@ -393,6 +395,12 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                 cancelEdit(number);
             }
         };
+
+        function resetAddTask() {
+            $("#addtask-form").hide();
+            $("#addtaskBTN").show();
+            $("#addtask-span").show();
+        }
 
         function cancelEdit(number) {
             $("#editTask-form" + number).hide();
@@ -536,7 +544,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                         <li class='editName center'>
                             <i id='editIcon' class='fas fa-user-edit' onclick='Rename()'></i>
                             <span id='Pname'><?php echo $fetch['firstname'] . " " .  $fetch['lastname']; ?></span>
-                            <form id='rename-form' class='rename-form' method='POST' action='updateName.php?q = workspace.php' onsubmit="return validateForm(event)" ;>
+                            <form id='rename-form' class='rename-form' method='POST' action='updateName.php?q=workspace.php' onsubmit="return validateForm(event)" ;>
                                 <input type='text' id='PRename' name='Rename' required value='<?php echo $fetch['firstname'] . " " .  $fetch['lastname']; ?>'><br>
                                 <span id='rename-error' style='color: red;'></span><br>
                                 <button type='submit'>Save</button> <button type='reset' onclick='cancelRename();'>Cancel</button>
@@ -734,7 +742,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                     <form id="addtask-form" method="post" action="addTask.php">
                         <input required type="text" id="taskDesc" name="taskDesc" placeholder="Task Name">
                         <input id="taskDue" name="taskDue" type="datetime-local"><br>
-                        <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="$('#addtask-form').hide();">Cancel</button>
+                        <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="resetAddTask()">Cancel</button>
                     </form>
                 </div>
             </div>

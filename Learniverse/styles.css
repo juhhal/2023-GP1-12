@@ -111,6 +111,10 @@ body {
     margin: auto;
 }
 
+.header_nav{
+    margin-right: auto;
+}
+
 .nav__menu li {
     display: inline-block;
     margin-right: 3rem;
