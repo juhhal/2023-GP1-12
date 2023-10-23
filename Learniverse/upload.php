@@ -10,8 +10,8 @@ session_start();
         
         // Convert cursor to Array and print result
         $emailCount = $cursor->toArray();
-        echo "<pre>";
-        print_r((string)$emailCount[0]->_id);
+        //echo "<pre>";
+        //print_r((string)$emailCount[0]->_id);
         
     if($_FILES['file']['type'] == 'application/pdf') {
 
@@ -42,6 +42,10 @@ session_start();
               move_uploaded_file($_FILES['file']['tmp_name'], "FILES/$id-$val.pdf");
 
         $data = [ 'message' => false ];
+        echo json_encode($data);
+    }
+    else {
+        $data = [ 'message' => true ];
         echo json_encode($data);
     }
 
