@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-<?php 
-require 'session.php';
-
+<?php session_start();
+error_reporting(0);
 
 ?>
 
@@ -27,13 +26,6 @@ require 'session.php';
     <script type='text/javascript'>
         $(document).ready(function() {
             $("#rename-form").hide();
-            if ($("#rename-form").css("display") === "none" || $("#rename-form").is(":hidden"))
-                cancelRename();
-
-            document.querySelector(".Pdropdown-menu").addEventListener("mouseleave", function() {
-                cancelRename();
-            });
-
 
             var isSidebarOpen = false;
             var isButtonClicked = false;
@@ -110,7 +102,6 @@ require 'session.php';
         };
 
         function cancelRename() {
-            $("#rename-form").get(0).reset();
             $("#rename-form").hide();
             $('#Pname').show();
             $('#Puser-icon').show();
@@ -357,12 +348,19 @@ require 'session.php';
 <script src="jquery.js"></script>
 <script>
     document.querySelector('#file').addEventListener('change', (e) => {
+        if(document.querySelectorAll('input')[1].files[0].type != 'application/pdf') {
+            alert("Its not a PDF file. Please upload a PDF file.")
+            return
+        }
         document.querySelector('.uploadedfile').style.display = 'flex';
         //console.log(document.querySelector('input').value.split("\\"))
         document.querySelector('.uploadedfile p').innerText = document.querySelector('#file').value.split("\\")[document.querySelector('#file').value.split("\\").length - 1];
         e.preventDefault();
         let formdata = new FormData(document.querySelector('#uploadFORM'));
         document.querySelector('#loadingbar').style.width = '50%';
+        
+        
+
         $.ajax({
             url: 'upload.php',
             data: formdata,
@@ -370,19 +368,27 @@ require 'session.php';
             processData: false,
             contentType: false,
             success: function(res) {
+                
                 console.log(res)
-                document.querySelector('#loadingbar').style.width = '100%';
-                document.querySelector('.uploadedfile').style.display = "none";
-                $.ajax({
-                    url: 'allfiles.php',
-                    data: "",
-                    method: 'POST',
-                    success: function(res) {
-                        document.querySelector('#allfiles').innerHTML = res
-                        console.log(res)
+                if(JSON.parse(`${res}`).message) {
+                    alert("Its not a PDF file. Please upload a PDF file.")
+                }
+                else {
+                    document.querySelector('#loadingbar').style.width = '100%';
+                    document.querySelector('.uploadedfile').style.display = "none";
+                    $.ajax({
+                        url: 'allfiles.php',
+                        data: "",
+                        method: 'POST',
+                        success: function(res) {
+                            document.querySelector('#allfiles').innerHTML = res
+                            console.log(res)
+    
+                        }
+                    })
+                }
 
-                    }
-                })
+                
             }
         })
     })
