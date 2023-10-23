@@ -1,0 +1,288 @@
+html {
+    font-size: 100%;
+    width: 100%;
+    height: 100%;
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', 'sans-serif';
+    color: #000e23;
+}
+
+@media only screen and (max-width: 991px) {
+    .nav__menu {
+        visibility: hidden;
+    }
+}
+
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .4);
+    background-color: #bf97d8
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    background-color: #F5F5F5
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #fdae9b
+}
+
+
+header {
+    background-image: url(images/pastel-mountains-vy-2560x1700.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    color: #Faf7ff;
+}
+
+header h1 {
+    margin: 10% 8% 0%;
+    font-size: 3rem;
+}
+
+header p {
+    margin-left: 8%;
+    font-size: 2rem;
+}
+
+@keyframes transitionIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+main {
+    animation: transitionIn 2s;
+}
+
+footer {
+    padding: 1%;
+    text-align: center;
+    box-shadow: 0 1px 6px rgba(61, 65, 84, 0.15);
+    background-image: url(images/Ultra\ Voilet.jpg);
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background-color: #Faf7ff;
+}
+
+.header-container {
+    display: block;
+    box-shadow: 0 1px 6px rgba(61, 65, 84, 0.15);
+}
+
+.flex-parent {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #faf7ff00;
+
+}
+
+.header_logo {
+    width: 25%;
+    display: flex;
+    align-items: center;
+}
+
+.header_logo:hover {
+    cursor: pointer;
+}
+
+.header_logo img {
+    width: 20%;
+    display: block;
+    margin: 5%;
+    margin-left: 12%;
+}
+
+.header_logo div {
+    font-size: 1.75rem;
+    margin: auto;
+}
+
+.nav__menu li {
+    display: inline-block;
+    margin-right: 3rem;
+}
+
+.nav__menu a {
+    text-decoration: none;
+    color: #Faf7ff;
+}
+
+.nav__menu a:hover {
+    color: #fdae9b;
+}
+
+.active a {
+    color: #fdae9b;
+}
+
+#login-register {
+    float: right;
+    margin-left: auto;
+    margin-right: 5%;
+    width: 17%;
+    letter-spacing: 2px;
+}
+
+#login-register a {
+    display: inline-block;
+    text-decoration: none;
+    color: #Faf7ff;
+    padding: 4px;
+    border: 1px solid;
+    border-radius: 10px;
+}
+
+#login-register a:first-of-type {
+    margin-right: 5%;
+}
+
+#login-register a:last-of-type {
+    margin-left: 5%;
+
+}
+
+/* .BTN a {
+    text-decoration: none;
+    width: 5rem;
+    height: 3rem;
+    background-color: #fdae9b;
+    border-radius: 0.5rem;
+    border: 2px solid #fdae9b;
+    padding: 10px 20px;
+    color: black;
+    cursor: pointer;
+    box-shadow: 0 1px 6px rgba(61, 65, 84, 0.15);
+    font-size: 1rem;
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+} */
+
+#login-register a:hover {
+    background-color: #Faf7ff;
+    color: #fdae9b;
+}
+
+.homepage_div {
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 5%;
+    margin-top: 10%;
+}
+
+.homepage_div div {
+    width: 60%;
+}
+
+.homepage_image img {
+    width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.homepage_content {
+    padding-left: 6%;
+    letter-spacing: 1px;
+    line-height: 2.5rem;
+}
+
+.homepage_content h4,
+#finalwords h4 {
+    font-size: 2rem;
+    font-weight: lighter;
+    color: #bf97d8;
+}
+
+.homepage_content p {
+    font-size: 1.5rem;
+    color: grey;
+
+}
+
+footer {
+    background-color: #bf97d8;
+    margin: 5% 0 0;
+    color: #Faf7ff;
+}
+
+.footer-div {
+    width: 20%;
+    margin: 2%;
+    display: inline-block;
+}
+
+.footer-div h4 {
+    margin-left: 26%;
+    width: fit-content;
+    font-weight: normal;
+}
+
+#contacts h4 {
+    margin-left: 40%;
+}
+
+.footer-div ul {
+    width: auto;
+}
+
+.footer-div li {
+    list-style-type: none;
+    display: inline;
+    margin: 0;
+}
+
+.footer-div a img {
+    display: block;
+    width: 25%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+#footerLogo {
+    width: 10%;
+    float: right;
+    margin: 1% 5%;
+}
+
+#copyright {
+    width: fit-content;
+    margin: auto;
+    text-align: center;
+    letter-spacing: 0.1em;
+    padding: 1% 0 2%;
+}
+
+#finalwords {
+    display: flex;
+    margin-top: 10%;
+    align-items: center;
+    justify-content: space-around;
+}
+
+#finalwords h4 {
+    font-size: 2.3rem;
+}
+
+#finalwords img {
+    width: 20%;
+
+}
+
+#finalwords a {
+    color: #fdae9b;
+    text-decoration: none;
+}
