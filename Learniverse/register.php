@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = strtolower($_POST["email"]);
     $password = $_POST["password"];
     if (strlen($_POST["password"]) < 12) {
-        $response = "Password must be at least 12.";
+        $response = "Password must be at least 12 characters.";
     } else if (!preg_match('/^[A-Za-z]/', $firstname) || !preg_match('/^[A-Za-z]/', $lastname)) {
         $response = "The first letter of both the first name and last name must be alphabetical characters.";
     } else {

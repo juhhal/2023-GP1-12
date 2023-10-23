@@ -28,9 +28,6 @@ if($emailCount == 0) {
 
     $result = $manager->executeBulkWrite('Learniverse.users', $bulk);
     
-    if(isset($_SESSION['email'])){
-        header("Location: index.html");
-    }
     $data = [ 'message' => false ];
     echo json_encode($data);
 }

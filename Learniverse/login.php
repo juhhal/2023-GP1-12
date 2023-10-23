@@ -73,7 +73,7 @@ session_start();
                 </div>
                 <div id="response" style="color:red;"></div>
                 <br>
-                <a class='forgot' href="reset.php">Forgot your password?</a>
+                <a class='forgot' href="reset.php?q=login.php">Forgot your password?</a>
                 <br><br>
                 <input class="button" id="login" type="submit" value="Login" name="login">
 

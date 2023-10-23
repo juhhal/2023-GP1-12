@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <?php
-require 'session.php';
+session_start();
+if (!isset($_SESSION['email'])) {
+    echo "<script>alert('Session Expired. Please Log in again.');</script>";
+    header("Location: index.php");
+    exit();
+}
 
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
@@ -202,18 +207,8 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
         $(document).ready(function() {
-            var dropdownButton = document.querySelector('.dropdown-button');
-            var dropdownMenu = document.querySelector('.Pdropdown-menu');
-            dropdownButton.addEventListener('click', function() {
-            dropdownMenu.classList.toggle('show');
-        });
             $("#rename-form").hide();
-            if ($("#rename-form").css("display") === "none" || $("#rename-form").is(":hidden"))
-                cancelRename();
 
-            document.querySelector(".Pdropdown-menu").addEventListener("mouseleave", function() {
-                cancelRename();
-            });
             $("#addtask-form").hide();
             $('.editTask-form').hide();
             $('.rescheduleDueDate').hide();
@@ -292,7 +287,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
         });
 
 
-        // PROFILE DROPDOWN MENU
         function Rename() {
             $('#Pname').hide();
             $('#Puser-icon').hide();
@@ -304,7 +298,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
         };
 
         function cancelRename() {
-            $("#rename-form").get(0).reset();
             $("#rename-form").hide();
             $('#Pname').show();
             $('#Puser-icon').show();
@@ -368,8 +361,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
 
         function addTask() {
             $("#addtask-form").show();
-            $("#addtaskBTN").hide();
-            $("#addtask-span").hide();
             var addTaskName = document.getElementById('taskDesc');
             var submitTaskBTN = document.getElementById('submitTaskBTN');
             
@@ -393,12 +384,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                 cancelEdit(number);
             }
         };
-
-        function resetAddTask() {
-            $("#addtask-form").hide();
-            $("#addtaskBTN").show();
-            $("#addtask-span").show();
-        }
 
         function cancelEdit(number) {
             $("#editTask-form" + number).hide();
@@ -443,7 +428,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
             });
         }
 
-
         // Call the function every specified interval (e.g., every minute)
         setInterval(checkDueDates, 1000);
 
@@ -480,9 +464,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
             document.getElementById("sidebar-tongue").style.marginLeft = '13.5%';
             document.getElementById("sidebar-tongue").textContent = "<";
             document.getElementById("sidebar-tongue").style.boxShadow = "none";
-            document.addEventListener('DOMContentLoaded', function() {
-                calendar.render();
-            });
         }
 
         function w3_close() {
@@ -492,9 +473,6 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
             document.getElementById("sidebar-tongue").textContent = ">";
             document.getElementById("tools_div").style.marginLeft = "-13.9%";
             document.getElementById("sidebar-tongue").style.marginLeft = '0';
-            document.addEventListener('DOMContentLoaded', function() {
-                calendar.render();
-            });
         }
     </script>
 </head>
@@ -548,7 +526,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                         <li class='editName center'>
                             <i id='editIcon' class='fas fa-user-edit' onclick='Rename()'></i>
                             <span id='Pname'><?php echo $fetch['firstname'] . " " .  $fetch['lastname']; ?></span>
-                            <form id='rename-form' class='rename-form' method='POST' action='updateName.php?q=workspace.php' onsubmit="return validateForm(event)" ;>
+                            <form id='rename-form' class='rename-form' method='POST' action='updateName.php?q = workspace.php' onsubmit="return validateForm(event)" ;>
                                 <input type='text' id='PRename' name='Rename' required value='<?php echo $fetch['firstname'] . " " .  $fetch['lastname']; ?>'><br>
                                 <span id='rename-error' style='color: red;'></span><br>
                                 <button type='submit'>Save</button> <button type='reset' onclick='cancelRename();'>Cancel</button>
@@ -559,7 +537,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                         <hr>
 
                         <?php if ($googleID === null) {
-                            echo "<li><a href='reset.php'><i class='far fa-edit'></i> Change password</a></li>";
+                            echo "<li><a href='reset.php?q=workspace.php'><i class='far fa-edit'></i> Change password</a></li>";
                         } ?>
 
                         <li><a href='#'><i class='far fa-question-circle'></i> Help </a></li>
@@ -746,7 +724,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                     <form id="addtask-form" method="post" action="addTask.php">
                         <input required type="text" id="taskDesc" name="taskDesc" placeholder="Task Name">
                         <input id="taskDue" name="taskDue" type="datetime-local"><br>
-                        <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="resetAddTask()">Cancel</button>
+                        <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="$('#addtask-form').hide();">Cancel</button>
                     </form>
                 </div>
             </div>
