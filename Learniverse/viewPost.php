@@ -609,6 +609,101 @@ if ($matchedDocument) {
                     $tags = $tags . "<span class='postTag' onclick=\"window.location='searchCommunity.php?searchTerm=[$t]'\">$t</span>";
                 };
                 echo "<div class='postTags'>tags: $tags</div></div>";
+
+                //SHOW COMMENTS SECTION
+
+                function getComments($post_id, $limit, $offset)
+                {
+                    global $manager;
+
+                    $options = [
+                        'limit' => $limit,
+                        'skip' => $offset,
+                    ];
+
+                    $query = new MongoDB\Driver\Query(['post_id' => $_GET['postID']], $options);
+
+                    $comments = $manager->executeQuery('Learniverse.comments', $query);
+
+                    return $comments;
+                }
+
+                $filter = ['post_id' => $_GET['postID']];
+                $query = new MongoDB\Driver\Query($filter);
+
+                // Execute the query
+                $cursor = $manager->executeQuery("Learniverse.comments", $query);
+
+                // Get the result
+                $result = $cursor->toArray();
+                $numberOfComments = count($result);
+                echo "<br><h2 id='NoOfComment'>" . $numberOfComments . " Comments</h2><div id='Showcomments'>";
+
+                $post_id = $_GET['postID'];
+                $limit = 3;
+                $offset = 0;
+
+                // Fetch comments
+                $comments = getComments($post_id, $limit, $offset);
+
+                // Display comments
+                foreach ($comments as $oneComment) {
+                    $commenter_firstname = "";
+                    $commenter_lastname = "";
+                    $commenter_username = "";
+                    $comment_Date = "";
+                    $comment = "";
+                    $commentId = "";
+                    $commenter_email = "";
+                    if ($oneComment) {
+                        $commenter_firstname = $oneComment->firstname;
+                        $commenter_lastname = $oneComment->lastname;
+                        $commenter_username = $oneComment->username;
+                        $comment_Date = $oneComment->commented_at;
+                        $comment = $oneComment->comment;
+                        $commentId = $oneComment->_id;
+                        $commenter_email = $oneComment->email;
+                    };
+
+                    echo "<p class='commentContent'>" . $comment . "</p>";
+                    if (!$guest_account) echo "<span class='alterComment'>;
+                    <img src='images/edit.png' alt='edit' width='20px' height='20px' onclick='reWriteComment($commentId);'> <img src='images/bin.png' alt='bin' width='20px' height='20px' onclick='DeleteComment(\"" . $commentId . "\", \"" . $_GET['postID'] . "\");'>
+                    </span><br><br>";
+                    echo "<span class='commentInfo'>
+                    By: " . $commenter_firstname . " " . " $commenter_lastname (@" . " $commenter_username) 
+                    Commented At: " . $comment_Date . "
+                    </span><br><br>
+                    <form id='editComment_form$commentId' method='POST' action='editcomment.php'>
+                    <textarea cols='50' id='Recomment' name='Recomment'>$comment</textarea>
+                    <input id='edit_id_post' name='edit_id_post' type='hidden' value='" . $_GET['postID'] . "'>
+                    <input id='edit_id_comment' name='edit_id_comment' type='hidden' value='" . $commentId . "'>
+                    <button id ='editButton' type='submit'>Submit</button><button id ='cancelButton' type='reset' onclick='cancelEditComment($commentId);'>Cancel</button>
+                    </form>";
+                }
+                // Calculate the next offset
+                $next_offset = $offset + $limit;
+
+                // Check if there are more comments
+                $filter = ['post_id' => $post_id];
+                $options = ['limit' => 1, 'skip' => $next_offset];
+                $countQuery = new MongoDB\Driver\Query($filter, $options);
+                $countCursor = $manager->executeQuery('Learniverse.comments', $countQuery);
+                $count = iterator_count($countCursor);
+
+                if ($count > 0) {
+                    // Display "Show More" link
+                    echo '<button id ="ShowmoreButton" onclick="showAllComments(' . $post_id . ', ' . $limit . ', ' . $next_offset . ');">Show More</button>';
+                }
+                echo "</div>";
+
+                //ADD COMMENT SECTION
+                echo "<div id='commentArea'>
+                <h2>Your comment:</h2><br>
+                <form id='addcomment' method='post' action='addcomment.php'>
+                <textarea cols = '50' id='comment' name='comment' placeholder='Write your comment here'></textarea>
+                <input id='id_post' name='id_post' hidden value = '" . $_GET['postID'] . "' ><br><br>
+                <button id='submitComment' type='submit' <? php if ($guest_account) {disabled} refresh()>Submit</button>
+                </form></div>";
                 ?>
             </div>
         </div>
