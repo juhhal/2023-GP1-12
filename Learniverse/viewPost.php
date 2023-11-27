@@ -37,7 +37,6 @@ if ($matchedDocument) {
     // Convert the matched document to an associative array
     $post = json_decode(json_encode($matchedDocument), true);
 }
-// echo "<script>alert('".$post['title']."')</script>";
 ?>
 <!DOCTYPE html>
 
@@ -52,6 +51,9 @@ if ($matchedDocument) {
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="manifest" href="favicon_io/site.webmanifest">
     <script src="jquery.js"></script>
+
+    <!-- Place the first <script> tag in your HTML's <head> -->
+    <script src="https://cdn.tiny.cloud/1/crr1vwkewrlr1xvvlr90xyibpryt3v70vmn1i18wagfzh6as/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
     <!-- Sweetalert2 -->
     <script src="js/sweetalert2.all.min.js"></script>
@@ -256,7 +258,26 @@ if ($matchedDocument) {
 </head>
 
 <body>
-
+    <!-- Place the following <script> and <textarea> tags in your HTML's <body> -->
+    <script>
+        tinymce.init({
+            selector: '#comment',
+            plugins: 'tinycomments mentions anchor autolink charmap codesample emoticons image link lists searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [{
+                    value: 'First.Name',
+                    title: 'First Name'
+                },
+                {
+                    value: 'Email',
+                    title: 'Email'
+                },
+            ],
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+        });
+    </script>
 
     <header>
         <div class="header-container">
@@ -553,7 +574,6 @@ if ($matchedDocument) {
                             if (result.isConfirmed) {
                                 const formData = result.value;
                                 const reportedPost = document.getElementById('reportedPost').value;
-                                alert(reportedPost);
                                 const submissionDate = document.getElementById('submissionDate').value;
                                 const reportedBy = document.getElementById('reportedBy').value;
                                 form = document.getElementById('reportPostForm');
@@ -603,6 +623,57 @@ if ($matchedDocument) {
                     </div>
                 </div>
                 <p id='postContent'> <?php echo $post['content'] ?> </p>
+
+                <script>
+                    function refresh() {
+                        header("Refresh: 0");
+                    }
+
+                    function reWriteComment(id) {
+                        $('.commentContent').$(this).hide();
+                        $('commentInfo').$(this).hide()
+                        $("#editComment_form" + id).show();
+                        $("#Recomment").focus();
+                        if ($("#editComment_form" + id).submitted) {
+                            cancelEditComment();
+                        }
+                    };
+
+                    function cancelEditComment(id) {
+                        $("#editComment_form" + id).hide();
+                        $('.commentContent').$(this).show();
+                        $('commentInfo').$(this).show();
+                    };
+
+                    function DeleteComment(commentId, postId) {
+                        if (confirm("Are you sure you want to delete your comment?")) {
+                            var commentid = commentId;
+                            var postid = postId;
+                            window.location.href = "deleteComment.php?commentID=" + commentid + "&postID=" + postid;
+                        } else {
+                            // Code to handle cancel action or do nothing
+                        }
+                    }
+
+                    function showAllComments(post_id, limit, offset) {
+                        $.ajax({
+                            url: 'view_more_comments.php',
+                            type: 'GET',
+                            data: {
+                                postID: post_id,
+                                limit: limit,
+                                offset: offset
+                            },
+                            success: function(response) {
+                                $('#ShowmoreButton').remove(); // Remove the "Show Comments" link
+                                $('#Showcomments').append(response); // Append the new comments
+                            },
+                            error: function() {
+                                console.log('Error occurred while fetching comments.');
+                            }
+                        });
+                    }
+                </script>
                 <?php
                 $tags = "";
                 foreach ($post['tags'] as $t) {
@@ -666,13 +737,14 @@ if ($matchedDocument) {
                     };
 
                     echo "<p class='commentContent'>" . $comment . "</p>";
-                    if (!$guest_account) echo "<span class='alterComment'>;
+                    if (!$guest_account && $commenter_email == $_SESSION['email']) echo "<span class='alterComment'>;
                     <img src='images/edit.png' alt='edit' width='20px' height='20px' onclick='reWriteComment($commentId);'> <img src='images/bin.png' alt='bin' width='20px' height='20px' onclick='DeleteComment(\"" . $commentId . "\", \"" . $_GET['postID'] . "\");'>
                     </span><br><br>";
                     echo "<span class='commentInfo'>
                     By: " . $commenter_firstname . " " . " $commenter_lastname (@" . " $commenter_username) 
                     Commented At: " . $comment_Date . "
-                    </span><br><br>
+                    </span><br><br>";
+                    if (!$guest_account && $commenter_email == $_SESSION['email']) echo "
                     <form id='editComment_form$commentId' method='POST' action='editcomment.php'>
                     <textarea cols='50' id='Recomment' name='Recomment'>$comment</textarea>
                     <input id='edit_id_post' name='edit_id_post' type='hidden' value='" . $_GET['postID'] . "'>
@@ -692,7 +764,7 @@ if ($matchedDocument) {
 
                 if ($count > 0) {
                     // Display "Show More" link
-                    echo '<button id ="ShowmoreButton" onclick="showAllComments(' . $post_id . ', ' . $limit . ', ' . $next_offset . ');">Show More</button>';
+                    echo '<button id ="ShowmoreButton" onclick="showAllComments(\'' . $post_id . '\', ' . $limit . ', ' . $next_offset . ');">Show More</button>';
                 }
                 echo "</div>";
 
@@ -702,7 +774,7 @@ if ($matchedDocument) {
                 <form id='addcomment' method='post' action='addcomment.php'>
                 <textarea cols = '50' id='comment' name='comment' placeholder='Write your comment here'></textarea>
                 <input id='id_post' name='id_post' hidden value = '" . $_GET['postID'] . "' ><br><br>
-                <button id='submitComment' type='submit' <? php if ($guest_account) {disabled} refresh()>Submit</button>
+                <button id='submitComment' type='submit' <?php if ($guest_account) {disabled} refresh()>Submit</button>
                 </form></div>";
                 ?>
             </div>
@@ -728,6 +800,8 @@ if ($matchedDocument) {
     <div role="button" id="sidebar-tongue" style="margin-left: 0;">
         &gt;
     </div>
+
+
 </body>
 
 </html>
