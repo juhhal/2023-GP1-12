@@ -21,8 +21,6 @@ $author = $_SESSION['email'];
 $postTags = explode(',', $postTagsString);
 $postTags = array_map('trim', $postTags);
 
-$postDate = explode("T", $postDateString);
-
 //check if ths is an update request by examining if postID is set
 if (isset($_POST['postID'])) {
     // Create a bulk write instance for the update operation
@@ -31,7 +29,7 @@ if (isset($_POST['postID'])) {
     // Update the document
     $bulkWrite->update(
         ['_id' => new ObjectID($_POST['postID'])],
-        ['$set' => ['title' => $postTitle, 'content' => $postContent, 'tags' => $postTags, 'edited' => true, 'dateEdited' => $postDate[0] . " at " . $postDate[1]]]
+        ['$set' => ['title' => $postTitle, 'content' => $postContent, 'tags' => $postTags, 'edited' => true, 'dateEdited' => $postDateString]]
     );
 
     // Execute the bulk write operation
@@ -51,7 +49,7 @@ if (isset($_POST['postID'])) {
         'content' => $postContent,
         'author' => $author,
         'tags' => $postTags,
-        'posted_at' => $postDate[0] . " at " . $postDate[1],
+        'posted_at' => $postDateString,
         'likes' => 0,
         'dislikes' => 0,
         "likedBy" => [],

@@ -1293,19 +1293,3 @@ main {
 .nav__menu {
   margin: 1em;
 }
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .4) !important;
-  background-color: #bf97d8 !important;
-  z-index: 10 !important;
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-  background-color: #F5F5F5 !important;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #fdae9b !important;
-
-}

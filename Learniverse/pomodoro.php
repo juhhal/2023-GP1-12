@@ -395,7 +395,6 @@ require 'dbConfig.php'; ?>
             </button>
           </div>
         </div>
-        <br /><br /><br /><br /><br /><br /><br /><br />
         <div id="bottom">
           <div id="bottom-mid"></div>
           <div id="bottom-right">

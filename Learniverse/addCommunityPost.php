@@ -340,11 +340,23 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 </div>
                 <!-- INSERT ITEMS HERE -->
                 <script>
-                    $("#addPostForm").submit(function() {
-                        $("#postDate").val(new Date().toISOString().slice(0, 16));
-                    });
+                    $("#addPostForm").submit(function(event) {
+                            // Create a new Date object
+                            var currentDate = new Date();
+
+                            // Extract the year, month, day, hours, and minutes from the current date
+                            var year = currentDate.getFullYear();
+                            var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                            var day = String(currentDate.getDate()).padStart(2, '0');
+                            var hours = String(currentDate.getHours()).padStart(2, '0');
+                            var minutes = String(currentDate.getMinutes()).padStart(2, '0');
+
+                            // Format the date string
+                            var formattedDate = year + '-' + month + '-' + day + ' at ' + hours + ':' + minutes;
+                            $("#postDate").val(formattedDate);
+                        });
                 </script>
-                <form id="addPostForm" method="post" action="addPost.php" onsubmit="adjustDate()">
+                <form id="addPostForm" method="post" action="addPost.php">
                     <?php
 
                     use MongoDB\BSON\ObjectID;
@@ -389,7 +401,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                         <h3>Tags</h3>
                     </label>
                     <textarea required id="postTags" name="postTags" placeholder="e.g. science, chemistry, atoms"><?php if(is_array($tags))echo implode(", ", $tags); else echo $tags; ?></textarea>
-                    <input type="datetime-local" name='postDate' hidden value="<?= date('Y-m-d H:i') ?>">
+                    <input type="datetime-local" id="postDate" name='postDate' hidden>
                     <?php
                     if (isset($_GET['postID']))
                         echo "<input type='hidden' id='postID' name='postID' value='".$_GET['postID']."' hidden>"
