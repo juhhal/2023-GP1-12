@@ -401,7 +401,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                         <h3>Tags</h3>
                     </label>
                     <textarea required id="postTags" name="postTags" placeholder="e.g. science, chemistry, atoms"><?php if(is_array($tags))echo implode(", ", $tags); else echo $tags; ?></textarea>
-                    <input type="datetime-local" id="postDate" name='postDate' hidden>
+                    <input type="text" id="postDate" name='postDate' hidden>
                     <?php
                     if (isset($_GET['postID']))
                         echo "<input type='hidden' id='postID' name='postID' value='".$_GET['postID']."' hidden>"
