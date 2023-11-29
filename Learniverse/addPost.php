@@ -17,7 +17,7 @@ $postTagsString = $_POST['postTags'];
 $postDateString = $_POST['postDate'];
 $author = $_SESSION['email'];
 
-if ($postTags == "") {
+if ($postTagsString == "") {
     $postTags = [];
 } else {
     // Split the tags string into an array and remove whitespace
