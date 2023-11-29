@@ -236,7 +236,18 @@ if ($matchedDocument) {
         }
 
         function deletePost() {
-            window.location.href = "deletePost.php?postID=<?php echo $_GET['postID'] ?>";
+            Swal.fire({
+                title: 'Heads Up!',
+                text: 'Are you sure you want to delete this post?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "deletePost.php?postID=<?php echo $_GET['postID'] ?>";
+                }
+            });
         }
 
         function showAlert(title, message) {
