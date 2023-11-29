@@ -56,19 +56,33 @@ html {
 }
 
 .tool_item {
+  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+    "sans-serif";
+    font-size: 0.9rem !important;
   list-style-type: none;
-  margin-bottom: 20%;
+  padding: 9%;
+  margin-bottom: 3%;
+  white-space: nowrap;
   text-indent: 1rem;
   font-size: 0.9rem;
   text-align: left;
   color: #000e23;
+  width: 160%;
+  transition: color 0.3s, background-color 0.3s;
+  border-radius: 5%;
 }
 
-.tool_item:hover,
-.tool_item a:hover {
+.tool_item:hover{
   cursor: pointer;
   transition-duration: 0.3s;
-  color: #faf7ff;
+  color: #faf7ff !important;
+  background-color: rgba(212, 179, 233, 0.933);
+}
+.tool_item:hover a{
+  cursor: pointer;
+  transition-duration: 0.3s;
+  color: #faf7ff !important;
+  background-color: rgba(212, 179, 233, 0.933);
 }
 
 .tool_item a {

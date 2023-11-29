@@ -573,43 +573,46 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
     </header>
     <main>
         <div id="tools_div">
-            <ul class="tool_list">
-                <li class="tool_item"><a href="workspace.php"><img src="images/calendar.png">
-                        Calendar & To-Do</a></li>
-                <li class="tool_item"><a href="thefiles.php?q=My Files"><img src="images/file.png">
-                        My Files</a>
-                </li>
-                <li class="tool_item"><img src="images/quiz.png">
-                    Quiz
-                </li>
-                <li class="tool_item"><img src="images/flash-cards.png">
-                    Flashcard
-                </li>
-                <li class="tool_item"><img src="images/summarization.png">
-                    Summarization
-                </li>
-                <li class="tool_item"><img src="images/study-planner.png">
-                    Study Planner
-                </li>
-                <li class="tool_item"><a href="Notes/notes.php"><img src="images/notes.png">
-                    Notes</a>
-                </li>
-                <li class="tool_item"><a href="pomodoro.php"><img src="images/pomodoro-technique.png">
-                    Pomodoro</a>
-                </li>
-                <li class="tool_item"><a href="gpa.php"><img src="images/gpa.png">
-                        GPA Calculator</a>
-                </li>
-                <li class="tool_item"><img src="images/collaboration.png">
-                    Shared spaces
-                </li>
-                <li class="tool_item"><img src="images/meeting-room.png">
-                    Meeting Room
-                </li>
-                <li class="tool_item"><a href="community.php"><img src="images/communities.png">
-                    Community</a>
-                </li>
-            </ul>
+        <ul class="tool_list">
+        <li class="tool_item">
+          <a href="workspace.php"> Calendar & To-Do
+          </a>
+        </li>
+        <li class="tool_item">
+          <a href="theFiles.php?q=My Files"> My Files</a>
+        </li>
+        <li class="tool_item">
+          Quiz
+        </li>
+        <li class="tool_item">
+          Flashcard
+        </li>
+        <li class="tool_item">
+          Summarization
+        </li>
+        <li class="tool_item">
+          Study Planner
+        </li>
+        <li class="tool_item"><a href="Notes/notes.php">
+            Notes</a>
+        </li>
+        <li class="tool_item">
+          <a href="pomodoro.php">
+            Pomodoro</a>
+        </li>
+        <li class="tool_item"><a href="gpa.php">
+            GPA Calculator</a>
+        </li>
+        <li class="tool_item">
+          Shared spaces
+        </li>
+        <li class="tool_item">
+          Meeting Room
+        </li>
+        <li class="tool_item"><a href="community.php">
+            Community</a>
+        </li>
+      </ul>
         </div>
 
         <div class="workarea">

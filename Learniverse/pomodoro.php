@@ -285,48 +285,41 @@ require 'dbConfig.php'; ?>
     <div id="tools_div">
       <ul class="tool_list">
         <li class="tool_item">
-          <a href="workspace.php"><img src="images/calendar.png" /> Calendar & To-Do
+          <a href="workspace.php"> Calendar & To-Do
           </a>
         </li>
         <li class="tool_item">
-          <a href="theFiles.php?q=My Files"><img src="images/file.png" /> My Files</a>
+          <a href="theFiles.php?q=My Files"> My Files</a>
         </li>
         <li class="tool_item">
-          <img src="images/quiz.png" />
           Quiz
         </li>
         <li class="tool_item">
-          <img src="images/flash-cards.png" />
           Flashcard
         </li>
         <li class="tool_item">
-          <img src="images/summarization.png" />
           Summarization
         </li>
         <li class="tool_item">
-          <img src="images/study-planner.png" />
           Study Planner
         </li>
-        <li class="tool_item"><a href="Notes/notes.php"><img src="images/notes.png">
+        <li class="tool_item"><a href="Notes/notes.php">
             Notes</a>
         </li>
         <li class="tool_item">
-          <a href="pomodoro.php"><img src="images/pomodoro-technique.png">
+          <a href="pomodoro.php">
             Pomodoro</a>
         </li>
-        <li class="tool_item"><a href="gpa.php"><img src="images/gpa.png">
+        <li class="tool_item"><a href="gpa.php">
             GPA Calculator</a>
         </li>
         <li class="tool_item">
-          <img src="images/collaboration.png" />
           Shared spaces
         </li>
         <li class="tool_item">
-          <img src="images/meeting-room.png" />
           Meeting Room
         </li>
         <li class="tool_item"><a href="community.php">
-            <img src="images/communities.png" />
             Community</a>
         </li>
       </ul>
