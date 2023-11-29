@@ -1,5 +1,7 @@
 <?php
-session_start();
+require "session.php";
+
+use MongoDB\BSON\ObjectID;
 
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
@@ -21,6 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $bulk = new MongoDB\Driver\BulkWrite;
 
+    $bulkwrite = new MongoDB\Driver\BulkWrite;
+
     $comment = [
         'username' => $username,
         'firstname' => $firstname,
@@ -32,9 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     $bulk->insert($comment);
+    $bulkwrite->update(['_id' => new ObjectID($post_id)], ['$inc' => ['comments' => 1]]);
+
 
     $result = $manager->executeBulkWrite("$databaseName.$collectionName", $bulk);
+    $inc = $manager->executeBulkWrite("$databaseName.community", $bulkwrite);
 
     header("Location: viewPost.php?postID=" . $post_id);
 }
-?>
