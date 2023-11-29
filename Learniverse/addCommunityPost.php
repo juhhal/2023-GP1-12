@@ -408,7 +408,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                     if (isset($_GET['postID']))
                         echo "<input type='hidden' id='postID' name='postID' value='".$_GET['postID']."' hidden>"
                     ?>
-                    <input type="submit">
+                    <br><input class="Formbuttons" type="submit"><input class="Formbuttons" type="reset" value="Cancel">
                 </form>
             </div>
         </div>
