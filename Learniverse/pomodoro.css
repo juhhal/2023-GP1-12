@@ -46,9 +46,11 @@
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --bs-font-monospace: " SFMono-Regular", "Menlo", "Monaco", "Consolas",
     "Liberation Mono", "Courier New", monospace;
-  --bs-gradient: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.15),
-      rgba(255, 255, 255, 0));
+  --bs-gradient: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.15),
+    rgba(255, 255, 255, 0)
+  );
   --bs-body-font-family: var(--bs-font-sans-serif);
   --bs-body-font-size: 1rem;
   --bs-body-font-weight: 400;
@@ -222,7 +224,7 @@ button:not(:disabled),
   margin-left: calc(-0.5 * var(--bs-gutter-x));
 }
 
-.row>* {
+.row > * {
   flex-shrink: 0;
   width: 100%;
   max-width: 100%;
@@ -241,16 +243,23 @@ button:not(:disabled),
   width: 100%;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1200px) {
   .col-md-4 {
     flex: 0 0 auto;
     width: 33.33333333%;
   }
 }
 
+@media (min-width: 768px) {
+  .modal-dialog {
+    max-height: 1rem !important;
+  }
+}
+
 .form-label {
   margin-bottom: 0.5rem;
   color: floralwhite;
+  white-space: nowrap;
 }
 
 .form-text {
@@ -273,6 +282,7 @@ button:not(:disabled),
   appearance: none;
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -674,11 +684,11 @@ button:not(:disabled),
   background-color: #fff;
 }
 
-.tab-content>.tab-pane {
+.tab-content > .tab-pane {
   display: none;
 }
 
-.tab-content>.actives {
+.tab-content > .actives {
   display: block;
 }
 
@@ -688,7 +698,9 @@ button:not(:disabled),
   height: 1em;
   padding: 0.25em 0.25em;
   color: #fff;
-  background: rgba(0, 0, 0, 0) url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27%23fff%27%3e%3cpath d=%27M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z%27/%3e%3c/svg%3e") center/1em auto no-repeat;
+  background: rgba(0, 0, 0, 0)
+    url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27%23fff%27%3e%3cpath d=%27M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z%27/%3e%3c/svg%3e")
+    center/1em auto no-repeat;
   border: 0;
   border-radius: 0.25rem;
   opacity: 0.4;
@@ -720,24 +732,39 @@ button:not(:disabled),
   visibility: hidden;
   z-index: 10;
   top: 0;
-  left: 30%;
-  right: 30%;
+  left: 28%;
+  right: 28%;
 }
 
 @media (max-width: 880px) {
   .modal-dialog {
     width: fit-content;
   }
+
+  #pomodoro-settings {
+    width: 42px;
+    height: 42px;
+  }
+
+  #pomodoro-settings svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  #settModal-tab {
+    min-width: 80px;
+  }
 }
 
 .modal-content {
   position: relative;
   display: flex;
+  justify-content: space-between;
   flex-direction: column;
   width: 100%;
   color: rgb(224, 224, 224);
   pointer-events: auto;
-  background: rgba(176, 147, 218, 0.52);
+  background: rgba(120, 117, 126, 0.52);
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(15.9px);
@@ -783,7 +810,7 @@ button:not(:disabled),
   border-bottom-left-radius: calc(2rem - 1px);
 }
 
-.modal-footer>* {
+.modal-footer > * {
   margin: 0.25rem;
 }
 
@@ -792,6 +819,7 @@ button:not(:disabled),
     max-width: 600px;
     margin: 3rem auto;
   }
+
 }
 
 .d-flex {
@@ -864,17 +892,17 @@ body {
   margin-bottom: 20px;
 }
 
-#pomodoro-durations>div {
+#pomodoro-durations > div {
   margin-right: 1rem;
   padding-left: 0;
 }
 
-#pomodoro-durations>div:first-child {
+#pomodoro-durations > div:first-child {
   padding-left: 0;
   position: relative;
 }
 
-#pomodoro-durations>div:last-child {
+#pomodoro-durations > div:last-child {
   margin-right: 0;
 }
 
@@ -1109,7 +1137,6 @@ button {
 @media screen and (max-height: 300px) {
   body {
     overflow: scroll;
-    background-image: url("images/shore.jpg");
   }
 }
 
@@ -1177,7 +1204,6 @@ button {
 body.banner-open #pomodoro-durations {
   margin-bottom: 0.5rem;
 }
-
 
 #sidebar-tongue {
   width: fit-content;
@@ -1293,3 +1319,13 @@ main {
 .nav__menu {
   margin: 1em;
 }
+#settModal-general-tab{
+  padding-top: 0%;
+}
+
+@media screen and (max-width: 1200px){
+  html{
+    font-size: 13px;
+  }
+}
+
