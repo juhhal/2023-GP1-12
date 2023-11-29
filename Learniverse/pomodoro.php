@@ -419,7 +419,7 @@ require 'dbConfig.php'; ?>
               <div class="d-flex align-items-start">
                 <div class="nav flex-column align-items-start nav-pills me-3" id="settModal-tab">
                   <button class="nav-link actives" id="settModal-general-tab" type="button" onclick="show(1);">
-                    General
+                    Background
                   </button>
                   <button class="nav-link" id="settModal-timers-tab" type="button" onclick="show(2);">
                     Timers
@@ -494,7 +494,7 @@ require 'dbConfig.php'; ?>
                         </div>
                         <div class="col-12">
                           <div class="mb-4">
-                            <label class="form-label">Select theme:</label>
+                            <label class="form-label" style="color: white; font-family:'Space Grotesk', sans-serif;">Select theme:</label>
                             <select id="themeSelect" class="form-select" onchange="changeSetting();">
                               >
                               <option value="none">None</option>
