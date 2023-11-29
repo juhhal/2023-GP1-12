@@ -9,7 +9,7 @@ var current_seconds;
 var type = "pomodoro";
 var cycle = 0;
 var settingOption = 1;
-
+var cycles = 0;
 
 
 //initialize values
@@ -40,10 +40,14 @@ function setCurrent() {
 
 //Timer
 function startTimer() {
+
+    //start timer
     if (document.getElementById("play-icon").textContent == "start") {
-        checkType();
+        checkCurrent();
         document.getElementById("pomodoro-timer").textContent =String(current_minutes).padStart(2, "0") + ":" + String(current_seconds).padStart(2, "0");
         document.getElementById("play-icon").textContent = "Pause";
+
+
         timer = setInterval(function () {
         if (current_seconds === 0) {
             //timer finish, change timer type
@@ -57,9 +61,13 @@ function startTimer() {
             }else{
                 type='pomodoro';
                 if(cycle==3){
-                cycle=0;}
+                cycle=0;
+                cycles++;
+              //display the finished cycles number
+            }
                 else{cycle++;}
             }
+            //session finishing sound
             var ring = new Audio('mp3/bell.mp3');
             ring.play();
             checkType();
@@ -74,7 +82,9 @@ function startTimer() {
 
         document.getElementById("pomodoro-timer").textContent =String(current_minutes).padStart(2, "0") + ":" + String(current_seconds).padStart(2, "0");
         }, 1000);
-    } else {
+    } 
+    //pause timer
+    else {
         clearInterval(timer);
         document.getElementById("play-icon").textContent = "start";
     }
@@ -131,10 +141,10 @@ function whatTimer() {
     else{
         document.getElementById("pomodoro-timer").textContent =String(current_minutes).padStart(2, "0") + ":" + String(current_seconds).padStart(2, "0");
     }
-  }
+  } 
 }
 
-//Reset password
+//Reset sessions
 function reset() {
   current_minutes = pomodoro_minutes;
   current_seconds = pomodoro_seconds;
@@ -189,6 +199,55 @@ function checkType(){
     selectedLabel.style.backgroundColor = "#fff";
     selectedLabel.style.color = "black";
   }
+}
+
+function checkCurrent(){
+  // Get the checked radio button with the name 'timerType'
+  var checkedRadio = document.querySelector('input[name="timerType"]:checked');
+
+  if (checkedRadio) {
+    // Define all labels
+    var labels = {
+        "pomodoro": document.getElementById("pomodoro"),
+        "short": document.getElementById("short"),
+        "long": document.getElementById("long")
+      };
+  
+      // Reset background and font color for all labels
+      for (var key in labels) {
+        if (labels.hasOwnProperty(key)) {
+          labels[key].style.backgroundColor = "";
+          labels[key].style.color = "white";
+        }
+      }
+  
+      // Get the label corresponding to the checked radio button
+      var selectedLabel = labels[checkedRadio.value];
+      // Apply white background and black font color to the selected label
+      if (selectedLabel) {
+        selectedLabel.style.backgroundColor = "#fff";
+        selectedLabel.style.color = "black";
+      }
+
+    // If a radio button is checked, display its time
+    if(checkedRadio.value == 'pomodoro' && type != 'pomodoro'){
+        type = 'pomodoro';
+        setCurrent();
+      }
+
+    else if(checkedRadio.value == 'short' && type != 'short'){
+      type = 'short';
+      setCurrent();}  
+    
+    else if(checkedRadio.value == 'long' && type != 'long'){
+      type = 'long';
+      setCurrent();}
+    
+    else{
+        document.getElementById("pomodoro-timer").textContent =String(current_minutes).padStart(2, "0") + ":" + String(current_seconds).padStart(2, "0");
+    }
+  } 
+
 }
 
 //display settings
@@ -452,11 +511,25 @@ document.addEventListener('fullscreenchange', function () {
       console.log('Entering fullscreen mode');
       header.style.visibility = 'hidden';
       pomodoroContainer.style.marginTop = '5%';
+      footer.style.visibility = 'hidden';
+      document.getElementById("sidebar-tongue").style.visibility = 'hidden';
+
+
   } else {
       console.log('Exiting fullscreen mode');
       header.style.visibility = 'visible';
       pomodoroContainer.style.marginTop = '0%';
+      footer.style.visibility = 'visible';
+      document.getElementById("sidebar-tongue").style.visibility = 'visible';
+
+
   }
 });
 
+if (document.getElementById("modal-dialog").style.visibility === 'hidden') {
+  document.getElementById("modal-dialog").style.visibility = 'visible';
+  show(1);
+}else{
+  document.getElementById("modal-dialog").style.visibility = 'hidden';
 
+}
