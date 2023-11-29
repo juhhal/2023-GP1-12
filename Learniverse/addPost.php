@@ -17,9 +17,13 @@ $postTagsString = $_POST['postTags'];
 $postDateString = $_POST['postDate'];
 $author = $_SESSION['email'];
 
-// Split the tags string into an array and remove whitespace
-$postTags = explode(',', $postTagsString);
-$postTags = array_map('trim', $postTags);
+if ($postTags == "") {
+    $postTags = [];
+} else {
+    // Split the tags string into an array and remove whitespace
+    $postTags = explode(',', $postTagsString);
+    $postTags = array_map('trim', $postTags);
+}
 
 //check if ths is an update request by examining if postID is set
 if (isset($_POST['postID'])) {

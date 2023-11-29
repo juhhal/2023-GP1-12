@@ -400,7 +400,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                     <label for="postTags">
                         <h3>Tags</h3>
                     </label>
-                    <textarea required id="postTags" name="postTags" placeholder="e.g. science, chemistry, atoms"><?php if(is_array($tags))echo implode(", ", $tags); else echo $tags; ?></textarea>
+                    <textarea id="postTags" name="postTags" placeholder="e.g. science, chemistry, atoms"><?php if(is_array($tags))echo implode(", ", $tags); else echo $tags; ?></textarea>
                     <input type="text" id="postDate" name='postDate' hidden>
                     <?php
                     if (isset($_GET['postID']))

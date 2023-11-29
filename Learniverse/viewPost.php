@@ -676,9 +676,12 @@ if ($matchedDocument) {
                 </script>
                 <?php
                 $tags = "";
-                foreach ($post['tags'] as $t) {
-                    $tags = $tags . "<span class='postTag' onclick=\"window.location='searchCommunity.php?searchTerm=[$t]'\">$t</span>";
-                };
+                if (count($post['tags']) == 0)
+                    $tags = "<span>none</span>";
+                else
+                    foreach ($post['tags'] as $t) {
+                        $tags = $tags . "<span class='postTag' onclick=\"window.location='searchCommunity.php?searchTerm=[$t]'\">$t</span>";
+                    };
                 echo "<div class='postTags'>tags: $tags</div></div>";
 
                 //SHOW COMMENTS SECTION
@@ -772,7 +775,7 @@ if ($matchedDocument) {
                 echo "<div id='commentArea'>
                 <h2>Your comment:</h2><br>
                 <form id='addcomment' method='post' action='addcomment.php'>
-                <textarea cols = '50' id='comment' name='comment' placeholder='Write your comment here'></textarea>
+                <textarea cols = '50' id='comment' name='comment' placeholder='Write your comment here' required></textarea>
                 <input id='id_post' name='id_post' hidden value = '" . $_GET['postID'] . "' ><br><br>
                 <button id='submitComment' type='submit' <?php if ($guest_account) {disabled} refresh()>Submit</button>
                 </form></div>";

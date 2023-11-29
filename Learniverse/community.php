@@ -384,7 +384,7 @@ if (isset($_SESSION['filteredSearch'])) {
                 <?php
                 $i = 0;
                 if (count($posts) < 1) {
-                    echo "<div class='emptySearch post'> No posts yet..</div>
+                    echo "<div class='emptySearch post'> No posts found..</div>
                     ";
                 }
                 foreach ($posts as $post) {
@@ -408,9 +408,12 @@ if (isset($_SESSION['filteredSearch'])) {
                         $last_name = $result->lastname;
                     };
                     $tags = "";
-                    foreach ($post['tags'] as $t) {
-                        $tags = $tags . "<span class='postTag' onclick=\"window.location='searchCommunity.php?searchTerm=[$t]'\">$t</span>";
-                    };
+                    if (count($post['tags']) == 0)
+                        $tags = "<span>none</span>";
+                    else
+                        foreach ($post['tags'] as $t) {
+                            $tags = $tags . "<span class='postTag' onclick=\"window.location='searchCommunity.php?searchTerm=[$t]'\">$t</span>";
+                        };
                     echo "
                     <div class='post'>
                     <span class='postTitle'><a href='viewPost.php?postID=" . $post['_id']['$oid'] . "'>" . $post['title'] . "</a></span><span class='postAuthor'>By: $first_name $last_name</span>

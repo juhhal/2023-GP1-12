@@ -38,10 +38,10 @@ if (strpos($searchTerm, "user:") === 0) {
 } elseif (strpos($searchTerm, "likes:") === 0) { // Check if the search term is based on likes
     $minLikes = (int)substr($searchTerm, strlen('likes:'));
     $filter = ['likes' => ['$gte' => $minLikes]];
-} elseif (strpos($searchTerm, "dislikes:") === 0) { // Check if the search term is based on likes
+} elseif (strpos($searchTerm, "dislikes:") === 0) { // Check if the search term is based on dislikes
     $minDislikes = (int)substr($searchTerm, strlen('dislikes:'));
     $filter = ['dislikes' => ['$gte' => $minDislikes]];
-} elseif (strpos($searchTerm, '[') === 0 && strpos($searchTerm, ']') === strlen($searchTerm) - 1) { // Check if the search term is based on tags or the title
+} elseif (strpos($searchTerm, '[') === 0 && strpos($searchTerm, ']') === strlen($searchTerm) - 1) { // Check if the search term is based on tags
     // Search based on tags
     $tags = trim($searchTerm, '[]');
     $filter = ['tags' => $tags];
