@@ -340,7 +340,8 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 </div>
                 <!-- INSERT ITEMS HERE -->
                 <script>
-                    $("#addPostForm").submit(function(event) {
+                    $(document).ready(function(){
+                        $("#addPostForm").submit(function(event) {
                             // Create a new Date object
                             var currentDate = new Date();
 
@@ -355,6 +356,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                             var formattedDate = year + '-' + month + '-' + day + ' at ' + hours + ':' + minutes;
                             $("#postDate").val(formattedDate);
                         });
+                    });
                 </script>
                 <form id="addPostForm" method="post" action="addPost.php">
                     <?php
