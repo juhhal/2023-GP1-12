@@ -369,7 +369,7 @@ require 'dbConfig.php'; ?>
           </div>
 
           <div id="pomodoro-timer"></div>
-
+            <div id="cycle">Cycle: 0</div>
           <div id="pomodoro-clock-actions">
             <button id="pomodoro-start" class="btn btn-primary" onclick="startTimer();">
               <span class="shown" id="play-icon">start</span>

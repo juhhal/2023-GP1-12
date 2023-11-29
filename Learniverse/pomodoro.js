@@ -55,20 +55,24 @@ function startTimer() {
             if(cycle==0){
                 type='short';
                 cycle++;
+                cycles++;
             }else if(cycle==2){
                 type='long';
                 cycle++;
+                cycles++;
             }else{
                 type='pomodoro';
                 if(cycle==3){
                 cycle=0;
-                cycles++;
+                
               //display the finished cycles number
+                
             }
                 else{cycle++;}
             }
             //session finishing sound
             var ring = new Audio('mp3/bell.mp3');
+            updateCycle();
             ring.play();
             checkType();
             setCurrent();
@@ -150,6 +154,8 @@ function reset() {
   current_seconds = pomodoro_seconds;
   type='pomodoro';
   cycle=0;
+  cycles=0;
+  updateCycle();
   document.getElementById("pomodoro-timer").textContent =String(pomodoro_minutes).padStart(2, "0") + ":" + String(pomodoro_seconds).padStart(2, "0");
 
 }
@@ -166,7 +172,8 @@ function ResetAll(){
   checkType();
   document.getElementById("pomodoro-timer").textContent =String(pomodoro_minutes).padStart(2, "0") + ":" + String(pomodoro_seconds).padStart(2, "0");
   cycle=0;
-
+  cycles=0;
+  updateCycle();
   //reset background picture
   document.body.style.backgroundImage='url("images/none.png")';
 
@@ -185,19 +192,25 @@ function checkType(){
         "long": document.getElementById("long")
     };
   
-    // Reset background and font color for all labels
+    // Reset background and font color for all labels and uncheck all radio buttons
     for (var key in labels) {
-        if (labels.hasOwnProperty(key)) {
-            labels[key].style.backgroundColor = "";
-            labels[key].style.color = "white"; 
-        }
-    }
-  
-  // Check type then update styles
+      if (labels.hasOwnProperty(key)) {
+          labels[key].style.backgroundColor = "";
+          labels[key].style.color = "white";
+          labels[key].querySelector('.form-check-input').checked = false;
+          console.log("Reset styles for:", key); // Debugging statement
+      }
+  }
+
+  // Check the radio button of the selected type and update styles
   var selectedLabel = labels[type];
   if (selectedLabel) {
-    selectedLabel.style.backgroundColor = "#fff";
-    selectedLabel.style.color = "black";
+      selectedLabel.style.backgroundColor = "#fff";
+      selectedLabel.style.color = "black";
+      selectedLabel.querySelector('.form-check-input').checked = true;
+      console.log("Updated styles for:", type); // Debugging statement
+  } else {
+      console.log("Selected label not found for type:", type); // Debugging statement
   }
 }
 
@@ -345,6 +358,9 @@ function changeAudio(amount){
   audioobject.volume = amount;
 }
 
+function updateCycle(){
+  document.getElementById("cycle").textContent = 'Cycle: '+cycles;
+}
 
 //update database when confirm or reset all
 $(document).ready(function() {
@@ -526,10 +542,4 @@ document.addEventListener('fullscreenchange', function () {
   }
 });
 
-if (document.getElementById("modal-dialog").style.visibility === 'hidden') {
-  document.getElementById("modal-dialog").style.visibility = 'visible';
-  show(1);
-}else{
-  document.getElementById("modal-dialog").style.visibility = 'hidden';
 
-}
