@@ -312,7 +312,7 @@ require 'session.php';
                             <form enctype="multipart/form-data" id="uploadFORM">
                                 <input type="file" name="file" id="file">
                                 <label for="file">
-                                    <h3>Upload File</h3>
+                                    <h3>Upload File (PDF only)</h3>
                                     <img src="images/upload.png" />
                                 </label>
                             </form>
