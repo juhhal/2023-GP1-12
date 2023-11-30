@@ -769,7 +769,7 @@ if ($matchedDocument) {
                     <textarea cols='50' id='Recomment' name='comment'></textarea>
                     <input id='edit_id_post' name='id_post' type='hidden' value='" . $_GET['postID'] . "'>
                     <input id='edit_id_comment' name='edit_id_comment' type='hidden' value='" . $commentId . "'>
-                    <input id='commentID' name='commentID' hidden value='$commentId'>
+                    <input id='commentID' name='commentID' hidden value=''>
                     <button id ='editButton' type='submit'>Submit</button><button id ='cancelButton' type='reset' onclick='cancelEditComment($commentId);'>Cancel</button>
                     </form></div>";
                 }
