@@ -236,6 +236,10 @@ if (isset($_SESSION['filteredSearch'])) {
             // If user is not a guest, relocate to add post page
             window.location.href = 'addCommunityPost.php';
         }
+
+        window.addEventListener('unload', function(event) {
+            <?php unset($_SESSION['filteredSearch']) ?>
+        });
     </script>
 </head>
 
@@ -276,7 +280,7 @@ if (isset($_SESSION['filteredSearch'])) {
                         </div>
                     </div>
                 </form>
-
+                <span id="clearSearch" title="Clear Search" onclick="location.reload();">Clear</span>
                 <?php
                 require_once __DIR__ . '/vendor/autoload.php';
                 // Create a MongoDB client
