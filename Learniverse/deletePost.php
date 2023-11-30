@@ -22,6 +22,16 @@ try {
     
     if ($result->getDeletedCount() > 0) {
         echo "Document deleted successfully.";
+        //delete any comments associated
+        $filter = ['post_id' => $postID];
+        $options = ['limit' => 0];
+
+        $bulk = new MongoDB\Driver\BulkWrite();
+        $bulk->delete($filter, $options);
+
+        $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
+        $result = $manager->executeBulkWrite("Learniverse.comments", $bulk, $writeConcern);
+
     } else {
         echo "No document found with the specified ObjectId.";
     }
