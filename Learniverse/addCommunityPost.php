@@ -345,24 +345,38 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 </div>
                 <!-- INSERT ITEMS HERE -->
                 <script>
-                    $(document).ready(function(){
-                        $("#addPostForm").submit(function(event) {
-                            // Create a new Date object
-                            var currentDate = new Date();
+                        $(document).ready(function() {
+                            $("#addPostForm").submit(function(event) {
+                                // Create a new Date object
+                                var currentDate = new Date();
 
-                            // Extract the year, month, day, hours, and minutes from the current date
-                            var year = currentDate.getFullYear();
-                            var month = String(currentDate.getMonth() + 1).padStart(2, '0');
-                            var day = String(currentDate.getDate()).padStart(2, '0');
-                            var hours = String(currentDate.getHours()).padStart(2, '0');
-                            var minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                                // Extract the year, month, day, hours, and minutes from the current date
+                                var year = currentDate.getFullYear();
+                                var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                                var day = String(currentDate.getDate()).padStart(2, '0');
+                                var hours = String(currentDate.getHours()).padStart(2, '0');
+                                var minutes = String(currentDate.getMinutes()).padStart(2, '0');
 
-                            // Format the date string
-                            var formattedDate = year + '-' + month + '-' + day + ' at ' + hours + ':' + minutes;
-                            $("#postDate").val(formattedDate);
+                                // Format the date string
+                                var formattedDate = year + '-' + month + '-' + day + ' at ' + hours + ':' + minutes;
+                                $("#postDate").val(formattedDate);
+                            });
+
+                            $("#postTags").on('input', function(event) {
+                                const inputValue = event.target.value;
+                                const inputArray = inputValue.split(',');
+
+                                const updatedText = inputArray
+                                    .map((word) => {
+                                        const trimmedWord = word.trim();
+                                        return trimmedWord ? `<span class="postTag">${trimmedWord}</span>` : '';
+                                    })
+                                    .join('');
+
+                                document.getElementById('renderedContent').innerHTML = updatedText;
+                            });
                         });
-                    });
-                </script>
+                    </script>
                 <form id="addPostForm" method="post" action="addPost.php">
                     <?php
 
@@ -408,6 +422,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                         <h3>Tags</h3>
                     </label>
                     <textarea id="postTags" name="postTags" placeholder="e.g. science, chemistry, atoms"><?php if(is_array($tags))echo implode(", ", $tags); else echo $tags; ?></textarea>
+                    <div id="renderedContent"></div>
                     <input type="text" id="postDate" name='postDate' hidden>
                     <?php
                     if (isset($_GET['postID']))
