@@ -754,11 +754,22 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                     </form>
                     <script>
                         document.addEventListener('DOMContentLoaded', function() {
-                            // Get the due input element
-                            taskDue = document.getElementById('taskDue');
+                             // Get the due input element
+                             taskDue = document.getElementById('taskDue');
 
-                            // Set the minimum value to the current datetime
-                            taskDue.min = new Date().toISOString().slice(0,16);
+var currentDate = new Date();
+
+// Extract the year, month, day, hours, and minutes from the current date
+var year = currentDate.getFullYear();
+var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+var day = String(currentDate.getDate()).padStart(2, '0');
+var hours = String(currentDate.getHours()).padStart(2, '0');
+var minutes = String(currentDate.getMinutes()).padStart(2, '0');
+
+const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+// Set the minimum value to the current datetime
+taskDue.min = formattedDate;
                         });
                     </script>
                 </div>

@@ -179,6 +179,11 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
             document.getElementById("tools_div").style.marginLeft = "-13.9%";
             document.getElementById("sidebar-tongue").style.marginLeft = '0';
         }
+
+        
+        window.addEventListener('unload', function(event) {
+            <?php unset($_SESSION['filteredSearch']) ?>
+        });
     </script>
 </head>
 
@@ -240,7 +245,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                         </div>
                     </div>
                 </form>
-
+                <span id="clearSearch" title="Clear Search" onclick="location.reload();">Clear</span>
                 <?php
                 require_once __DIR__ . '/vendor/autoload.php';
 

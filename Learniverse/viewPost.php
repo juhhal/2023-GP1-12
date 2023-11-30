@@ -265,6 +265,10 @@ if ($matchedDocument) {
                 showCloseButton: true
             });
         }
+
+        window.addEventListener('unload', function(event) {
+            <?php unset($_SESSION['filteredSearch']) ?>
+        });
     </script>
 </head>
 
@@ -326,7 +330,7 @@ if ($matchedDocument) {
                         </div>
                     </div>
                 </form>
-
+                <span id="clearSearch" title="Clear Search" onclick="location.reload();">Clear</span>
                 <?php
                 require_once __DIR__ . '/vendor/autoload.php';
 
