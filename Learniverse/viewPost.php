@@ -657,13 +657,19 @@ if ($matchedDocument) {
                     };
 
                     function DeleteComment(commentId, postId) {
-                        if (confirm("Are you sure you want to delete your comment?")) {
+                        Swal.fire({
+                            title: 'Heads Up!',
+                            text: 'Are you sure you want to delete this comment?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, delete it!',
+                            cancelButtonText: 'Cancel',
+                        }).then((result) => {
                             var commentid = commentId;
                             var postid = postId;
                             window.location.href = "deleteComment.php?commentID=" + commentid + "&postID=" + postid;
-                        } else {
-                            // Code to handle cancel action or do nothing
-                        }
+                        });
+                        // Code to handle cancel action or do nothing
                     }
 
                     function showAllComments(post_id, limit, offset) {
@@ -759,12 +765,13 @@ if ($matchedDocument) {
                     Commented At: " . $comment_Date . "
                     </span><br><br>";
                     if (!$guest_account && $commenter_email == $_SESSION['email']) echo "
-                    <form id='editComment_form$commentId' method='POST' action='editcomment.php'>
-                    <textarea cols='50' id='Recomment' name='Recomment'>$comment</textarea>
-                    <input id='edit_id_post' name='edit_id_post' type='hidden' value='" . $_GET['postID'] . "'>
+                    <form id='editComment_form$commentId' method='POST' action='addcomment.php'>
+                    <textarea cols='50' id='Recomment' name='comment'></textarea>
+                    <input id='edit_id_post' name='id_post' type='hidden' value='" . $_GET['postID'] . "'>
                     <input id='edit_id_comment' name='edit_id_comment' type='hidden' value='" . $commentId . "'>
+                    <input id='commentID' name='commentID' hidden value='$commentId'>
                     <button id ='editButton' type='submit'>Submit</button><button id ='cancelButton' type='reset' onclick='cancelEditComment($commentId);'>Cancel</button>
-                    </form>";
+                    </form></div>";
                 }
                 // Calculate the next offset
                 $next_offset = $offset + $limit;
@@ -788,6 +795,7 @@ if ($matchedDocument) {
                 <form id='addcomment' method='post' action='addcomment.php'>
                 <textarea cols = '50' id='comment' name='comment' placeholder='Write your comment here' required></textarea>
                 <input id='id_post' name='id_post' hidden value = '" . $_GET['postID'] . "' ><br><br>
+                <input id='commentID' name='commentID' hidden value=''>
                 <button id='submitComment' type='submit' <?php if ($guest_account) {disabled} refresh()>Submit</button>
                 </form></div>";
                 ?>

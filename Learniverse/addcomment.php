@@ -20,27 +20,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $post_id = $_POST['id_post'];
     $commentDate = date('Y-m-d \a\t\ H:i');
     $email = $_SESSION['email'];
-
+    $commentID = "";
     $bulk = new MongoDB\Driver\BulkWrite;
 
     $bulkwrite = new MongoDB\Driver\BulkWrite;
 
-    $comment = [
-        'username' => $username,
-        'firstname' => $firstname,
-        'lastname' => $lastname,
-        'comment' => $commentdata,
-        'commented_at' => $commentDate,
-        'post_id' => $post_id,
-        'email' => $email,
-    ];
-
-    $bulk->insert($comment);
-    $bulkwrite->update(['_id' => new ObjectID($post_id)], ['$inc' => ['comments' => 1]]);
-
+    //check if it is a comment update request
+    if (isset($_POST['commentID'])) {
+        $commentID = $_POST['commentID'];
+        $bulk->update(['_id' => new ObjectID($commentID)], ['$set' => ['comment' => $commentdata, 'edited_at' => date('Y-m-d \a\t\ H:i')]]);
+    } else { //it is a new comment, add it to comments collection
+        $comment = [
+            'username' => $username,
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'comment' => $commentdata,
+            'commented_at' => $commentDate,
+            'post_id' => $post_id,
+            'email' => $email,
+            'edited_at' => ""
+        ];
+        $bulk->insert($comment);
+        $bulkwrite->update(['_id' => new ObjectID($post_id)], ['$inc' => ['comments' => 1]]);
+        $inc = $manager->executeBulkWrite("$databaseName.community", $bulkwrite);
+    }
 
     $result = $manager->executeBulkWrite("$databaseName.$collectionName", $bulk);
-    $inc = $manager->executeBulkWrite("$databaseName.community", $bulkwrite);
 
     header("Location: viewPost.php?postID=" . $post_id);
 }
