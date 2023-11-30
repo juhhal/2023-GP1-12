@@ -749,9 +749,18 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
 
                     <form id="addtask-form" method="post" action="addTask.php">
                         <input required type="text" id="taskDesc" name="taskDesc" placeholder="Task Name">
-                        <input id="taskDue" name="taskDue" type="datetime-local"><br>
+                        <input id="taskDue" name="taskDue" type="datetime-local" title="Set the deadline of this task"><br>
                         <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="resetAddTask()">Cancel</button>
                     </form>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Get the due input element
+                            taskDue = document.getElementById('taskDue');
+
+                            // Set the minimum value to the current datetime
+                            taskDue.min = new Date().toISOString().slice(0,16);
+                        });
+                    </script>
                 </div>
             </div>
         </div>
