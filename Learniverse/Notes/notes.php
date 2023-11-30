@@ -4,7 +4,7 @@
 require_once '../vendor/autoload.php';
 
 session_start();
-error_reporting(0);
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 //print_r($_SESSION);
@@ -17,7 +17,7 @@ $result_array = $cursor->toArray();
 $result_json = json_decode(json_encode($result_array), true)[0];
 
 echo '<script>console.log(' . json_encode($result_json) . ');</script>';
-$FOLDERS = [];
+$FOLDERS = []; 
 $FOLDERS = is_string($result_json['folders']) ? json_decode($result_json['folders'], true) : $result_json['folders'];
 $a = $result_json['_id'];
 //echo $a['$oid'];
@@ -55,10 +55,9 @@ $noteNumber = "";
 
 ?>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <title>Notes</title>
+  <title>My Files</title>
   <link rel="stylesheet" href="../theFiles.css">
   <link rel="stylesheet" href="../header-footer.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -71,15 +70,16 @@ $noteNumber = "";
   <script src="../jquery.js"></script>
   <script src="https://cdn.tiny.cloud/1/no-origin/tinymce/6.7.2-32/tinymce.min.js" referrerpolicy="origin"></script>
   <script>
-    tinymce.init({
-      selector: '#mytextarea',
-      menubar: false,
-      toolbar: 'undo redo | bold italic underline | numlist bullist | forecolor backcolor | alignleft aligncenter alignright alignjustify | outdent indent',
-      // add colors to text color selector
+      tinymce.init({
+        selector: '#mytextarea',
+        menubar: false,
+        toolbar: 'undo redo | bold italic underline | numlist bullist | forecolor backcolor | alignleft aligncenter alignright alignjustify | outdent indent',
+        // add colors to text color selector
 
-      plugins: 'lists colorpicker',
-    });
+        plugins: 'lists colorpicker',
+      });
   </script>
+  <script src="../js/sweetalert2.all.min.js"></script>
 
 
   <!-- PROFILE STYLESHEET -->
@@ -251,7 +251,7 @@ $noteNumber = "";
                 <a href="../index.php">Home</a>
               </li>
               <li>
-                <a href="../community.php">Community</a>
+                <a href="#">Community</a>
               </li>
               <li class="active">
                 <a href="../workspace.php">My Workspace</a>
@@ -320,96 +320,91 @@ $noteNumber = "";
 
   <main>
     <div id="tools_div">
-    <ul class="tool_list">
-        <li class="tool_item">
-          <a href="../workspace.php"> Calendar & To-Do
-          </a>
+      <ul class="tool_list">
+        <li class="tool_item"><a href="../workspace.php"><img src="../images/calendar.png">
+            Calendar & To-Do </li>
+        <li class="tool_item"><a href="../theFiles.php?q=My Files"><img src="../images/file.png">
+            My Files</a>
         </li>
-        <li class="tool_item">
-          <a href="../theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/quiz.png">
           Quiz
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/flash-cards.png">
           Flashcard
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/summarization.png">
           Summarization
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/study-planner.png">
           Study Planner
         </li>
-        <li class="tool_item"><a href="notes.php">
-            Notes</a>
+        <li class="tool_item"><img src="../images/notes.png">
+          Notes
         </li>
-        <li class="tool_item">
-          <a href="../pomodoro.php">
-            Pomodoro</a>
+        <li class="tool_item"><img src="../images/pomodoro-technique.png">
+          Pomodoro
         </li>
-        <li class="tool_item"><a href="../gpa.php">
-            GPA Calculator</a>
+        <li class="tool_item"><img src="../images/gpa.png">
+          GPA Calculator
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/collaboration.png">
           Shared spaces
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/meeting-room.png">
           Meeting Room
         </li>
-        <li class="tool_item"><a href="../community.php">
-            Community</a>
+        <li class="tool_item"><img src="../images/communities.png">
+          Community
         </li>
       </ul>
     </div>
 
     <div class="workarea">
       <nav>
-        <a href="notes.php?folder=<?php echo urlencode($_GET['folder']); ?>&mode=create" style="color: black;">
+      <a href="notes.php?folder=<?php echo urlencode($_GET['folder']); ?>&mode=create" style="color: black;">
           <img src="file-circle-plus-solid.svg" /> New Note
-        </a>
+      </a>
 
         <!-- <a href="fetchHome.php">
                 <img src="house-solid.svg" /> Dashboard </a> -->
         <button onclick="newFolder()" style="color: black; cursor: pointer;">
           <img src="folder-plus.svg" /> New Folder </button>
 
-        <?php foreach ($FOLDERS as $folderName => $folder) { ?>
-          <div class="eachFolder" id="folder_<?php echo $folderName; ?>">
-            <a href="#" class="folderHeader" style="display: flex; align-items: center; justify-content: space-between; position: relative;">
-              <span style="display: flex; align-items: center;">
+          <?php foreach ($FOLDERS as $folderName => $folder) { ?>
+    <div class="eachFolder" id="folder_<?php echo $folderName; ?>">
+        <a href="#" class="folderHeader" style="display: flex; align-items: center; justify-content: space-between; position: relative;">
+            <span style="display: flex; align-items: center;">
                 <img src="folder-solid.svg" />
                 <span><?php echo $folderName; ?></span>
-              </span>
-              <?php if ($folderName != 'Notes') { ?>
+            </span>
+            <?php if ($folderName != 'Notes') { ?>
                 <img class="deleteFolder" src="trash.svg" onclick="deleteFolder('<?php echo $folderName; ?>')" style="position: absolute; right:0; " />
                 <img src="plus.svg" onclick="window.location.href='notes.php?folder=<?php echo $folderName; ?>&mode=create'" style="position: absolute; right: 30px;" />
-              <?php } ?>
-            </a>
+            <?php } ?>
+        </a>
 
-            <div class="folderContent">
-              <?php if (!empty($folder['notes'])) : ?>
+        <div class="folderContent">
+            <?php if (!empty($folder['notes'])): ?>
                 <!-- Print titles of notes in this folder -->
-                <?php foreach ($folder['notes'] as $note) : ?>
-                  <div class="note">
-                    <a href="notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $note['id']; ?>&mode=view">
-                      <?php echo $note['title']; ?>
-                      <div class="actions">
-                        <img src="trash.svg" style="padding: 0;" onclick="deleteNote('<?php echo $folderName; ?>', '<?php echo $note['id']; ?>')">
-                        <a href="notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $note['id']; ?>&mode=edit">
-                          <img src="edit.svg" style="padding: 0;">
-                        </a>
-                      </div>
-                    </a>
-                  </div>
+                <?php foreach ($folder['notes'] as $note): ?>
+                   <div class="note" id="note_<?php echo $note['id']; ?>">
+                        <a href="notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $note['id']; ?>&mode=view"><?php echo $note['title']; ?></a>
+                        <div class="actions">
+                            <img src="trash.svg" style="padding: 0; cursor: pointer;" onclick="deleteNote('<?php echo $folderName; ?>', '<?php echo $note['id']; ?>')">
+                            <a href="notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $note['id']; ?>&mode=edit" style="margin:0 !important;">
+                                <img src="edit.svg" style="padding: 0;">
+                            </a>
+                        </div>
+                   </div>
                 <?php endforeach; ?>
-              <?php else : ?>
+            <?php else: ?>
                 <p style="padding: 0 20px">No notes available.</p>
-              <?php endif; ?>
-            </div>
+            <?php endif; ?>
+        </div>  
 
 
-          </div>
-        <?php } ?>
+    </div>
+<?php } ?>
 
 
 
@@ -429,12 +424,13 @@ $noteNumber = "";
         <?php
         if (isset($_GET['mode']) && $_GET['mode'] === 'edit') { ?>
           <form id="editNoteform" class="note-form">
-            <input name="title" type="text" placeholder="Note Title" id="title" class="title-input" required value="<?php
-                                                                                                                    $noteId = $_GET['noteId'];
-                                                                                                                    $folderName = $_GET['folder'];
-                                                                                                                    $note = $FOLDERS[$folderName]['notes'][array_search($noteId, array_column($FOLDERS[$folderName]['notes'], 'id'))];
-                                                                                                                    echo $note['title'];
-                                                                                                                    ?>" />
+            <input name="title" type="text" placeholder="Note Title" id="title" class="title-input" required 
+              value="<?php
+              $noteId = $_GET['noteId'];
+              $folderName = $_GET['folder'];
+              $note = $FOLDERS[$folderName]['notes'][array_search($noteId, array_column($FOLDERS[$folderName]['notes'], 'id'))];
+              echo $note['title'];
+              ?>" />
             <textarea id="mytextarea">
               <?php
               // get content from selected note by id
@@ -448,23 +444,23 @@ $noteNumber = "";
           </form>
         <?php } ?>
 
-
-        <?php if (isset($_GET['mode']) && $_GET['mode'] === 'view' && isset($_GET['noteId'])) { ?>
-          <?php
-          $noteId = $_GET['noteId'];
-          $folderName = $_GET['folder'];
-          $note = $FOLDERS[$folderName]['notes'][array_search($noteId, array_column($FOLDERS[$folderName]['notes'], 'id'))];
-          ?>
-          <div id="note_<?php echo $noteId; ?>" class="noteView">
-            <div>
-              <span class="note-date"><?php echo $note['date']; ?></span>
-              <img src="edit.svg" onclick="window.location.href='notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $noteId; ?>&mode=edit'" style="padding: 0; float: right; cursor: pointer;" width="15px" height="15px">
-            </div>
-            <span class="note-folder-name">Folder Name: <?php echo $folderName ?></span>
-            <h2 class="note-title">Title: <?php echo $note['title']; ?></h2>
-            <div class="note-content"><?php echo $note['content']; ?></div>
-          </div>
-        <?php } ?>
+      
+      <?php if (isset($_GET['mode']) && $_GET['mode'] === 'view' && isset($_GET['noteId'])) { ?>
+        <?php
+        $noteId = $_GET['noteId'];
+        $folderName = $_GET['folder'];
+        $note = $FOLDERS[$folderName]['notes'][array_search($noteId, array_column($FOLDERS[$folderName]['notes'], 'id'))];
+        ?>
+        <div id="note_<?php echo $noteId; ?>" class="noteView">
+        <div>
+        <span class="note-date"><?php echo $note['date']; ?></span>
+        <img src="edit.svg" onclick="window.location.href='notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $noteId; ?>&mode=edit'" style="padding: 0; float: right; cursor: pointer;" width="15px" height="15px">
+        </div>
+        <span class="note-folder-name">Folder Name: <?php echo $folderName ?></span>
+          <h2 class="note-title">Title: <?php echo $note['title']; ?></h2>
+          <div class="note-content"><?php echo $note['content']; ?></div>
+        </div>
+      <?php } ?>
 
       </div>
     </div>
@@ -494,58 +490,86 @@ $noteNumber = "";
 
 <script>
   function deleteNote(folder, noteid) {
-    if (window.confirm('Are you sure you want to delete this note?')) {
-      $.ajax({
-        url: "deleteNote.php",
-        method: "POST",
-        data: {
-          folder,
-          noteid
-        },
-        success: function(res) {
-          document.querySelector(`#note_${noteid}`).style.display = 'none';
-        }
-      });
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: "deleteNote.php",
+          method: "POST",
+          data: {
+            folder,
+            noteid
+          },
+          success: function(res) {
+            document.querySelector(#note_${noteid}).style.display = 'none';
+          }
+        });
+      }
+    });
   }
+
 
 
   function deleteFolder(e) {
-    if (window.confirm('Are you sure you want to delete this folder?')) {
-      $.ajax({
-        url: "deleteFolder.php",
-        method: "POST",
-        data: {
-          name: e
-        },
-        success: function(res) {
-          document.querySelector(`#folder_${e}`).style.display = 'none';
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'You won\'t be able to revert this!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: "deleteFolder.php",
+            method: "POST",
+            data: {
+              name: e
+            },
+            success: function(res) {
+              document.querySelector(#folder_${e}).style.display = 'none';
+            }
+          });
         }
       });
     }
-  }
 
   function newFolder() {
-    const val = prompt('Enter your Notebook Name')
-
-    if (val) {
-      $.ajax({
-        url: "addFolder.php",
-        method: "POST",
-        data: {
-          name: val
-        },
-        success: function(res) {
-          console.log(res)
-          window.location.reload()
+    Swal.fire({
+      title: 'Enter your Notebook Name',
+      input: 'text',
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value) {
+          return 'You need to enter something!';
+        } else {
+          $.ajax({
+            url: "addFolder.php",
+            method: "POST",
+            data: {
+              name: value
+            },
+            success: function(res) {
+              console.log(res);
+              window.location.reload();
+            }
+          });
         }
-      })
-    }
+      }
+    });
   }
 
 
 
-  $(document).ready(function() {
+  $(document).ready(function() {    
 
     var folderContents = $('.folderContent');
     folderContents.hide();
@@ -568,13 +592,13 @@ $noteNumber = "";
         data: {
           title: $('#title').val(),
           content: tinymce.get('mytextarea').getContent(),
-          folder: '<?php echo $_GET['folder']; ?>',
+          folder: '<?php echo $_GET['folder']; ?>' ,
         },
         success: function(res) {
           const data = JSON.parse(res);
           const noteId = data.noteId;
           alert('Note added successfully');
-          window.location.href = `notes.php?folder=<?php echo $_GET['folder']; ?>&noteId=${noteId}&mode=view`;
+          window.location.href = notes.php?folder=<?php echo $_GET['folder']; ?>&noteId=${noteId}&mode=view;
         }
       });
     });
@@ -601,7 +625,7 @@ $noteNumber = "";
           const data = JSON.parse(res);
           const noteId = data.noteId;
           alert('Note edited successfully');
-          window.location.href = `notes.php?folder=${folder}&noteId=${noteId}&mode=view`;
+          window.location.href = notes.php?folder=${folder}&noteId=${noteId}&mode=view;
         }
       });
     });
