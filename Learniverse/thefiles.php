@@ -441,6 +441,7 @@ require 'session.php';
             });
         });
 
+        
         document.querySelectorAll('.deleteic').forEach(e => {
             e.addEventListener('click', (event) => {
                 $(".icon").hide();
