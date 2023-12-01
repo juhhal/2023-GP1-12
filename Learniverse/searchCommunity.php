@@ -62,7 +62,7 @@ if (strpos($searchTerm, "user:") === 0) {
 // echo "<script>alert('".print_r($filter)."')</script>";
 
 // Construct the query
-$query = new MongoDB\Driver\Query($filter);
+$query = new MongoDB\Driver\Query($filter, ['sort' => ['posted_at' => -1]]); // Sort by 'posted_at' in descending order
 
 // Execute the query
 $documents = $manager->executeQuery("Learniverse.community", $query);
