@@ -111,7 +111,7 @@ function sendNotification($postID) {
         // Set the email content
         $mail->setFrom('Learniverse.website@gmail.com');
         $mail->addAddress($email);
-        $mail->Subject = 'You receive a new comment on your post.';
+        $mail->Subject = 'You received a new comment on your post!';
         $mail->Body = "Dear ". $firstname . " " . $lastname .",\n\nYou have received a new comment on your\" " . $title . "\"  post. Check it now!!.\n http://localhost:3000/viewPost.php?" . $post_id . "\n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
 
         // Send the email
