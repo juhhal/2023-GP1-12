@@ -415,27 +415,35 @@ div.clicked img {
 textarea {
     width: 60%;
 }
-#Cusername{
-    margin-left: -5%; 
-}
-.commentInfo{
+
+.commentInfo,
+.commentdate{
     float: right;
     color: grey;
     font-size: 0.9rem;
     margin-left: auto;
 }
-.alterComment{
+.deleteComment,
+.editComment{
     width: 1.3rem;
+    color:grey;
     float: right;
 }
 
-.commentContent{
+.deleteComment:hover,
+.editComment:hover{
+    color: black;
+    cursor: pointer;
+}
+
+.oneCommnet{
     border-bottom: 1px solid rgb(197, 197, 197);
 }
 
 #NoOfComment{
     margin-bottom: 3.5%;
 }
+
 #submitComment {
     margin-right: auto;
     margin-right: 10%;
@@ -448,7 +456,8 @@ textarea {
     border: none;
 }
 
-#submitComment:hover {
+#submitComment:hover,
+#ShowmoreButton:hover {
     filter: brightness(0.5);
     cursor: pointer;
 }
@@ -457,31 +466,6 @@ textarea {
     margin-top: 7%;
 }
 
-#showMorebutton{
-    background-color: #fdae9b;
-    height: 30px;
-    width: 160px;
-    border-radius: 10px;
-    border: none;
-}
-
-#alterComment{
-    float: right;
-    color: grey;
-    font-size: 1rem;
-    margin-left: auto;
-}
-#editButton{
-    margin-right: auto;
-    margin-right: 3%;
-    margin-top: 1.5%;
-    background-color: #fdae9b;
-    padding: 0.5rem 1rem;
-    height: 30px;
-    width: 90px;
-    border-radius: 10px;
-    border: none;
-}
 #ShowmoreButton{
     margin-right: auto;
     margin-right: 3%;
@@ -493,17 +477,7 @@ textarea {
     border-radius: 10px;
     border: none;
 }
-#cancelButton{
-    margin-right: auto;
-    margin-right: 3%;
-    margin-top: 1.5%;
-    background-color:#e2e1e3;
-    padding: 0.5rem 1rem;
-    height: 30px;
-    width: 90px;
-    border-radius: 10px;
-    border: none;
-}
+/* Comment section*/
 
 #clearSearch {
     border-radius: 10px;

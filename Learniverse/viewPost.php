@@ -278,7 +278,7 @@ if ($matchedDocument) {
         tinymce.init({
             selector: '#comment',
             plugins: 'tinycomments mentions anchor autolink charmap codesample emoticons image link lists searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent',
             tinycomments_mode: 'embedded',
             tinycomments_author: 'Author name',
             mergetags_list: [{
@@ -644,21 +644,16 @@ if ($matchedDocument) {
                         header("Refresh: 0");
                     }
 
-                    function reWriteComment(id) {
-                        $('.commentContent').$(this).hide();
-                        $('commentInfo').$(this).hide()
-                        $("#editComment_form" + id).show();
-                        $("#Recomment").focus();
-                        if ($("#editComment_form" + id).submitted) {
-                            cancelEditComment();
-                        }
-                    };
-
-                    function cancelEditComment(id) {
-                        $("#editComment_form" + id).hide();
-                        $('.commentContent').$(this).show();
-                        $('commentInfo').$(this).show();
-                    };
+                    function editComment(comment, id) {
+                        $('#comment').attr('placeholder', '');
+                        $(tinymce.get('comment').getBody()).html(comment); // Set the content of the textarea
+                        $("#commentID").val(id);
+                        var targetDiv = $("#commentArea"); // Replace "your-div-id" with the actual ID of the div you want to scroll to
+                        var offsetTop = targetDiv.offset().top;
+                        $("html, body").animate({
+                            scrollTop: offsetTop
+                        }, 500);
+                    }
 
                     function DeleteComment(commentId, postId) {
                         Swal.fire({
@@ -669,11 +664,12 @@ if ($matchedDocument) {
                             confirmButtonText: 'Yes, delete it!',
                             cancelButtonText: 'Cancel',
                         }).then((result) => {
-                            var commentid = commentId;
-                            var postid = postId;
-                            window.location.href = "deleteComment.php?commentID=" + commentid + "&postID=" + postid;
+                            if (result.isConfirmed) { // Check if the user clicked the "Yes, delete it!" button
+                                var commentid = commentId;
+                                var postid = postId;
+                                window.location.href = "deleteComment.php?commentID=" + commentid + "&postID=" + postid;
+                            }
                         });
-                        // Code to handle cancel action or do nothing
                     }
 
                     function showAllComments(post_id, limit, offset) {
@@ -686,13 +682,26 @@ if ($matchedDocument) {
                                 offset: offset
                             },
                             success: function(response) {
-                                $('#ShowmoreButton').remove(); // Remove the "Show Comments" link
-                                $('#Showcomments').append(response); // Append the new comments
+                                var comments = JSON.parse(response); // Parse the JSON response
+                                $('#ShowmoreButton').remove(); // Remove the "Show Comments" button
+                                $('#Showcomments').append(comments); // Append the parsed HTML string
                             },
                             error: function() {
                                 console.log('Error occurred while fetching comments.');
                             }
                         });
+                    }
+
+                    function CommentcheckGuest() {
+                        <?php
+                        // $guest_account is a PHP variable that determines if the user is a guest or not
+                        if ($guest_account) {
+                            echo "showAlert(\"Enjoying Your Experience?\", \"<a class='link' href='register.php'>Register</a> or <a class='link' href='login.php'>Login</a> to continue your journey!\");";
+                            echo "return false;"; // Return false to prevent form submission
+                        }
+                        ?>
+                        // If the user is not a guest, allow the form submission
+                        return true;
                     }
                 </script>
                 <?php
@@ -750,6 +759,7 @@ if ($matchedDocument) {
                     $comment = "";
                     $commentId = "";
                     $commenter_email = "";
+                    $edited_date = "";
                     if ($oneComment) {
                         $commenter_firstname = $oneComment->firstname;
                         $commenter_lastname = $oneComment->lastname;
@@ -758,25 +768,20 @@ if ($matchedDocument) {
                         $comment = $oneComment->comment;
                         $commentId = $oneComment->_id;
                         $commenter_email = $oneComment->email;
+                        $edited_date = $oneComment->edited_at;
                     };
 
-                    echo "<p class='commentContent'>" . $comment . "</p>";
-                    if (!$guest_account && $commenter_email == $_SESSION['email']) echo "<span class='alterComment'>;
-                    <img src='images/edit.png' alt='edit' width='20px' height='20px' onclick='reWriteComment($commentId);'> <img src='images/bin.png' alt='bin' width='20px' height='20px' onclick='DeleteComment(\"" . $commentId . "\", \"" . $_GET['postID'] . "\");'>
-                    </span><br><br>";
+                    echo "<div class='oneCommnet'><p class='commentContent'>" . $comment . "</p>";
                     echo "<span class='commentInfo'>
-                    By: " . $commenter_firstname . " " . " $commenter_lastname (@" . " $commenter_username) 
-                    Commented At: " . $comment_Date . "
-                    </span><br><br>";
-                    if (!$guest_account && $commenter_email == $_SESSION['email']) echo "
-                    <form id='editComment_form$commentId' method='POST' action='addcomment.php'>
-                    <textarea cols='50' id='Recomment' name='comment'></textarea>
-                    <input id='edit_id_post' name='id_post' type='hidden' value='" . $_GET['postID'] . "'>
-                    <input id='edit_id_comment' name='edit_id_comment' type='hidden' value='" . $commentId . "'>
-                    <input id='commentID' name='commentID' hidden value=''>
-                    <button id ='editButton' type='submit'>Submit</button><button id ='cancelButton' type='reset' onclick='cancelEditComment($commentId);'>Cancel</button>
-                    </form></div>";
+                    By: " . $commenter_firstname . " " . " $commenter_lastname (@" . " $commenter_username) </span><br><span class = 'commentdate'>";
+                    if ($edited_date != "") echo "Edited At " . $edited_date;
+                    else echo "At " . $comment_Date;
+                    echo "</span><br>";
+                    if (!$guest_account && $commenter_email == $_SESSION['email'])
+                    echo "<span class='editComment'><img src='images/edit.png' alt='edit' width='20px' height='20px' onclick='editComment(\"" . $comment . "\", \"" . $commentId . "\");'></span><span class='deleteComment'><img src='images/bin.png' alt='bin' width='20px' height='20px' onclick='DeleteComment(\"" . $commentId . "\", \"" . $_GET['postID'] . "\");'></span>";
+                    echo "<br></div>";
                 }
+
                 // Calculate the next offset
                 $next_offset = $offset + $limit;
 
@@ -796,12 +801,13 @@ if ($matchedDocument) {
                 //ADD COMMENT SECTION
                 echo "<div id='commentArea'>
                 <h2>Your comment:</h2><br>
-                <form id='addcomment' method='post' action='addcomment.php'>
-                <textarea cols = '50' id='comment' name='comment' placeholder='Write your comment here' required></textarea>
-                <input id='id_post' name='id_post' hidden value = '" . $_GET['postID'] . "' ><br><br>
-                <input id='commentID' name='commentID' hidden value=''>
-                <button id='submitComment' type='submit' <?php if ($guest_account) {disabled} refresh()>Submit</button>
-                </form></div>";
+                <form id='addcomment' method='post' action='addcomment.php' onsubmit='return CommentcheckGuest()';>
+                    <textarea cols='50' id='comment' name='comment' placeholder='Write your comment here'></textarea>
+                    <input id='id_post' name='id_post' hidden value='" . $_GET['postID'] . "'><br><br>
+                    <input id='commentID' name='commentID' hidden value=''>    
+                    <button id='submitComment' type='submit'>Submit</button>
+                </form>
+                </div>";
                 ?>
             </div>
         </div>
