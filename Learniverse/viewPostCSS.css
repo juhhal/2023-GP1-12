@@ -2,18 +2,19 @@ html {
     font-size: 100%;
     width: 99%;
     height: 99%;
-    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', 'sans-serif';
+    font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+      "sans-serif";
     color: #000e23;
     background-color: #faf7ff;
-}
-
-@media only screen and (max-width: 991px) {
+  }
+  
+  @media only screen and (max-width: 991px) {
     .nav__menu {
-        visibility: hidden;
+      visibility: hidden;
     }
-}
-
-#sidebar-tongue {
+  }
+  
+  #sidebar-tongue {
     width: fit-content;
     padding: 50px 3px;
     border-radius: 2px 10px 10px 2px;
@@ -28,15 +29,15 @@ html {
     color: #faf7ff;
     margin-left: 0;
     z-index: 150;
-}
-
-#sidebar-tongue:hover {
+  }
+  
+  #sidebar-tongue:hover {
     transition-duration: 0.3s;
     filter: brightness(0.5);
     cursor: pointer;
-}
-
-#tools_div {
+  }
+  
+  #tools_div {
     background-color: #bf97d8;
     width: 12%;
     padding: 2% 0.5% 0;
@@ -47,326 +48,237 @@ html {
     position: fixed;
     z-index: 100;
     height: 99vh;
-}
-
-.tool_list {
+  }
+  
+  .tool_list {
     display: inline-block;
     padding-inline-start: 0;
-}
-
-.tool_item {
+  }
+  
+  .tool_item {
     list-style-type: none;
     margin-bottom: 20%;
     text-indent: 1rem;
     font-size: 0.9rem;
     text-align: left;
     color: #000e23;
-}
-
-.tool_item:hover,
-.tool_item a:hover {
+  }
+  
+  .tool_item:hover,
+  .tool_item a:hover {
     cursor: pointer;
     transition-duration: 0.3s;
     color: #faf7ff;
-}
-
-.tool_item a {
+  }
+  
+  .tool_item a {
     text-decoration: none;
     color: #000e23;
-}
-
-.tool_item img {
+  }
+  
+  .tool_item img {
     width: 15%;
     float: left;
     margin-left: 2%;
-}
-
-.workarea {
+  }
+  
+  .workarea {
     padding: 1%;
     display: flex;
-}
-
-.workarea_item {
+  }
+  
+  .workarea_item {
     margin: 1%;
     margin-left: 7%;
     width: 85%;
-}
-
-.workarea_item h1 {
+  }
+  
+  .workarea_item h1 {
     text-align: left;
     margin-left: 5%;
     margin-bottom: 5%;
-}
-
-/* Vars  */
-:root {
-    --rad: .7rem;
-    --dur: .3s;
-    --color-dark: #2f2f2f;
-    --color-light: #fff;
-    --color-brand: #fdae9b;
-    --font-fam: 'Lato', sans-serif;
-    --height: 2rem;
-    --btn-width: 3rem;
-    --bez: cubic-bezier(0, 0, 0.43, 1.49);
-}
-
-#searchCommunity {
-    display: inline;
-    width: 30%;
-    margin-right: auto;
-    margin-left: -10%;
-    background: var(--color-brand);
-    border-radius: 0.8rem;
-}
-
-#searchCommunity input,
-#searchCommunity button {
-    height: var(--height);
-    font-family: var(--font-fam);
-    border: 0;
-    color: var(--color-dark);
-    font-size: 0.8rem;
-}
-
-#searchCommunity input[type="search"] {
-    outline: 0;
-    width: 120%;
-    background: var(--color-light);
-    padding: 0 1.6rem;
-    border-radius: var(--rad);
-    appearance: none;
-    /* for iOS input[type="search"] roundedness issue. border-radius alone doesn't work */
-    transition: all var(--dur) var(--bez);
-    transition-property: width, border-radius;
-    z-index: 1;
-    position: relative;
-}
-
-#searchCommunity button {
-    display: none;
-    /* prevent being able to tab to it */
-    position: absolute;
-    margin-left: 26%;
-    bottom: 19%;
-    width: var(--btn-width);
-    font-weight: bold;
-    background: var(--color-brand);
-    border-radius: 0 var(--rad) var(--rad) 0;
-}
-
-#searchCommunity input:not(:placeholder-shown) {
-    border-radius: var(--rad) 0 0 var(--rad);
-    width: calc(100% - var(--btn-width));
-
-    +button {
-        display: block;
-    }
-}
-
-#searchCommunity label {
-    position: absolute;
-    clip: rect(1px, 1px, 1px, 1px);
-    padding: 0;
-    border: 0;
-    height: 1px;
-    width: 1px;
-    overflow: hidden;
-}
-
-/* TOOLTIP */
-/* Tooltip text */
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: max-content;
-    padding: 10px;
-    top: 100%;
-    left: 55%;
-    /* Use half of the width to center the tooltip */
-    background-color: #fff;
-    /* border: 0.5px solid rgba(128, 128, 128, 0.545); */
-    color: #000e23;
-    text-align: left;
-    border-radius: 6px;
-    box-shadow: 2px 2px 5px rgba(61, 65, 84, 0.15);
-    /* Position the tooltip text*/
-    position: absolute;
-    z-index: 1;
-    font-size: 0.9rem;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    filter: brightness(1);
-}
-
-.tooltip .tooltiptext::after {
-    content: " ";
-    position: absolute;
-    bottom: 100%;
-    /* At the top of the tooltip */
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent transparent #fff transparent;
-}
-
-#topShelf {
+  }
+  
+  #topShelf {
     display: flex;
-}
-
-.addPostBTN {
+  }
+  
+  #topShelf h1{
+      margin-top: 0.5%;
+      margin-left: 4%;
+    }
+  
+  .addPostBTN {
     margin-left: auto;
-    margin-right: 10%;
+    margin-right: 2%;
     margin-top: 3%;
     background-color: #fdae9b;
     padding: 0.5rem 1rem;
     height: fit-content;
     border-radius: 10px;
-}
-
-.addPostBTN:hover {
-    filter: brightness(0.5);
-    cursor: pointer;
-}
-
-.post {
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    transition: background-color 0.3s, box-shadow 0.3s; 
+  }
+  
+  
+  .post {
     width: 90%;
     height: 5rem;
     padding: 0.7rem;
     padding-left: 1.1rem;
     border-top: 1px solid rgb(197, 197, 197);
-    /* border-bottom: 1px solid rgb(197, 197, 197) ; */
-}
-
-.post a {
+  }
+  
+  #post{
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  }
+  
+  .post a {
     color: rgb(36, 85, 174);
-}
-
-.postRating {
+  }
+  
+  #post p, .language-python{
+      margin-left: 4%;
+      margin-right: 2%;
+  }
+  
+  #postContent{
+      margin-left: 1% !important;
+      margin-right: 1% !important;
+  
+  }
+  
+  .postRating {
     padding-top: 1rem;
     color: grey;
     font-size: 0.8rem;
-}
-
-.postRating img {
+  }
+  
+  .postRating img {
     width: 1.2rem;
     display: inline-block;
     margin-right: 0.3rem;
     margin-left: 2rem;
-}
-
-.postRating img:first-of-type {
+  }
+  
+  .postRating img:first-of-type {
     margin-left: 0.3rem;
-}
-
-.postAuthor,
-.postedDate {
+  }
+  
+  .postAuthor,
+  .postedDate {
     float: right;
     color: grey;
     font-size: 0.9rem;
-}
-
-#postTitle {
+  }
+  
+  #postTitle {
     margin-block-start: 0;
-}
-
-.postTags {
-    margin-top: 2rem;
-    color: grey;
-    font-size: 0.9rem;
-}
-
-.postTag {
-    border-radius: 0.2rem;
+  }
+  
+  .postTags {
+    margin-top: 0.5%;
+  }
+  
+  .postTag {
+    align-items: center;
     background-color: #f1dbff;
-    padding: 0 0.2rem;
-    font-size: 0.9rem;
-    margin-right: 1rem;
+    border-radius: 100px;
     color: #000e23;
-}
-
-.postTag:first-of-type {
-    margin-left: 0.7rem;
-}
-
-.postTag:hover {
-    filter: brightness(0.5);
     cursor: pointer;
-}
-
-#edit-delete-post {
+    display: inline-flex;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+      Arial, sans-serif;
+    font-size: 10px; /* Even smaller font size */
+    font-weight: 600;
+    justify-content: center;
+    line-height: 12px; /* Adjusted line height for smaller font */
+    padding: 2px 8px; /* Even smaller padding */
+    text-align: center;
+    transition: background-color 0.167s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.167s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    vertical-align: middle;
+    margin-right: 0.5%;
+  }
+  
+  .postTag:hover,
+  .postTag:focus {
+    background-color: #d9b3f1;
+  }
+  
+  #edit-delete-post {
     float: right;
     width: 10%;
     justify-content: right;
     margin-left: auto;
-}
-
-#edit-delete-post img {
+  }
+  
+  #edit-delete-post img {
     width: 19%;
     display: inline-block;
     margin-right: 1%;
     filter: opacity(0.6);
-}
-
-#edit-delete-post img:hover {
+  }
+  
+  #edit-delete-post img:hover {
     filter: opacity(1);
     cursor: pointer;
-}
-
-#deletePost img {
+  }
+  
+  #deletePost img {
     width: 33%;
-}
-
-#reportPost {
+  }
+  
+  #reportPost {
     width: 8%;
     float: right;
     text-align: right;
     margin-left: auto;
+    padding-right: 1% !important;
     color: grey;
     padding: 0.2rem;
     border-radius: 10px;
-}
-
-#reportPost:hover {
+  }
+  
+  #reportPost:hover {
     background-color: #eeeeee;
     color: #000e23;
     cursor: pointer;
-}
-
-#reportPost img {
+  }
+  
+  #reportPost img {
     width: 35%;
     vertical-align: middle;
-}
-
-#postInfo {
+  }
+  
+  #postInfo {
     color: grey;
     font-size: 0.9rem;
-}
-
-#postInfo span {
+  }
+  
+  #postInfo span {
     margin-right: 6%;
-}
-
-#username {
+  }
+  
+  #username {
     margin-left: -6%;
     font-size: 0.8rem;
-}
-
-#postContent {
+  }
+  
+  #postContent {
     border-top: 1px solid rgb(197, 197, 197);
     padding: 0.5rem;
-}
-
-#post {
+  }
+  
+  #post {
     background-color: #fff;
     border-radius: 10px;
     padding: 2rem;
-}
-
-.postLikes {
+  }
+  
+  .postLikes {
     float: left;
     width: 5%;
     height: 100%;
@@ -374,99 +286,120 @@ html {
     margin-bottom: auto;
     margin-right: 1%;
     align-items: center;
-}
-
-.postLikes div {
+  }
+  
+  .postLikes div {
     padding: 5% 2%;
     color: grey;
     border-radius: 10px;
-}
-
-.postLikes div:hover {
+  }
+  
+  .postLikes div:hover {
     background-color: #eeeeee;
     cursor: pointer;
-}
-
-
-.postLikes div img {
+  }
+  
+  .postLikes div img {
     width: 45%;
     filter: grayscale(100%);
-}
-
-.postLikes div img:hover {
+  }
+  
+  .postLikes div img:hover {
     filter: none;
-}
-
-div.clicked img {
+  }
+  
+  div.clicked img {
     filter: none;
-}
-
-/* #isEdited {
-    color: grey;
-    float: right;
-} */
-
-.link {
+  }
+  
+  .link {
     text-decoration: none;
     color: #fdae9b;
-}
-
-/* ADD COMMUNITY POST */
-textarea {
+  }
+  
+  /* ADD COMMUNITY POST */
+  textarea {
     width: 60%;
-}
-
-.commentInfo,
-.commentdate{
+  }
+  #Cusername {
+    margin-left: -5%;
+  }
+  .commentInfo {
     float: right;
     color: grey;
     font-size: 0.9rem;
     margin-left: auto;
-}
-.deleteComment,
-.editComment{
+  }
+  .alterComment {
     width: 1.3rem;
-    color:grey;
     float: right;
-}
-
-.deleteComment:hover,
-.editComment:hover{
-    color: black;
-    cursor: pointer;
-}
-
-.oneCommnet{
+  }
+  
+  .commentContent {
     border-bottom: 1px solid rgb(197, 197, 197);
-}
-
-#NoOfComment{
+  }
+  
+  #NoOfComment {
     margin-bottom: 3.5%;
-}
-
-#submitComment {
+    margin-left: 1%;
+  }
+  #submitComment {
     margin-right: auto;
     margin-right: 10%;
-    margin-top: 3%;
+    margin-top: 2%;
+    margin-left: 1.5%;
     background-color: #fdae9b;
     padding: 0.5rem 1rem;
     height: 30px;
     width: 90px;
     border-radius: 10px;
     border: none;
-}
-
-#submitComment:hover,
-#ShowmoreButton:hover {
-    filter: brightness(0.5);
-    cursor: pointer;
-}
-
-#commentArea{
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    transition: background-color 0.3s, box-shadow 0.3s; 
+  }
+  
+  
+  #submitComment:hover, .addPostBTN:hover {
+      cursor: pointer;
+      background-color: #ec947e;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13); 
+  
+  }
+  
+  #commentArea {
     margin-top: 7%;
-}
-
-#ShowmoreButton{
+  }
+  
+  #commentArea h2 {
+      margin-left: 1.4%;
+    }
+  
+  #showMorebutton {
+    background-color: #fdae9b;
+    height: 30px;
+    width: 160px;
+    border-radius: 10px;
+    border: none;
+  }
+  
+  #alterComment {
+    float: right;
+    color: grey;
+    font-size: 1rem;
+    margin-left: auto;
+  }
+  #editButton {
+    margin-right: auto;
+    margin-right: 3%;
+    margin-top: 1.5%;
+    background-color: #fdae9b;
+    padding: 0.5rem 1rem;
+    height: 30px;
+    width: 90px;
+    border-radius: 10px;
+    border: none;
+  }
+  #ShowmoreButton {
     margin-right: auto;
     margin-right: 3%;
     margin-top: 1.5%;
@@ -476,16 +409,24 @@ textarea {
     width: 100px;
     border-radius: 10px;
     border: none;
-}
-/* Comment section*/
-
-#clearSearch {
+  }
+  #cancelButton {
+    margin-right: auto;
+    margin-right: 3%;
+    margin-top: 1.5%;
+    background-color: #e2e1e3;
+    padding: 0.5rem 1rem;
+    height: 30px;
+    width: 90px;
     border-radius: 10px;
-    padding: 0.2% 0.4%;
-    margin-right: 5%;
-}
-
-#clearSearch:hover {
-    cursor: pointer;
-    background-color: #e0d8ee;
-}
+    border: none;
+  }
+  
+  #commentArea {
+    background-color: white; /* White background */
+    border-radius: 5px; /* Small radius for slightly rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 20px; /* Space inside the box */
+    margin-bottom: 20px; /* Space between boxes if you have multiple .Area */
+  }
+  

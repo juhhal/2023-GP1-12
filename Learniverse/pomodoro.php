@@ -524,15 +524,7 @@ require 'dbConfig.php'; ?>
       </div>
     </div>
   </main>
-  <footer id="footer">
-    <div class="footer-div" id="socials">
-      <h4>Follow Us on Social Media</h4>
-
-      <a href="https://twitter.com/learniversewebsite" target="_blank"><img src="images/twitter.png" alt="@Learniverse"></a>
-
-    </div>
-    <div class="footer-div" id="contacts">
-      <h4>Contact Us</h4>
+  <footer id="footer" style="margin-top: 7%;">
 
     <div id="copyright">Learniverse &copy; 2023</div>
   </footer>

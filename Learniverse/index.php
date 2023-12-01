@@ -202,22 +202,10 @@ if (isset($_SESSION['email'])) {
             <h4> <a href="register.php">Join </a>Learniverse and embrace the future of learning!</h4>
         </div>
     </main>
-    <footer>
-        <img id="footerLogo" src="LOGO.png" alt="Learniverse">
-        <div class="footer-div" id="socials">
-            <h4>Follow Us on Social Media</h4>
-            <ul>
-                <li><a href="https://twitter.com/learniversewebsite" target="_blank"><img src="images/twitter.png" alt="@Learniverse"></a></li>
-            </ul>
-        </div>
-        <div class="footer-div" id="contacts">
-            <h4>Contact Us</h4>
-            <ul>
-                <li><a href="mailto:learniverse.website@gmail.com" target="_blank"><img src="images/gmail.png" alt="learniverse.website@gmail.com"></a></li>
-            </ul>
-        </div>
-        <div id="copyright">Learniverse &copy; 2023</div>
-    </footer>
+    <footer id="footer" style="margin-top: 7%;">
+
+<div id="copyright">Learniverse &copy; 2023</div>
+</footer>
 </body>
 
 </html>

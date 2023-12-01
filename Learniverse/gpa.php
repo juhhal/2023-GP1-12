@@ -256,18 +256,10 @@ if ($user == null) {
     </main>
 
 
-    <footer>
-        <div class="footer-div" id="socials">
-            <h4>Follow Us on Social Media</h4>
+    <footer id="footer" style="margin-top: 7%;">
 
-            <a href="https://twitter.com/learniversewebsite" target="_blank"><img src="images/twitter.png" alt="@Learniverse"></a>
-
-        </div>
-        <div class="footer-div" id="contacts">
-            <h4>Contact Us</h4>
-
-        <div id="copyright">Learniverse &copy; 2023</div>
-    </footer>
+<div id="copyright">Learniverse &copy; 2023</div>
+</footer>
 
     <div role="button" id="sidebar-tongue" style="margin-left: 0;">
         &gt;

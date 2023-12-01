@@ -37,6 +37,7 @@ if (isset($_SESSION['filteredSearch'])) {
     <title>Community</title>
     <link rel="stylesheet" href="communityCSS.css">
     <link rel="stylesheet" href="header-footer.css">
+    <link rel="stylesheet" href="searchCSS.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
@@ -280,7 +281,7 @@ if (isset($_SESSION['filteredSearch'])) {
                         </div>
                     </div>
                 </form>
-                <span id="clearSearch" title="Clear Search" onclick="location.reload();">Clear</span>
+                <span id="clearSearch" title="Clear Search" onclick="location.reload();">Clear Search</span>
                 <?php
                 require_once __DIR__ . '/vendor/autoload.php';
                 // Create a MongoDB client
@@ -434,14 +435,10 @@ if (isset($_SESSION['filteredSearch'])) {
             </div>
         </div>
     </main>
-    <footer>
-        <div class="footer-div" id="socials">
-            <h4>Follow Us on Social Media</h4>
+    <footer id="footer" style="margin-top: 7%;">
 
-            <a href="https://twitter.com/learniversewebsite" target="_blank"><img src="images/twitter.png" alt="@Learniverse"></a>
-
-        <div id="copyright">Learniverse &copy; 2023</div>
-    </footer>
+<div id="copyright">Learniverse &copy; 2023</div>
+</footer>
 
     <div role="button" id="sidebar-tongue" style="margin-left: 0;">
         &gt;
