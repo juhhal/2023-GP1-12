@@ -272,7 +272,7 @@ body #container form label {
   width: 100%;
   background: rgb(255, 255, 255);
   top: 0;
-  z-index: 100;
+  z-index: 10;
   left: 0;
   position: absolute;
 }
@@ -284,7 +284,7 @@ body #container form label {
   position: absolute;
   background: rgb(255, 255, 255);
   top: 0;
-  z-index: 100;
+  z-index: 10;
   right: 0;
 }
 
@@ -299,7 +299,7 @@ iframe::-webkit-scrollbar {
   height: 100%;
   width: 100%;
   left: 0;
-  z-index: 1000000;
+  z-index: 10;
 }
 
 #allfiles .box:hover {
@@ -317,7 +317,7 @@ iframe::-webkit-scrollbar {
   display: none;
   flex-direction: column;
   justify-content: space-around;
-  z-index: 100000;
+  z-index: 1000;
   padding: 10px !important;
   background: floralwhite;
 }
@@ -346,7 +346,7 @@ iframe::-webkit-scrollbar {
   position: absolute;
   bottom: 10px;
   left: 10px;
-  z-index: 10000000;
+  z-index: 100000;
 }
 
 #allfiles span .icon:nth-of-type(2) {
@@ -354,7 +354,7 @@ iframe::-webkit-scrollbar {
   position: absolute;
   left: 87%;
   bottom: auto;
-  z-index: 10000000;
+  z-index: 100000;
 }
 
 #allfiles span .icon:hover {
@@ -382,5 +382,5 @@ iframe::-webkit-scrollbar {
 }
 
 .swal2-popup {
-  z-index: 999999999;
+  z-index: 999999999999;
 }

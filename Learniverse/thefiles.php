@@ -455,21 +455,34 @@ require 'session.php';
 
         document.querySelectorAll('.deleteic').forEach(e => {
             e.addEventListener('click', (event) => {
-                if (confirm('Are you sure you want to delete this file?')) {
-                    $.ajax({
-                        url: 'delete.php',
-                        data: {
-                            value: event.target.attributes['data-p'].value
-                        },
-                        method: 'POST',
-                        success: function(res) {
-                            console.log(res)
-                            document.querySelector('#' + event.target.attributes['data-value'].value).style.display = 'none'
+                $(".icon").hide();
+                $(".file").hide();
+                Swal.fire({
+                    title: 'Heads Up!',
+                    text: 'Are you sure you want to delete this file?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: 'delete.php',
+                            data: {
+                                value: event.target.attributes['data-p'].value
+                            },
+                            method: 'POST',
+                            success: function(res) {
+                                console.log(res)
+                                document.querySelector('#' + event.target.attributes['data-value'].value).style.display = 'none'
 
-                        }
-                    });
-                }
+                            }
+                        });
+                    }
 
+                });
+                $(".icon").show();
+                $(".file").show();
             });
         });
     }
