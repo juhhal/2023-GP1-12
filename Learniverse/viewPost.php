@@ -804,7 +804,7 @@ if ($matchedDocument) {
                 <h2>Your comment:</h2><br>
                 <form id='addcomment' method='post' action='addcomment.php' onsubmit='return CommentcheckGuest()';>
                     <textarea cols='50' id='comment' name='comment' placeholder='Write your comment here'></textarea>
-                    <input id='id_post' name='id_post' hidden value='" . $_GET['postID'] . "'><br><br>
+                    <input id='id_post' name='id_post' hidden value='" . $_GET['postID'] . "'>
                     <input id='commentID' name='commentID' hidden value=''>    
                     <button id='submitComment' type='submit'>Submit</button>
                 </form>

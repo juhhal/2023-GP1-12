@@ -13,6 +13,8 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
     <link rel="stylesheet" href="viewPostCSS.css">
     <link rel="stylesheet" href="header-footer.css">
     <link rel="stylesheet" href="searchCSS.css">
+    <link rel="stylesheet" href="addCommunityPostCSS.css">
+
 
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
@@ -429,7 +431,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                     if (isset($_GET['postID']))
                         echo "<input type='hidden' id='postID' name='postID' value='".$_GET['postID']."' hidden>"
                     ?>
-                    <br><input class="Formbuttons" type="submit"><input class="Formbuttons" type="reset" value="Cancel">
+                    <br><input class="Formbuttons create" type="submit"><input class="Formbuttons cancel" type="reset" value="Cancel">
                 </form>
             </div>
         </div>

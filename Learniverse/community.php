@@ -414,7 +414,7 @@ if (isset($_SESSION['filteredSearch'])) {
                     };
                     $tags = "";
                     if (count($post['tags']) == 0)
-                        $tags = "<span>none</span>";
+                        $tags = "<br>";
                     else
                         foreach ($post['tags'] as $t) {
                             $tags = $tags . "<span class='postTag' onclick=\"window.location='searchCommunity.php?searchTerm=[$t]'\">$t</span>";
@@ -422,7 +422,7 @@ if (isset($_SESSION['filteredSearch'])) {
                     echo "
                     <div class='post'>
                     <span class='postTitle'><a href='viewPost.php?postID=" . $post['_id']['$oid'] . "'>" . $post['title'] . "</a></span><span class='postAuthor'>By: $first_name $last_name</span>
-                    <div class='postTags'>tags: $tags</div>
+                    <div class='postTags'>$tags</div>
                     <div class='postRating'><img src='images/like.png'>" . $post['likes'] . "<img src='images/dislike.png'>" . $post['dislikes'] . "<img src='images/comment.png'>" . $post['comments'] . "<span class='postedDate'>Posted: " . $post['posted_at'] . "</span></div>
                     </div>
                     ";
