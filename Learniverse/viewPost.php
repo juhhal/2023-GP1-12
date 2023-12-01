@@ -646,10 +646,11 @@ if ($matchedDocument) {
                     }
 
                     function editComment(comment, id) {
-                        $('#comment').attr('placeholder', '');
-                        $(tinymce.get('comment').getBody()).html(comment); // Set the content of the textarea
+                        // Set the content of the textarea
+                        tinymce.get('comment').setContent(comment);
+                        tinymce.get('comment').focus();
                         $("#commentID").val(id);
-                        var targetDiv = $("#commentArea"); // Replace "your-div-id" with the actual ID of the div you want to scroll to
+                        var targetDiv = $("#commentArea"); //scroll to
                         var offsetTop = targetDiv.offset().top;
                         $("html, body").animate({
                             scrollTop: offsetTop
