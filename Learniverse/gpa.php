@@ -266,10 +266,6 @@ if ($user == null) {
         <div class="footer-div" id="contacts">
             <h4>Contact Us</h4>
 
-            <a href="mailto:learniverse.website@gmail.com" target="_blank"><img src="images/gmail.png" alt="learniverse.website@gmail.com"></a>
-
-        </div>
-        <img id="footerLogo" src="LOGO.png" alt="Learniverse">
         <div id="copyright">Learniverse &copy; 2023</div>
     </footer>
 
