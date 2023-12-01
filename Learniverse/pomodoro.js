@@ -51,33 +51,35 @@ function startTimer() {
         timer = setInterval(function () {
         if (current_seconds === 0) {
             //timer finish, change timer type
+
+
+
             if (current_minutes === 0) {
-            if(cycle==0){
-                type='short';
-                cycle++;
+
+              if(type === 'pomodoro')
                 cycles++;
-            }else if(cycle==2){
-                type='long';
+
+              if (cycle == 0) {
+                type = 'short';
                 cycle++;
-                cycles++;
-            }else{
-                type='pomodoro';
-                if(cycle==3){
-                cycle=0;
-                
-              //display the finished cycles number
-                
+            } else if (cycle == 2) {
+                type = 'long';
+                cycle++;
+            } else if (cycle == 3) {
+                type = 'pomodoro';
+                cycle = 0; // Reset for the next full cycle
             }
-                else{cycle++;}
-            }
+            else{cycle++; type='pomodoro'}
+            
             //session finishing sound
             var ring = new Audio('mp3/bell.mp3');
             updateCycle();
+            ring.volume = 0.5;
             ring.play();
             checkType();
             setCurrent();
             return;
-            }
+          }
             current_minutes--;
             current_seconds = 59;
         } else {
@@ -150,9 +152,11 @@ function whatTimer() {
 
 //Reset sessions
 function reset() {
+  clearInterval(timer);
   current_minutes = pomodoro_minutes;
   current_seconds = pomodoro_seconds;
   type='pomodoro';
+  checkType();
   cycle=0;
   cycles=0;
   updateCycle();
@@ -246,15 +250,18 @@ function checkCurrent(){
     if(checkedRadio.value == 'pomodoro' && type != 'pomodoro'){
         type = 'pomodoro';
         setCurrent();
+        cycle = 0;
       }
 
     else if(checkedRadio.value == 'short' && type != 'short'){
       type = 'short';
-      setCurrent();}  
+      setCurrent();
+    cycle = 1;}  
     
     else if(checkedRadio.value == 'long' && type != 'long'){
       type = 'long';
-      setCurrent();}
+      setCurrent();
+    cycle = 3;}
     
     else{
         document.getElementById("pomodoro-timer").textContent =String(current_minutes).padStart(2, "0") + ":" + String(current_seconds).padStart(2, "0");
