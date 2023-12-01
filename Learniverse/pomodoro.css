@@ -1260,7 +1260,7 @@ body.banner-open #pomodoro-durations {
   font-size: 0.9rem;
   text-align: left;
   color: #000e23;
-  width: 160%;
+  width: 147%;
   transition: color 0.3s, background-color 0.3s;
   border-radius: 5%;
 }

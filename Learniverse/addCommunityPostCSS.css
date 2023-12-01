@@ -24,7 +24,7 @@
   }
   
   .Area {
-    background-color: white; /* White background */
+    background-color: white !important; /* White background */
     border-radius: 5px; /* Small radius for slightly rounded corners */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     padding: 20px; /* Space inside the box */

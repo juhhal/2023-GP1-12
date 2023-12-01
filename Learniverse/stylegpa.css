@@ -228,7 +228,7 @@ body {
   
   #tools_div {
     background-color: #bf97d8;
-    width: 12.5%;
+    width: 12%;
     padding: 2% 0.5% 0;
     float: left;
     margin-left: -13.9%;
@@ -245,25 +245,37 @@ body {
   }
   
   .tool_item {
-    font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
-      "sans-serif";
-    list-style-type: none;
-    margin-bottom: 20%;
-    text-indent: 1rem;
-    font-size: 0.9rem;
-    text-align: left;
-    color: #000e23;
+  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+    "sans-serif";
+    font-size: 1rem !important;
+  list-style-type: none;
+  padding: 9%;
+  margin-bottom: 5%;
+  white-space: nowrap;
+  text-indent: 1rem;
+  font-size: 0.9rem;
+  text-align: left;
+  color: #000e23;
+  width: 135%;
+  transition: color 0.3s, background-color 0.3s;
+  border-radius: 5%;
   }
   
-  .tool_item:hover,
-  .tool_item a:hover {
-    cursor: pointer;
-    transition-duration: 0.3s;
-    color: #faf7ff;
+  .tool_item:hover{
+  cursor: pointer;
+  transition-duration: 0.3s;
+  color: #faf7ff !important;
+  background-color: rgba(212, 179, 233, 0.933);
+  }
+  .tool_item:hover a{
+  cursor: pointer;
+  transition-duration: 0.3s;
+  color: #faf7ff !important;
+  background-color: rgba(212, 179, 233, 0.933);
   }
   
   .tool_item a {
-    text-decoration: none;
+    text-decoration: none !important;
     color: #000e23;
   }
   
