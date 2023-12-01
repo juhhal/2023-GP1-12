@@ -43,15 +43,16 @@ foreach ($comments as $oneComment) {
     };
 
     $result = $result . "<div class='oneCommnet'><p class='commentContent'>" . $comment . "</p>";
-    if (!$guest_account && $commenter_email == $_SESSION['email'])
-        $result = $result . "<span class='editComment'><img src='images/edit.png' alt='edit' width='20px' height='20px' onclick='reWriteComment($comment, $commentId);'></span><span class='deleteComment'><img src='images/bin.png' alt='bin' width='20px' height='20px' onclick='DeleteComment(\"" . $commentId . "\", \"" . $_GET['postID'] . "\");'></span>";
     $result = $result . "<span class='commentInfo'>
     By: " . $commenter_firstname . " " . " $commenter_lastname (@" . " $commenter_username) </span><br><span class = 'commentdate'>";
     if ($edited_date != "")
         $result = $result . "Edited At " . $edited_date;
     else
         $result = $result . "At " . $comment_Date;
-    $result = $result . "</span></div>";
+    $result = $result . "</span><br>";
+    if (!$guest_account && $commenter_email == $_SESSION['email'])
+        $result = $result . "<span class='editComment'><img src='images/edit.png' alt='edit' width='20px' height='20px' onclick='editComment(\"" . $comment . "\", \"" . $commentId . "\");'></span><span class='deleteComment'><img src='images/bin.png' alt='bin' width='20px' height='20px' onclick='DeleteComment(\"" . $commentId . "\", \"" . $_GET['postID'] . "\");'></span>";
+    $result = $result . "<br></div>";
 }
 
 echo json_encode($result);
