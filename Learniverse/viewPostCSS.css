@@ -444,3 +444,10 @@ html {
     margin-bottom: 20px; /* Space between boxes if you have multiple .Area */
   }
   
+  #goToComment{
+    float: right;
+}
+
+#imgcomment{
+    width: 1.4rem;
+}

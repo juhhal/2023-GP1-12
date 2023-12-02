@@ -717,7 +717,8 @@ if ($matchedDocument) {
                     foreach ($post['tags'] as $t) {
                         $tags = $tags . "<span class='postTag' onclick=\"window.location='searchCommunity.php?searchTerm=[$t]'\">$t</span>";
                     };
-                echo "<div class='postTags'>tags: $tags</div></div>";
+                echo "<div class='postTags'>tags: $tags</div>
+                <span id='goToComment'><a href='#commentArea'><img id='imgcomment' src='images/comment.png'> Add Comment</a></span><br></div>";
 
                 //SHOW COMMENTS SECTION
 
