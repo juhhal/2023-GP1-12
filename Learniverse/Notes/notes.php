@@ -289,41 +289,44 @@ $FOLDERS = json_decode(json_encode($result_json), true);
 
   <main>
     <div id="tools_div">
-      <ul class="tool_list">
-        <li class="tool_item"><a href="../workspace.php"><img src="../images/calendar.png">
-            Calendar & To-Do </li>
-        <li class="tool_item"><a href="../theFiles.php?q=My Files"><img src="../images/file.png">
-            My Files</a>
+    <ul class="tool_list">
+        <li class="tool_item">
+          <a href="../workspace.php"> Calendar & To-Do
+          </a>
         </li>
-        <li class="tool_item"><img src="../images/quiz.png">
+        <li class="tool_item">
+          <a href="../theFiles.php?q=My Files"> My Files</a>
+        </li>
+        <li class="tool_item">
           Quiz
         </li>
-        <li class="tool_item"><img src="../images/flash-cards.png">
+        <li class="tool_item">
           Flashcard
         </li>
-        <li class="tool_item"><img src="../images/summarization.png">
+        <li class="tool_item">
           Summarization
         </li>
-        <li class="tool_item"><img src="../images/study-planner.png">
+        <li class="tool_item">
           Study Planner
         </li>
-        <li class="tool_item"><img src="../images/notes.png">
-          Notes
+        <li class="tool_item"><a href="Notes/notes.php">
+            Notes</a>
         </li>
-        <li class="tool_item"><img src="../images/pomodoro-technique.png">
-          Pomodoro
+        <li class="tool_item">
+          <a href="../pomodoro.php">
+            Pomodoro</a>
         </li>
-        <li class="tool_item"><img src="../images/gpa.png">
-          GPA Calculator
+        <li class="tool_item"><a href="../gpa.php">
+            GPA Calculator</a>
         </li>
-        <li class="tool_item"><img src="../images/collaboration.png">
+        <li class="tool_item">
           Shared spaces
         </li>
-        <li class="tool_item"><img src="../images/meeting-room.png">
+        <li class="tool_item">
           Meeting Room
         </li>
-        <li class="tool_item"><img src="../images/communities.png">
-          Community
+        <li class="tool_item"><a href="../community.php">
+            Community</a>
         </li>
       </ul>
     </div>
