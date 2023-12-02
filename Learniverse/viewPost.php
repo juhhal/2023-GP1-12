@@ -582,8 +582,13 @@ if ($matchedDocument) {
                             showCloseButton: true,
                             preConfirm: () => {
                                 const description = document.getElementById('description').value;
+                                if (description.length === 0) {
+                                    Swal.showValidationMessage('Description is required');
+                                    return false;
+                                }
                                 if (description.length > 500) {
                                     Swal.showValidationMessage('Character limit exceeded');
+                                    return false;
                                 }
                                 return {
                                     description: description
