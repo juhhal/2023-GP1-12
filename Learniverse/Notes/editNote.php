@@ -3,52 +3,25 @@ session_start();
 
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
-$query = new MongoDB\Driver\Query(['email' => $_SESSION['email']]);
-$cursor = $manager->executeQuery('Learniverse.users', $query);
-$result_array = $cursor->toArray();
-$result_json = json_decode(json_encode($result_array), true);
-
-$folders = $result_json[0]['folders'];
-
-$folder = $_POST['folder'];
+$folderName = $_POST['folderName'];
 $noteId = $_POST['noteId']; 
+$content = $_POST['content'];
+$title = $_POST['title'];
 
-if (isset($folders[$folder])) {
-    $notes = $folders[$folder]['notes'];
-    $noteIndex = array_search($noteId, array_column($notes, 'id'));
+$bulk = new MongoDB\Driver\BulkWrite;
 
-    if ($noteIndex !== false) {
-        $newTitle = $_POST['title'];
-        $newContent = $_POST['content'];
+$bulk->update(
+    ['name' => $folderName, 'notes.id' => $noteId],
+    ['$set' => [
+        'notes.$.title' => $title,
+        'notes.$.content' => $content,
+        'notes.$.date' => date("Y-m-d H:i:s"),
+    ]],
+    ['multi' => false, 'upsert' => false]
+);
 
-        $folders[$folder]['notes'][$noteIndex]['title'] = $newTitle;
-        $folders[$folder]['notes'][$noteIndex]['content'] = $newContent;
+$manager->executeBulkWrite('Learniverse.doc', $bulk);
 
-        $bulk = new MongoDB\Driver\BulkWrite;
-        $bulk->update(
-            ['email' => $_SESSION['email']],
-            ['$set' => ['folders' => $folders]],
-            ['multi' => false, 'upsert' => false]
-        );
-
-        $result = $manager->executeBulkWrite('Learniverse.users', $bulk);
-
-        if ($result->getModifiedCount() > 0) {
-          // send noteId
-          $response = array(
-              'success' => true,
-              'message' => 'Note edited successfully',
-              'noteId' => $noteId
-          );
-            echo json_encode($response);
-            exit();
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to edit note']);
-        }
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Note not found in folder']);
-    }
-} else {
-    echo json_encode(['success' => false, 'message' => 'Folder not found']);
-}
+// Return a success message or any other response
+echo json_encode(['message' => 'Note updated successfully']);
 ?>

@@ -179,7 +179,7 @@ $FOLDERS = get_object_vars(json_decode($result_json[0]['folders']));
                             <a href="../index.php">Home</a>
                         </li>
                         <li>
-                            <a href="../community.php">Community</a>
+                            <a href="#">Community</a>
                         </li>
                         <li class="active">
                             <a href="../workspace.php">My Workspace</a>
@@ -289,8 +289,8 @@ $FOLDERS = get_object_vars(json_decode($result_json[0]['folders']));
             <li class="tool_item"><a href="fetchHome.php">
                 <img src="../images/notes.png"> Notes</a>
             </li>
-            <li class="tool_item"><a href="../pomodoro.php">
-                <img src="../images/pomodoro-technique.png"> Pomodoro</a>
+            <li class="tool_item">
+                <img src="../images/pomodoro-technique.png"> Pomodoro
             </li>
             <li class="tool_item">
                 <img src="../images/gpa.png"> GPA Calculator
@@ -301,8 +301,8 @@ $FOLDERS = get_object_vars(json_decode($result_json[0]['folders']));
             <li class="tool_item">
                 <img src="../images/meeting-room.png"> Meeting Room
             </li>
-            <li class="tool_item"><a href="../community.php">
-                <img src="../images/communities.png"> Community</a>
+            <li class="tool_item">
+                <img src="../images/communities.png"> Community
             </li>
         </ul>
     </div>

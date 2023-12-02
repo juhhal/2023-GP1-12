@@ -7,53 +7,22 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-//print_r($_SESSION);
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
 // retrieve the todo list of this user
-$query = new MongoDB\Driver\Query(array('email' => $_SESSION['email']));
-$cursor = $manager->executeQuery('Learniverse.users', $query);
+$userEmail = $_SESSION['email'];
+$query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
+$cursor = $manager->executeQuery('Learniverse.doc', $query);
 $result_array = $cursor->toArray();
-$result_json = json_decode(json_encode($result_array), true)[0];
+$result_json = json_decode(json_encode($result_array), true);
 
 echo '<script>console.log(' . json_encode($result_json) . ');</script>';
 $FOLDERS = []; 
-$FOLDERS = is_string($result_json['folders']) ? json_decode($result_json['folders'], true) : $result_json['folders'];
-$a = $result_json['_id'];
-//echo $a['$oid'];
-//print_r($FOLDERS);
-$noteNumber = "";
-// if (isset($_GET['new'])) {
+$FOLDERS = json_decode(json_encode($result_json), true);
 
-
-
-//   $val = ((int)end($FOLDERS[$_GET['folder']]) + 1);
-//   $noteNumber = $a['$oid'] . "_" . $_GET['folder'] . "_" . $val . ".php";
-//   copy("index.php", $a['$oid'] . "_" . $_GET['folder'] . "_" . $val . ".php");
-
-//   $arr = get_object_vars($FOLDERS[$_GET['folder']]);
-//   $arr['_' . $val] =  $val;
-//   $FOLDERS[$_GET['folder']] = $arr;
-
-//   //print_r($FOLDERS);
-
-//   $bulk = new MongoDB\Driver\BulkWrite;
-
-
-//   $bulk->update(
-//     ['email' => $_SESSION['email']],
-//     ['$set' => ['folders' => json_encode($FOLDERS)]],
-//     ['multi' => false, 'upsert' => false]
-//   );
-
-
-
-//   $result = $manager->executeBulkWrite('Learniverse.users', $bulk);
-// } else if (isset($_GET['noteNumber'])) {
-//   $noteNumber = $a['$oid'] . "_" . $_GET['folder'] . "_" . $_GET['noteNumber'] . ".php";
-// }
 
 ?>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -115,7 +84,7 @@ $noteNumber = "";
         }
       });
 
-      sidebarTongue.addEventListener('click', function(event) {
+      sidebarTongue?.addEventListener('click', function(event) {
         if (!isButtonClicked && isSidebarOpen) {
           isButtonClicked = true;
         } else {
@@ -320,51 +289,48 @@ $noteNumber = "";
 
   <main>
     <div id="tools_div">
-    <ul class="tool_list">
-        <li class="tool_item">
-          <a href="../workspace.php"> Calendar & To-Do
-          </a>
+      <ul class="tool_list">
+        <li class="tool_item"><a href="../workspace.php"><img src="../images/calendar.png">
+            Calendar & To-Do </li>
+        <li class="tool_item"><a href="../theFiles.php?q=My Files"><img src="../images/file.png">
+            My Files</a>
         </li>
-        <li class="tool_item">
-          <a href="../theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/quiz.png">
           Quiz
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/flash-cards.png">
           Flashcard
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/summarization.png">
           Summarization
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/study-planner.png">
           Study Planner
         </li>
-        <li class="tool_item"><a href="Notes/notes.php">
-            Notes</a>
+        <li class="tool_item"><img src="../images/notes.png">
+          Notes
         </li>
-        <li class="tool_item">
-          <a href="../pomodoro.php">
-            Pomodoro</a>
+        <li class="tool_item"><img src="../images/pomodoro-technique.png">
+          Pomodoro
         </li>
-        <li class="tool_item"><a href="../gpa.php">
-            GPA Calculator</a>
+        <li class="tool_item"><img src="../images/gpa.png">
+          GPA Calculator
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/collaboration.png">
           Shared spaces
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/meeting-room.png">
           Meeting Room
         </li>
-        <li class="tool_item"><a href="../community.php">
-            Community</a>
+        <li class="tool_item"><img src="../images/communities.png">
+          Community
         </li>
       </ul>
     </div>
 
     <div class="workarea">
       <nav>
-      <a href="notes.php?folder=<?php echo urlencode($_GET['folder']); ?>&mode=create" style="color: black;">
+      <a href="notes.php?folder=<?php echo urlencode($_GET['folder'] ?? $FOLDERS[0]['name']); ?>&mode=create" style="color: black;">
           <img src="file-circle-plus-solid.svg" /> New Note
       </a>
 
@@ -374,16 +340,16 @@ $noteNumber = "";
           <img src="folder-plus.svg" /> New Folder </button>
 
           <?php foreach ($FOLDERS as $folderName => $folder) { ?>
-    <div class="eachFolder" id="folder_<?php echo $folderName; ?>">
+    <div class="eachFolder" id="folder_<?php echo $folder['name']; ?>">
         <a href="#" class="folderHeader" style="display: flex; align-items: center; justify-content: space-between; position: relative;">
             <span style="display: flex; align-items: center;">
                 <img src="folder-solid.svg" />
-                <span><?php echo $folderName; ?></span>
+                <span><?php echo $folder['name']; ?></span>
             </span>
-            <?php if ($folderName != 'Notes') { ?>
-                <img class="deleteFolder" src="trash.svg" onclick="deleteFolder('<?php echo $folderName; ?>')" style="position: absolute; right:0; " />
-                <img src="plus.svg" onclick="window.location.href='notes.php?folder=<?php echo $folderName; ?>&mode=create'" style="position: absolute; right: 30px;" />
-            <?php } ?>
+            <?php if ($folder['name'] != 'Notes') { ?>
+                <img class="deleteFolder icon" src="trash.svg" onclick="deleteFolder('<?php echo $folder['name']; ?>')" style="position: absolute; right:0; width: 20px; height: 20px; padding-right: 0; margin-right: 15px;" />
+                <?php } ?>
+                <img class="icon" src="plus.svg" onclick="window.location.href='notes.php?folder=<?php echo $folder['name']; ?>&mode=create'" style="position: absolute; right: 30px; width: 20px; height: 20px; padding-right: 0; margin-right: 15px;" />
         </a>
 
         <div class="folderContent">
@@ -391,11 +357,11 @@ $noteNumber = "";
                 <!-- Print titles of notes in this folder -->
                 <?php foreach ($folder['notes'] as $note): ?>
                    <div class="note" id="note_<?php echo $note['id']; ?>">
-                        <a href="notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $note['id']; ?>&mode=view"><?php echo $note['title']; ?></a>
+                        <a href="notes.php?folder=<?php echo $folder['name']; ?>&noteId=<?php echo $note['id']; ?>&mode=view"><?php echo $note['title']; ?></a>
                         <div class="actions">
-                            <img src="trash.svg" style="padding: 0; cursor: pointer;" onclick="deleteNote('<?php echo $folderName; ?>', '<?php echo $note['id']; ?>')">
-                            <a href="notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $note['id']; ?>&mode=edit" style="margin:0 !important;">
-                                <img src="edit.svg" style="padding: 0;">
+                            <img src="trash.svg" style="padding: 0; cursor: pointer; width: 20px; height: 20px; padding-right: 0;" onclick="deleteNote('<?php echo $folder['name']; ?>', '<?php echo $note['id']; ?>')">
+                            <a href="notes.php?folder=<?php echo $folder['name']; ?>&noteId=<?php echo $note['id']; ?>&mode=edit" style="margin:0 !important;">
+                                <img src="edit.svg" style="padding: 0; width: 20px; height: 20px;">
                             </a>
                         </div>
                    </div>
@@ -431,15 +397,14 @@ $noteNumber = "";
               value="<?php
               $noteId = $_GET['noteId'];
               $folderName = $_GET['folder'];
-              $note = $FOLDERS[$folderName]['notes'][array_search($noteId, array_column($FOLDERS[$folderName]['notes'], 'id'))];
+              $note = ($folder = array_filter($FOLDERS, function($item) use ($folderName) { return $item['name'] === $folderName; })) ? current($folder)['notes'][array_search($noteId, array_column(current($folder)['notes'], 'id'))] : null;
               echo $note['title'];
               ?>" />
             <textarea id="mytextarea">
               <?php
-              // get content from selected note by id
               $noteId = $_GET['noteId'];
               $folderName = $_GET['folder'];
-              $note = $FOLDERS[$folderName]['notes'][array_search($noteId, array_column($FOLDERS[$folderName]['notes'], 'id'))];
+              $note = ($folder = array_filter($FOLDERS, function($item) use ($folderName) { return $item['name'] === $folderName; })) ? current($folder)['notes'][array_search($noteId, array_column(current($folder)['notes'], 'id'))] : null;
               echo $note['content'];
               ?>
             </textarea>
@@ -452,7 +417,7 @@ $noteNumber = "";
         <?php
         $noteId = $_GET['noteId'];
         $folderName = $_GET['folder'];
-        $note = $FOLDERS[$folderName]['notes'][array_search($noteId, array_column($FOLDERS[$folderName]['notes'], 'id'))];
+        $note = ($folder = array_filter($FOLDERS, function($item) use ($folderName) { return $item['name'] === $folderName; })) ? current($folder)['notes'][array_search($noteId, array_column(current($folder)['notes'], 'id'))] : null;
         ?>
         <div id="note_<?php echo $noteId; ?>" class="noteView">
         <div>
@@ -493,6 +458,7 @@ $noteNumber = "";
 
 <script>
   function deleteNote(folder, noteid) {
+    console.log(folder, noteid);
     Swal.fire({
       title: 'Are you sure?',
       text: 'You won\'t be able to revert this!',
@@ -507,11 +473,11 @@ $noteNumber = "";
           url: "deleteNote.php",
           method: "POST",
           data: {
-            folder,
+            folderName: folder,
             noteid
           },
           success: function(res) {
-            document.querySelector(#note_${noteid}).style.display = 'none';
+            document.querySelector(`#note_${noteid}`).style.display = 'none';
           }
         });
       }
@@ -538,7 +504,8 @@ $noteNumber = "";
               name: e
             },
             success: function(res) {
-              document.querySelector(#folder_${e}).style.display = 'none';
+              document.querySelector(`#folder_${e}`).style.display = 'none';
+              window.location.href='notes.php';
             }
           });
         }
@@ -560,10 +527,24 @@ $noteNumber = "";
             data: {
               name: value
             },
-            success: function(res) {
-              console.log(res);
-              window.location.reload();
-            }
+            success: async function(res) {
+              const addfolderRes = JSON.parse(res);
+              if (addfolderRes?.error) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: addfolderRes.error,
+                });
+              } else {
+                await Swal.fire({
+                  icon: 'success',
+                  title: 'Folder added successfully',
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+                window.location.reload();
+              }
+            },
           });
         }
       }
@@ -586,22 +567,33 @@ $noteNumber = "";
     $('#addNoteForm').submit(function(e) {
       e.preventDefault();
       if ($('#title').val() === '' || tinymce.get('mytextarea').getContent() === '') {
-        alert('Please fill in all fields');
+        Swal.fire({
+          icon: 'error',
+          title: 'Please fill in all fields',
+          showConfirmButton: false,
+          timer: 1500
+        });
         return;
       }
+      const folderName = '<?php echo isset($_GET['folder']) ? htmlspecialchars($_GET['folder']) : ''; ?>';
       $.ajax({
         url: "addNote.php",
         method: "POST",
         data: {
           title: $('#title').val(),
           content: tinymce.get('mytextarea').getContent(),
-          folder: '<?php echo $_GET['folder']; ?>' ,
+          folderName: folderName
         },
-        success: function(res) {
+        success: async function(res) {
           const data = JSON.parse(res);
           const noteId = data.noteId;
-          alert('Note added successfully');
-          window.location.href = notes.php?folder=<?php echo $_GET['folder']; ?>&noteId=${noteId}&mode=view;
+          await Swal.fire({
+            icon: 'success',
+            title: 'Note added successfully',
+            showConfirmButton: false,
+            timer: 1500
+          });
+          window.location.href = `notes.php?folder=<?php echo $_GET['folder']; ?>&noteId=${noteId}&mode=view`;
         }
       });
     });
@@ -609,7 +601,12 @@ $noteNumber = "";
     $('#editNoteform').submit(function(e) {
       e.preventDefault();
       if ($('#title').val() === '' || tinymce.get('mytextarea').getContent() === '') {
-        alert('Please fill in all fields');
+        Swal.fire({
+          icon: 'error',
+          title: 'Please fill in all fields',
+          showConfirmButton: false,
+          timer: 1500
+        });
         return;
       }
       const folder = '<?php echo isset($_GET['folder']) ? htmlspecialchars($_GET['folder']) : ''; ?>';
@@ -621,14 +618,20 @@ $noteNumber = "";
         data: {
           title: $('#title').val(),
           content: tinymce.get('mytextarea').getContent(),
-          folder: folder,
+          folderName: folder,
           noteId: noteId
         },
-        success: function(res) {
+        success: async function(res) {
           const data = JSON.parse(res);
           const noteId = data.noteId;
-          alert('Note edited successfully');
-          window.location.href = notes.php?folder=${folder}&noteId=${noteId}&mode=view;
+          // alert('Note edited successfully');
+          await Swal.fire({
+            icon: 'success',
+            title: 'Note edited successfully',
+            showConfirmButton: false,
+            timer: 1500
+          });
+          window.location.href = `notes.php?folder=${folder}&noteId=${noteId}&mode=view`;
         }
       });
     });
