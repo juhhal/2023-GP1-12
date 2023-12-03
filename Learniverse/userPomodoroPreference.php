@@ -1,9 +1,9 @@
 <?php
 require_once 'dbConfig.php';
 require_once 'session.php';
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 // Create a bulk writer and connect to collection
 $bulk = new MongoDB\Driver\BulkWrite;    

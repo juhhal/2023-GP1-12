@@ -4,8 +4,8 @@
 require_once '../vendor/autoload.php';
 
 session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
@@ -19,7 +19,6 @@ $result_json = json_decode(json_encode($result_array), true);
 echo '<script>console.log(' . json_encode($result_json) . ');</script>';
 $FOLDERS = []; 
 $FOLDERS = json_decode(json_encode($result_json), true);
-
 
 ?>
 
@@ -37,7 +36,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
   <link rel="manifest" href="../favicon_io/site.webmanifest">
   <link rel="stylesheet" href="index.css">
   <script src="../jquery.js"></script>
-  <script src="https://cdn.tiny.cloud/1/no-origin/tinymce/6.7.2-32/tinymce.min.js" referrerpolicy="origin"></script>
+  <script src="https://cdn.tiny.cloud/1/jqchvmrvo8t50p8bodpapx40rcckse9f6slian9li7d12hvs/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
   <script>
       tinymce.init({
         selector: '#mytextarea',
@@ -330,9 +329,12 @@ $FOLDERS = json_decode(json_encode($result_json), true);
 
     <div class="workarea">
       <nav>
+        <!-- // if there the folder array length is 0 don't show new note -->
+        <?php if (count($FOLDERS) > 0) { ?>
       <a href="notes.php?folder=<?php echo urlencode($_GET['folder'] ?? $FOLDERS[0]['name']); ?>&mode=create" style="color: black;">
           <img src="file-circle-plus-solid.svg" /> New Note
       </a>
+      <?php } ?>
 
         <!-- <a href="fetchHome.php">
                 <img src="house-solid.svg" /> Dashboard </a> -->
@@ -346,9 +348,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
                 <img src="folder-solid.svg" />
                 <span><?php echo $folder['name']; ?></span>
             </span>
-            <?php if ($folder['name'] != 'Notes') { ?>
                 <img class="deleteFolder icon" src="trash.svg" onclick="deleteFolder('<?php echo $folder['name']; ?>')" style="position: absolute; right:0; width: 20px; height: 20px; padding-right: 0; margin-right: 15px;" />
-                <?php } ?>
                 <img class="icon" src="plus.svg" onclick="window.location.href='notes.php?folder=<?php echo $folder['name']; ?>&mode=create'" style="position: absolute; right: 30px; width: 20px; height: 20px; padding-right: 0; margin-right: 15px;" />
         </a>
 
@@ -505,7 +505,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
             },
             success: function(res) {
               document.querySelector(`#folder_${e}`).style.display = 'none';
-              window.location.href='notes.php';
+              window.location.href = 'notes.php';
             }
           });
         }
@@ -517,11 +517,11 @@ $FOLDERS = json_decode(json_encode($result_json), true);
       title: 'Enter your Notebook Name',
       input: 'text',
       showCancelButton: true,
-      inputValidator: (value) => {
+      inputValidator: async (value) => {
         if (!value) {
           return 'You need to enter something!';
         } else {
-          $.ajax({
+          await $.ajax({
             url: "addFolder.php",
             method: "POST",
             data: {
@@ -624,7 +624,6 @@ $FOLDERS = json_decode(json_encode($result_json), true);
         success: async function(res) {
           const data = JSON.parse(res);
           const noteId = data.noteId;
-          // alert('Note edited successfully');
           await Swal.fire({
             icon: 'success',
             title: 'Note edited successfully',

@@ -22,6 +22,5 @@ $bulk->update(
 
 $manager->executeBulkWrite('Learniverse.doc', $bulk);
 
-// Return a success message or any other response
-echo json_encode(['message' => 'Note updated successfully']);
+echo json_encode(['success' => 'Note updated successfully', 'noteId' => $noteId]);
 ?>

@@ -29,7 +29,7 @@ session_start();
             <form id="form" action="adduser.php" method="POST" onsubmit="validateForm(event)">
                 <h2>Create a New Account</h2>
 
-                <p id='Response'></p>
+                <p style="color: red;"  id='Response'></p>
                 <div class="form-row">
                     <div class="input-group">
                         <label for="username">Username</label>
@@ -39,7 +39,7 @@ session_start();
                                 <b>Username</b> must be unquie
                             </div>
                         </div>
-                        <p id="usernameResponse"></p>
+                        <p style="color: red;" id="usernameResponse"></p>
                     </div>
                 </div>
 
@@ -52,7 +52,7 @@ session_start();
                                 <b>First name</b> must start with a letter
                             </div>
                         </div>
-                        <p id="firstnameResponse"></p>
+                        <p style="color: red;"  id="firstnameResponse"></p>
                     </div>
                 </div>
 
@@ -65,7 +65,7 @@ session_start();
                                 <b>Last name</b> must start with a letter
                             </div>
                         </div>
-                        <p id="lastnameResponse"></p>
+                        <p style="color: red;"  id="lastnameResponse"></p>
                     </div>
                 </div>
 
@@ -78,7 +78,7 @@ session_start();
                                 <b>Email</b> must be valid email
                             </div>
                         </div>
-                        <p id="emailResponse"></p>
+                        <p style="color: red;"  id="emailResponse"></p>
                     </div>
                 </div>
 
@@ -91,7 +91,7 @@ session_start();
                                 <b>Password</b> must be 12 character
                             </div>
                         </div>
-                        <p id="passwordResponse"></p>
+                        <p style="color: red;"  id="passwordResponse"></p>
                     </div>
                 </div>
         </div>
@@ -117,12 +117,12 @@ session_start();
 </body>
 <script src="jquery.js"></script>
 <script>
+
     $(document).ready(function() {
-        $('#form').submit(function(e) {
+        $('form').submit(function(e) {
             // Prevent form submission
             e.preventDefault();
-
-            var username = $('#usename').val();
+            var username = $('#username').val();
             var firstname = $('#firstname').val();
             var lastname = $('#lastname').val();
             var email = $('#email').val();
@@ -141,26 +141,37 @@ session_start();
                 },
                 dataType: 'json',
                 success: function(response) {
+                    $('#passwordResponse').text('');
+                    $('#firstnameResponse').text('');
+                    $('#lastnameResponse').text('');
+                    $('#emailResponse').text('');
+                    $('#Response').text('');
+
+                    console.log(response)
+
+                    if(response.message == true) {
+                        window.location.href = 'login.php'
+                    }
                     if (response.message == "Password must be at least 12 character.") {
-                        $('#passwordResponse').innerText(response.message);
+                        $('#passwordResponse').text(response.message);
                     } else if (response.message == "The first character of the first name must be alphabetical characters.") {
                         // Display failure message
-                        $('#firstnameResponse').innerText(response.message);
+                        $('#firstnameResponse').text(response.message);
                     } else if (response.message == "The first character of the last name must be alphabetical characters.") {
                         // Display failure message
-                        $('#lastnameResponse').innerText(response.message);
+                        $('#lastnameResponse').text(response.message);
                     } else if (response.message == "Invalid email address.") {
                         // Display failure message
-                        $('#emailResponse').innerText(response.message);
+                        $('#emailResponse').text(response.message);
                     } else if (response.message == "Your are already registred! Try to login") {
                         // Display failure message
-                        $('#emailResponse').innerText(response.message);
+                        $('#emailResponse').text(response.message);
                     } else if (response.message == "That username is taken. Try another one.") {
                         // Display failure message
-                        $('#usernameResponse').innerText(response.message);
+                        $('#usernameResponse').text(response.message);
                     } else {
                         // Display failure message
-                        $('#Response').innerText(response.message);
+                        $('#Response').text(response.message);
                     }
 
                 }
@@ -170,7 +181,7 @@ session_start();
 
     function validateForm(event) {
         event.preventDefault(); // Prevent the form from submitting by default
-
+        console.log(event)
         var username = document.getElementById('username');
 
         var error = document.getElementById('Response');
@@ -183,8 +194,8 @@ session_start();
         }
 
         // If the validation passes, you can proceed with form submission
-        document.getElementById('form').submit();
+        document.querySelector('form').dispatchEvent(new Event('submit'));
     }
 </script>
 
-</html>
+</html

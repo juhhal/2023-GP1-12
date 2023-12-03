@@ -2,7 +2,7 @@
 session_start();
 
 // Require the MongoDB library
-require_once __DIR__ . '/vendor/autoload.php';
+require_once _DIR_ . '/vendor/autoload.php';
 
 // Create a MongoDB client
 $connection = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
@@ -53,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['email'] = $email;
                     require 'initialize_tools.php';
                     // Successful register
-                    header("Location: workspace.php");
-                    exit();
+                    echo json_encode(['message' => true]);
+                    //exit();
                 } else {
                     echo json_encode(['message' => "Registration failed. Please try again later."]);
                 }
