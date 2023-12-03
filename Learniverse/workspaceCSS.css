@@ -13,7 +13,9 @@ html {
     visibility: hidden;
   }
 }
-
+#calendar{
+  margin: 1% !important;
+}
 #calendar_area {
   margin: 1em !important;
 }

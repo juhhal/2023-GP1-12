@@ -723,7 +723,7 @@ if ($matchedDocument) {
                         $tags = $tags . "<span class='postTag' onclick=\"window.location='searchCommunity.php?searchTerm=[$t]'\">$t</span>";
                     };
                 echo "<div class='postTags'>tags: $tags</div>
-                <span id='goToComment'><a href='#commentArea'><img id='imgcomment' src='images/comment.png'> Add Comment</a></span><br></div>";
+                <br></div>";
 
                 //SHOW COMMENTS SECTION
 
@@ -787,7 +787,7 @@ if ($matchedDocument) {
                     By: " . $commenter_firstname . " " . " $commenter_lastname (@" . " $commenter_username) </span><br><span class = 'commentdate'>";
                     if ($edited_date != "") echo "Edited At " . $edited_date;
                     else echo "At " . $comment_Date;
-                    echo "</span><br>";
+                    echo "</span>";
                     if (!$guest_account && $commenter_email == $_SESSION['email'])
                     echo "<span class='editComment'><img src='images/edit.png' alt='edit' width='20px' height='20px' onclick='editComment(\"" . $comment . "\", \"" . $commentId . "\");'></span><span class='deleteComment'><img src='images/bin.png' alt='bin' width='20px' height='20px' onclick='DeleteComment(\"" . $commentId . "\", \"" . $_GET['postID'] . "\");'></span>";
                     echo "<br></div>";

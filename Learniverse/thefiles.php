@@ -319,6 +319,8 @@ require 'session.php';
                     </div>
                     <span id="formContanier">
                         <span class="uploadedfile">
+                        
+
                             <p></p>
                             <span id="loadingbar"></span>
                         </span>
@@ -414,6 +416,7 @@ require 'session.php';
                         data: "",
                         method: 'POST',
                         success: function(res) {
+
                             document.querySelector('#allfiles').innerHTML = res
                             console.log(res)
     
