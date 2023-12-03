@@ -630,7 +630,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
             showConfirmButton: false,
             timer: 1500
           });
-          window.location.href = `notes.php?folder=${folder}&noteId=${noteId}&mode=view`
+          window.location.href = `notes.php?folder=${folder}&noteId=${noteId}&mode=view`;
         }
       });
     });
