@@ -98,35 +98,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-row">
                     <div class="input-group">
                         <label for="username">Username</label>
-                        <input type="text" id="username" name="username" placeholder="Username must be unquie" class="form-control" value="" required>
+                        <input type="text" id="username" name="username" placeholder="" class="form-control" value="" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="input-group">
                         <label for="firstname">First Name</label>
-                        <input type="text" id="firstname" name="firstname" placeholder="First name must start with a letter" class="form-control" value="" required>
+                        <input type="text" id="firstname" name="firstname" placeholder="Start with a letter" class="form-control" value="" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="input-group">
                         <label for="lastname">Last Name</label>
-                        <input type="text" id="lastname" name="lastname" placeholder="Last name must start with a letter" class="form-control" value="" required>
+                        <input type="text" id="lastname" name="lastname" placeholder="Start with a letter" class="form-control" value="" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="input-group">
                         <label for="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Email must be valid email" class="form-control" value="" required>
+                        <input type="email" id="email" name="email" placeholder="example@email.com" class="form-control" value="" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="input-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Password must be 12 character" class="form-control" value="" required>
+                        <input type="password" id="password" name="password" placeholder="12 character" class="form-control" value="" required>
                     </div>
                 </div>
 

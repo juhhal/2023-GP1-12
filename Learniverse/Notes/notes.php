@@ -4,8 +4,8 @@
 require_once '../vendor/autoload.php';
 
 session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
@@ -19,7 +19,6 @@ $result_json = json_decode(json_encode($result_array), true);
 echo '<script>console.log(' . json_encode($result_json) . ');</script>';
 $FOLDERS = []; 
 $FOLDERS = json_decode(json_encode($result_json), true);
-
 
 ?>
 
@@ -37,7 +36,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
   <link rel="manifest" href="../favicon_io/site.webmanifest">
   <link rel="stylesheet" href="index.css">
   <script src="../jquery.js"></script>
-  <script src="https://cdn.tiny.cloud/1/no-origin/tinymce/6.7.2-32/tinymce.min.js" referrerpolicy="origin"></script>
+  <script src="https://cdn.tiny.cloud/1/jqchvmrvo8t50p8bodpapx40rcckse9f6slian9li7d12hvs/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
   <script>
       tinymce.init({
         selector: '#mytextarea',
@@ -289,53 +288,53 @@ $FOLDERS = json_decode(json_encode($result_json), true);
 
   <main>
     <div id="tools_div">
-    <ul class="tool_list">
-        <li class="tool_item">
-          <a href="../workspace.php"> Calendar & To-Do
-          </a>
+      <ul class="tool_list">
+        <li class="tool_item"><a href="../workspace.php"><img src="../images/calendar.png">
+            Calendar & To-Do </li>
+        <li class="tool_item"><a href="../theFiles.php?q=My Files"><img src="../images/file.png">
+            My Files</a>
         </li>
-        <li class="tool_item">
-          <a href="../theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/quiz.png">
           Quiz
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/flash-cards.png">
           Flashcard
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/summarization.png">
           Summarization
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/study-planner.png">
           Study Planner
         </li>
-        <li class="tool_item"><a href="Notes/notes.php">
-            Notes</a>
+        <li class="tool_item"><img src="../images/notes.png">
+          Notes
         </li>
-        <li class="tool_item">
-          <a href="../pomodoro.php">
-            Pomodoro</a>
+        <li class="tool_item"><img src="../images/pomodoro-technique.png">
+          Pomodoro
         </li>
-        <li class="tool_item"><a href="../gpa.php">
-            GPA Calculator</a>
+        <li class="tool_item"><img src="../images/gpa.png">
+          GPA Calculator
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/collaboration.png">
           Shared spaces
         </li>
-        <li class="tool_item">
+        <li class="tool_item"><img src="../images/meeting-room.png">
           Meeting Room
         </li>
-        <li class="tool_item"><a href="../community.php">
-            Community</a>
+        <li class="tool_item"><img src="../images/communities.png">
+          Community
         </li>
       </ul>
     </div>
 
     <div class="workarea">
       <nav>
+        <!-- // if there the folder array length is 0 don't show new note -->
+        <?php if (count($FOLDERS) > 0) { ?>
       <a href="notes.php?folder=<?php echo urlencode($_GET['folder'] ?? $FOLDERS[0]['name']); ?>&mode=create" style="color: black;">
           <img src="file-circle-plus-solid.svg" /> New Note
       </a>
+      <?php } ?>
 
         <!-- <a href="fetchHome.php">
                 <img src="house-solid.svg" /> Dashboard </a> -->
@@ -349,9 +348,9 @@ $FOLDERS = json_decode(json_encode($result_json), true);
                 <img src="folder-solid.svg" />
                 <span><?php echo $folder['name']; ?></span>
             </span>
-            <?php if ($folder['name'] != 'Notes') { ?>
+            
                 <img class="deleteFolder icon" src="trash.svg" onclick="deleteFolder('<?php echo $folder['name']; ?>')" style="position: absolute; right:0; width: 20px; height: 20px; padding-right: 0; margin-right: 15px;" />
-                <?php } ?>
+                
                 <img class="icon" src="plus.svg" onclick="window.location.href='notes.php?folder=<?php echo $folder['name']; ?>&mode=create'" style="position: absolute; right: 30px; width: 20px; height: 20px; padding-right: 0; margin-right: 15px;" />
         </a>
 
@@ -480,7 +479,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
             noteid
           },
           success: function(res) {
-            document.querySelector(`#note_${noteid}`).style.display = 'none';
+            document.querySelector(#note_${noteid}).style.display = 'none';
           }
         });
       }
@@ -507,8 +506,8 @@ $FOLDERS = json_decode(json_encode($result_json), true);
               name: e
             },
             success: function(res) {
-              document.querySelector(`#folder_${e}`).style.display = 'none';
-              window.location.href='notes.php';
+              document.querySelector(#folder_${e}).style.display = 'none';
+              window.location.href = 'notes.php';
             }
           });
         }
@@ -520,11 +519,11 @@ $FOLDERS = json_decode(json_encode($result_json), true);
       title: 'Enter your Notebook Name',
       input: 'text',
       showCancelButton: true,
-      inputValidator: (value) => {
+      inputValidator: async (value) => {
         if (!value) {
           return 'You need to enter something!';
         } else {
-          $.ajax({
+          await $.ajax({
             url: "addFolder.php",
             method: "POST",
             data: {
@@ -596,7 +595,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
             showConfirmButton: false,
             timer: 1500
           });
-          window.location.href = `notes.php?folder=<?php echo $_GET['folder']; ?>&noteId=${noteId}&mode=view`;
+          window.location.href = notes.php?folder=<?php echo $_GET['folder']; ?>&noteId=${noteId}&mode=view;
         }
       });
     });
@@ -627,14 +626,13 @@ $FOLDERS = json_decode(json_encode($result_json), true);
         success: async function(res) {
           const data = JSON.parse(res);
           const noteId = data.noteId;
-          // alert('Note edited successfully');
           await Swal.fire({
             icon: 'success',
             title: 'Note edited successfully',
             showConfirmButton: false,
             timer: 1500
           });
-          window.location.href = `notes.php?folder=${folder}&noteId=${noteId}&mode=view`;
+          window.location.href = notes.php?folder=${folder}&noteId=${noteId}&mode=view;
         }
       });
     });
