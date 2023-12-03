@@ -54,7 +54,7 @@ if ($matchedDocument) {
     <script src="jquery.js"></script>
 
     <!-- Place the first <script> tag in your HTML's <head> -->
-    <script src="https://cdn.tiny.cloud/1/crr1vwkewrlr1xvvlr90xyibpryt3v70vmn1i18wagfzh6as/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/e8h8gh1syzmbf6ll5p6ekbp90u4p2gal5m68fgoocwttoaai/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
     <!-- Sweetalert2 -->
     <script src="js/sweetalert2.all.min.js"></script>
@@ -229,7 +229,7 @@ if ($matchedDocument) {
             }
             ?>
             // If user is not a guest, relocate to add post page
-            window.location.href = 'addCommunityPost.php';
+            window.location.href = 'addCommunityPost.php?q=viewPost.php?postID=<?php echo $_GET['postID'] ?>';
         }
 
         function editPost() {
@@ -279,7 +279,7 @@ if ($matchedDocument) {
         tinymce.init({
             selector: '#comment',
             plugins: 'tinycomments mentions anchor autolink charmap codesample emoticons image link lists searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
             tinycomments_mode: 'embedded',
             tinycomments_author: 'Author name',
             mergetags_list: [{
@@ -351,7 +351,7 @@ if ($matchedDocument) {
                     );
                 }
                 $fetch = $Usercollection->findOne($data);
-                $googleID = $fetch['google_user_id'];
+                //$googleID = $fetch['google_user_id'];
 
                 ?>
                 <div class="dropdown" style="display: <?php echo $visibility ?>">
@@ -371,11 +371,7 @@ if ($matchedDocument) {
                         <li class='center'>Username: <?php echo $fetch['username']; ?></li>
                         <li class='center'><?php echo $fetch['email']; ?></li>
                         <hr>
-
-                        <?php if ($googleID === null) {
-                            echo "<li><a href='reset.php?q=workspace.php'><i class='far fa-edit'></i> Change password</a></li>";
-                        } ?>
-
+                        <li><a href="reset.php?q=viewPost.php?postID=<?php echo $_GET['postID']; ?>"><i class='far fa-edit'></i> Change password</a></li>
                         <li><a href='#'><i class='far fa-question-circle'></i> Help </a></li>
                         <hr>
                         <li><a href='logout.php'><i class='fas fa-sign-out-alt'></i> Sign out</a></li>
@@ -387,46 +383,46 @@ if ($matchedDocument) {
 
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
-        <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
-          </a>
-        </li>
-        <li class="tool_item">
-          <a href="theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
-          Quiz
-        </li>
-        <li class="tool_item">
-          Flashcard
-        </li>
-        <li class="tool_item">
-          Summarization
-        </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
-        <li class="tool_item"><a href="Notes/notes.php">
-            Notes</a>
-        </li>
-        <li class="tool_item">
-          <a href="pomodoro.php">
-            Pomodoro</a>
-        </li>
-        <li class="tool_item"><a href="gpa.php">
-            GPA Calculator</a>
-        </li>
-        <li class="tool_item">
-          Shared spaces
-        </li>
-        <li class="tool_item">
-          Meeting Room
-        </li>
-        <li class="tool_item"><a href="community.php">
-            Community</a>
-        </li>
-      </ul>
+            <ul class="tool_list">
+                <li class="tool_item">
+                    <a href="workspace.php"> Calendar & To-Do
+                    </a>
+                </li>
+                <li class="tool_item">
+                    <a href="theFiles.php?q=My Files"> My Files</a>
+                </li>
+                <li class="tool_item">
+                    Quiz
+                </li>
+                <li class="tool_item">
+                    Flashcard
+                </li>
+                <li class="tool_item">
+                    Summarization
+                </li>
+                <li class="tool_item">
+                    Study Planner
+                </li>
+                <li class="tool_item"><a href="Notes/notes.php">
+                        Notes</a>
+                </li>
+                <li class="tool_item">
+                    <a href="pomodoro.php">
+                        Pomodoro</a>
+                </li>
+                <li class="tool_item"><a href="gpa.php">
+                        GPA Calculator</a>
+                </li>
+                <li class="tool_item">
+                    Shared spaces
+                </li>
+                <li class="tool_item">
+                    Meeting Room
+                </li>
+                <li class="tool_item"><a href="community.php">
+                        Community</a>
+                </li>
+            </ul>
         </div>
 
         <div class="workarea">
@@ -789,7 +785,7 @@ if ($matchedDocument) {
                     else echo "At " . $comment_Date;
                     echo "</span>";
                     if (!$guest_account && $commenter_email == $_SESSION['email'])
-                    echo "<span class='editComment'><img src='images/edit.png' alt='edit' width='20px' height='20px' onclick='editComment(\"" . $comment . "\", \"" . $commentId . "\");'></span><span class='deleteComment'><img src='images/bin.png' alt='bin' width='20px' height='20px' onclick='DeleteComment(\"" . $commentId . "\", \"" . $_GET['postID'] . "\");'></span>";
+                        echo "<span class='editComment'><img src='images/edit.png' alt='edit' width='20px' height='20px' onclick='editComment(\"" . $comment . "\", \"" . $commentId . "\");'></span><span class='deleteComment'><img src='images/bin.png' alt='bin' width='20px' height='20px' onclick='DeleteComment(\"" . $commentId . "\", \"" . $_GET['postID'] . "\");'></span>";
                     echo "<br></div>";
                 }
 
@@ -825,8 +821,8 @@ if ($matchedDocument) {
     </main>
     <footer id="footer" style="margin-top: 7%;">
 
-<div id="copyright">Learniverse &copy; 2023</div>
-</footer>
+        <div id="copyright">Learniverse &copy; 2023</div>
+    </footer>
 
     <div role="button" id="sidebar-tongue" style="margin-left: 0;">
         &gt;

@@ -2,7 +2,7 @@
 <?php
 include("gpabackend.php");
 $user = null;
-$googleID = null;
+//$googleID = null;
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -170,11 +170,7 @@ if ($user == null) {
                             <?php echo $user['email']; ?>
                         </li>
                         <hr>
-
-                        <?php if ($googleID === null) {
-                            echo "<li><a href='reset.php?q=workspace.php'><i class='far fa-edit'></i> Change password</a></li>";
-                        } ?>
-
+                        <li><a href='reset.php?q=gpa.php'><i class='far fa-edit'></i> Change password</a></li>
                         <li><a href='#'><i class='far fa-question-circle'></i> Help </a></li>
                         <hr>
                         <li><a href='logout.php'><i class='fas fa-sign-out-alt'></i> Sign out</a></li>

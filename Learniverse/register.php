@@ -1,5 +1,67 @@
 <?php
 session_start();
+
+// Require the MongoDB library
+require_once __DIR__ . '/vendor/autoload.php';
+
+// Create a MongoDB client
+$connection = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+
+// Select the database and collection
+$database = $connection->Learniverse;
+$Usercollection = $database->users;
+
+// Initialize variables
+$username = "";
+$firstname = "";
+$lastname = "";
+$email = "";
+$password = "";
+$response = "";
+
+// Check if the form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = strtolower(htmlspecialchars($_POST["username"]));
+    $firstname = htmlspecialchars($_POST["firstname"]);
+    $lastname = htmlspecialchars($_POST["lastname"]);
+    $email = strtolower($_POST["email"]);
+    $password = $_POST["password"];
+    if (strlen($_POST["password"]) < 12) {
+        $response = "Password must be at least 12 character.";
+    } else if (!preg_match('/^[A-Za-z]/', $firstname) || !preg_match('/^[A-Za-z]/', $lastname)) {
+        $response = "The first letter of both the first name and last name must be alphabetical characters.";
+    } else {
+        $password = sha1(htmlspecialchars($_POST["password"]));
+        // Sanitize and validate email
+        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $response = 'Invalid email address.';
+        } else {
+            // Perform register validation
+            $findemail = $Usercollection->findOne(['email' => $email]);
+            $findusername = $Usercollection->findOne(['username' => $username]);
+            if ($findemail) {
+                $response = 'Your are already registred! Try to login';
+            } else if ($findusername) {
+                $response = 'That username is taken. Try another one.';
+            } else {
+                $newUser = ['google_user_id' => null, 'username' => $username, 'firstname' => $firstname, 'lastname' => $lastname, 'email' => $email, 'password' => $password, 'files_count' => 0, 'file_names' => ""];
+                $result = $Usercollection->insertOne($newUser);
+
+                if ($result) {
+                    $_SESSION['email'] = $email;
+                    require 'initialize_tools.php';
+                    // Successful register
+                    header("Location: workspace.php");
+                    exit();
+                } else {
+                    $response = 'Registration failed. Please try again later.';
+                }
+            }
+        }
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -26,84 +88,59 @@ session_start();
             <img src="LOGO.png" class="logo">
             <br>
 
-            <form id="form" action="adduser.php" method="POST" onsubmit="validateForm(event)">
+            <form id="form" action="" method="POST" onsubmit="validateForm(event)">
                 <h2>Create a New Account</h2>
 
-                <p style="color: red;"  id='Response'></p>
+                <br>
+
+                <div id="response" style="color:red;"><?php echo $response; ?></div>
+
                 <div class="form-row">
                     <div class="input-group">
                         <label for="username">Username</label>
-                        <div class="tooltip">
-                            <input type="text" id="username" name="username" class="form-control" value="" required>
-                            <div class="tooltiptext">
-                                <b>Username</b> must be unquie
-                            </div>
-                        </div>
-                        <p style="color: red;" id="usernameResponse"></p>
+                        <input type="text" id="username" name="username" placeholder="Username must be unquie" class="form-control" value="" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="input-group">
                         <label for="firstname">First Name</label>
-                        <div class="tooltip">
-                            <input type="text" id="firstname" name="firstname" class="form-control" value="" required>
-                            <div class="tooltiptext">
-                                <b>First name</b> must start with a letter
-                            </div>
-                        </div>
-                        <p style="color: red;"  id="firstnameResponse"></p>
+                        <input type="text" id="firstname" name="firstname" placeholder="First name must start with a letter" class="form-control" value="" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="input-group">
                         <label for="lastname">Last Name</label>
-                        <div class="tooltip">
-                            <input type="text" id="lastname" name="lastname" class="form-control" value="" required>
-                            <div class="tooltiptext">
-                                <b>Last name</b> must start with a letter
-                            </div>
-                        </div>
-                        <p style="color: red;"  id="lastnameResponse"></p>
+                        <input type="text" id="lastname" name="lastname" placeholder="Last name must start with a letter" class="form-control" value="" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="input-group">
                         <label for="email">Email</label>
-                        <div class="tooltip">
-                            <input type="email" id="email" name="email" class="form-control" value="" required>
-                            <div class="tooltiptext">
-                                <b>Email</b> must be valid email
-                            </div>
-                        </div>
-                        <p style="color: red;"  id="emailResponse"></p>
+                        <input type="email" id="email" name="email" placeholder="Email must be valid email" class="form-control" value="" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="input-group">
                         <label for="password">Password</label>
-                        <div class="tooltip">
-                            <input type="password" id="password" name="password" class="form-control" value="" required>
-                            <div class="tooltiptext">
-                                <b>Password</b> must be 12 character
-                            </div>
-                        </div>
-                        <p style="color: red;"  id="passwordResponse"></p>
+                        <input type="password" id="password" name="password" placeholder="Password must be 12 character" class="form-control" value="" required>
                     </div>
                 </div>
+
+                <input type="submit" class="button" id="signup" name="signup" value="Sign up">
+
+                <h6> OR </h6>
+
+                <p class='login'>Already have an account? <a href="login.php">Sign in</a></p>
+
+            </form>
+
         </div>
-        <input type="submit" class="button" id="signup" name="signup" value="Sign up">
-
-        <h6> OR </h6>
-
-        <p class='login'>Already have an account? <a href="login.php">Sign in</a></p>
-
-        </form>
-
     </div>
+
 
     <div class="split right">
         <img src="images/signup.png" alt='Advertising picture'>
@@ -115,73 +152,16 @@ session_start();
     </div>
 
 </body>
-<script src="jquery.js"></script>
+<script src = "jquery.js"></script>
 <script>
-
-    $(document).ready(function() {
-        $('form').submit(function(e) {
-            // Prevent form submission
-            e.preventDefault();
-            var username = $('#username').val();
-            var firstname = $('#firstname').val();
-            var lastname = $('#lastname').val();
-            var email = $('#email').val();
-            var password = $('#password').val();
-
-            // Send AJAX request to the server
-            $.ajax({
-                url: 'adduser.php',
-                type: 'POST',
-                data: {
-                    username: username,
-                    firstname: firstname,
-                    lastname: lastname,
-                    email: email,
-                    password: password
-                },
-                dataType: 'json',
-                success: function(response) {
-                    $('#passwordResponse').text('');
-                    $('#firstnameResponse').text('');
-                    $('#lastnameResponse').text('');
-                    $('#emailResponse').text('');
-                    $('#Response').text('');
-
-                    if (response.message == "Password must be at least 12 character.") {
-                        $('#passwordResponse').text(response.message);
-                    } else if (response.message == "The first character of the first name must be alphabetical characters.") {
-                        // Display failure message
-                        $('#firstnameResponse').text(response.message);
-                    } else if (response.message == "The first character of the last name must be alphabetical characters.") {
-                        // Display failure message
-                        $('#lastnameResponse').text(response.message);
-                    } else if (response.message == "Invalid email address.") {
-                        // Display failure message
-                        $('#emailResponse').text(response.message);
-                    } else if (response.message == "Your are already registred! Try to login") {
-                        // Display failure message
-                        $('#emailResponse').text(response.message);
-                    } else if (response.message == "That username is taken. Try another one.") {
-                        // Display failure message
-                        $('#usernameResponse').text(response.message);
-                    } else {
-                        // Display failure message
-                        $('#Response').text(response.message);
-                    }
-
-                }
-            });
-        });
-    });
-
     function validateForm(event) {
         event.preventDefault(); // Prevent the form from submitting by default
-        console.log(event)
+
         var username = document.getElementById('username');
 
-        var error = document.getElementById('Response');
+        var error = document.getElementById('response');
 
-        if (username.value.trim() == '') {
+        if (username.value.trim() == '' ) {
             error.textContent = 'Please enter a valid nonempty username.'; // Display the error message
             return false; // Cancel form submission
         } else {
@@ -189,7 +169,7 @@ session_start();
         }
 
         // If the validation passes, you can proceed with form submission
-        document.querySelector('form').dispatchEvent(new Event('submit'));
+        document.getElementById('form').submit();
     }
 </script>
 

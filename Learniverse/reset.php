@@ -62,12 +62,24 @@ $q = $_GET['q']; ?>
     function goBack(event) {
         event.preventDefault();
         <?php if (isset($_SESSION["email"])) : ?>
-            <?php if ($_GET['q'] === "thefiles.php") : ?>
-                redirect("thefiles.php?q=My Files");
+            <?php if ($_GET['q'] === "theFiles.php") : ?>
+                redirect("theFiles.php?q=My Files");
             <?php elseif ($_GET['q'] === "workspace.php") : ?>
                 redirect("workspace.php");
-            <?php else: ?>
+            <?php elseif ($_GET['q'] === "pomodoro.php") : ?>
+                redirect("pomodoro.php");
+            <?php elseif ($_GET['q'] === "addCommunityPost.php") : ?>
+                redirect("addCommunityPost.php");
+            <?php elseif ($_GET['q'] === "gpa.php") : ?>
+                redirect("gpa.php");
+            <?php elseif ($_GET['q'] === "community.php") : ?>
+                redirect("community.php");
+            <?php elseif ($_GET['q'] === "notes.php") : ?>
+                redirect("Notes/notes.php");
+            <?php elseif ($_GET['q'] === "index.php") : ?>
                 redirect("index.php");
+            <?php else : ?>
+                redirect(q);
             <?php endif; ?>
         <?php else : ?>
             redirect("login.php");

@@ -352,19 +352,24 @@ width: 1rem;
 height: 1rem;
 float: right;
 margin-right: 2.5%;
-
 }
+
 .deleteComment img{
 margin-right: 1% !important;
 
 }
-.alterComment {
-  width: 1.3rem;
-  float: right;
+
+.deleteComment img:hover, .editComment img:hover {
+  filter: opacity(1);
+  cursor: pointer;
 }
 
-.commentContent {
-  border-bottom: 1px solid rgb(197, 197, 197);
+.oneCommnet {
+  border-bottom: 1px solid rgb(210, 208, 208);
+}
+
+.oneCommnet:last-child {
+  border-bottom: none;
 }
 
 #NoOfComment {
@@ -387,7 +392,7 @@ margin-right: 1% !important;
 }
 
 
-#submitComment:hover, .addPostBTN:hover {
+#submitComment:hover, .addPostBTN:hover, #ShowmoreButton:hover {
     cursor: pointer;
     background-color: #ec947e;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13); 
@@ -401,14 +406,6 @@ margin-right: 1% !important;
 #commentArea h2 {
     margin-left: 1.4%;
   }
-
-#showMorebutton {
-  background-color: #fdae9b;
-  height: 30px;
-  width: 160px;
-  border-radius: 10px;
-  border: none;
-}
 
 #alterComment {
   float: right;
