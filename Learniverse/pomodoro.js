@@ -152,6 +152,7 @@ function whatTimer() {
 
 //Reset sessions
 function reset() {
+  if(typeof timer !== 'undefined')
   clearInterval(timer);
   current_minutes = pomodoro_minutes;
   current_seconds = pomodoro_seconds;

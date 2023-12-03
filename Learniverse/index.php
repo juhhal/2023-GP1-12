@@ -154,10 +154,7 @@ if (isset($_SESSION['email'])) {
                             <li class="center">Username: ' . $fetch['username'] . '</li>
                             <li class="center">' . $fetch['email'] . '</li>
                             <hr>';
-
-                    if ($googleID === null) {
                         echo "<li><a href='reset.php?q=index.php'><i class='far fa-edit'></i> Change password</a></li>";
-                    }
                     echo '
     
                             <li><a href="#"><i class="far fa-question-circle"></i> Help </a></li>

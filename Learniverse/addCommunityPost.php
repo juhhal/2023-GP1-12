@@ -24,7 +24,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 
     <!-- rich text editor -->
     <!-- Place the first <script> tag in your HTML's <head> -->
-    <script src="https://cdn.tiny.cloud/1/crr1vwkewrlr1xvvlr90xyibpryt3v70vmn1i18wagfzh6as/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/e8h8gh1syzmbf6ll5p6ekbp90u4p2gal5m68fgoocwttoaai/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
@@ -183,7 +183,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
             document.getElementById("sidebar-tongue").style.marginLeft = '0';
         }
 
-        
+
         window.addEventListener('unload', function(event) {
             <?php unset($_SESSION['filteredSearch']) ?>
         });
@@ -264,7 +264,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 );
 
                 $fetch = $Usercollection->findOne($data);
-                $googleID = $fetch['google_user_id'];
+                //$googleID = $fetch['google_user_id'];
 
                 ?>
                 <div class="dropdown">
@@ -284,12 +284,8 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                         <li class='center'>Username: <?php echo $fetch['username']; ?></li>
                         <li class='center'><?php echo $fetch['email']; ?></li>
                         <hr>
-
-                        <?php if ($googleID === null) {
-                            echo "<li><a href='reset.php?q=workspace.php'><i class='far fa-edit'></i> Change password</a></li>";
-                        } ?>
-
-                        <li><a href='#'><i class='far fa-question-circle'></i> Help </a></li>
+                        <li><a href='reset.php?q=addCommunityPost.php'><i class='far fa-edit'></i> Change password</a></li>
+                        <li><a href='#'><i class='far fa-question-circle'></i> Help</a></li>
                         <hr>
                         <li><a href='logout.php'><i class='fas fa-sign-out-alt'></i> Sign out</a></li>
                     </ul>
@@ -300,46 +296,46 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
-        <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
-          </a>
-        </li>
-        <li class="tool_item">
-          <a href="theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
-          Quiz
-        </li>
-        <li class="tool_item">
-          Flashcard
-        </li>
-        <li class="tool_item">
-          Summarization
-        </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
-        <li class="tool_item"><a href="Notes/notes.php">
-            Notes</a>
-        </li>
-        <li class="tool_item">
-          <a href="pomodoro.php">
-            Pomodoro</a>
-        </li>
-        <li class="tool_item"><a href="gpa.php">
-            GPA Calculator</a>
-        </li>
-        <li class="tool_item">
-          Shared spaces
-        </li>
-        <li class="tool_item">
-          Meeting Room
-        </li>
-        <li class="tool_item"><a href="community.php">
-            Community</a>
-        </li>
-      </ul>
+            <ul class="tool_list">
+                <li class="tool_item">
+                    <a href="workspace.php"> Calendar & To-Do
+                    </a>
+                </li>
+                <li class="tool_item">
+                    <a href="theFiles.php?q=My Files"> My Files</a>
+                </li>
+                <li class="tool_item">
+                    Quiz
+                </li>
+                <li class="tool_item">
+                    Flashcard
+                </li>
+                <li class="tool_item">
+                    Summarization
+                </li>
+                <li class="tool_item">
+                    Study Planner
+                </li>
+                <li class="tool_item"><a href="Notes/notes.php">
+                        Notes</a>
+                </li>
+                <li class="tool_item">
+                    <a href="pomodoro.php">
+                        Pomodoro</a>
+                </li>
+                <li class="tool_item"><a href="gpa.php">
+                        GPA Calculator</a>
+                </li>
+                <li class="tool_item">
+                    Shared spaces
+                </li>
+                <li class="tool_item">
+                    Meeting Room
+                </li>
+                <li class="tool_item"><a href="community.php">
+                        Community</a>
+                </li>
+            </ul>
         </div>
 
         <div class="workarea">
@@ -351,38 +347,50 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 </div>
                 <!-- INSERT ITEMS HERE -->
                 <script>
-                        $(document).ready(function() {
-                            $("#addPostForm").submit(function(event) {
-                                // Create a new Date object
-                                var currentDate = new Date();
+                    $(document).ready(function() {
+                        $("#addPostForm").submit(function(event) {
+                            // Create a new Date object
+                            var currentDate = new Date();
 
-                                // Extract the year, month, day, hours, and minutes from the current date
-                                var year = currentDate.getFullYear();
-                                var month = String(currentDate.getMonth() + 1).padStart(2, '0');
-                                var day = String(currentDate.getDate()).padStart(2, '0');
-                                var hours = String(currentDate.getHours()).padStart(2, '0');
-                                var minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                            // Extract the year, month, day, hours, and minutes from the current date
+                            var year = currentDate.getFullYear();
+                            var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                            var day = String(currentDate.getDate()).padStart(2, '0');
+                            var hours = String(currentDate.getHours()).padStart(2, '0');
+                            var minutes = String(currentDate.getMinutes()).padStart(2, '0');
 
-                                // Format the date string
-                                var formattedDate = year + '-' + month + '-' + day + ' at ' + hours + ':' + minutes;
-                                $("#postDate").val(formattedDate);
-                            });
-
-                            $("#postTags").on('input', function(event) {
-                                const inputValue = event.target.value;
-                                const inputArray = inputValue.split(',');
-
-                                const updatedText = inputArray
-                                    .map((word) => {
-                                        const trimmedWord = word.trim();
-                                        return trimmedWord ? `<span class="postTag">${trimmedWord}</span>` : '';
-                                    })
-                                    .join('');
-
-                                document.getElementById('renderedContent').innerHTML = updatedText;
-                            });
+                            // Format the date string
+                            var formattedDate = year + '-' + month + '-' + day + ' at ' + hours + ':' + minutes;
+                            $("#postDate").val(formattedDate);
                         });
-                    </script>
+
+                        $("#postTags").on('input', function(event) {
+                            const inputValue = event.target.value;
+                            const inputArray = inputValue.split(',');
+
+                            const updatedText = inputArray
+                                .map((word) => {
+                                    const trimmedWord = word.trim();
+                                    return trimmedWord ? `<span class="postTag">${trimmedWord}</span>` : '';
+                                })
+                                .join('');
+
+                            document.getElementById('renderedContent').innerHTML = updatedText;
+                        });
+
+                    });
+                    function cancelEdit() {
+                            const urlParams = new URLSearchParams(window.location.search);
+
+                            // Retrieve the value of a specific parameter
+                            const location = urlParams.get('q');
+                            if (location && location !== "community.php") {
+                                window.location.href = location;
+                            } else {
+                                window.location.href = "community.php";
+                            }
+                        }
+                </script>
                 <form id="addPostForm" method="post" action="addPost.php">
                     <?php
 
@@ -416,39 +424,40 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                         // tinymce.activeEditor.setContent(formattedText);
                     </script>
                     <div class="Area">
-                    <label for="postTitle">
-                        <h3>Title</h3>
-                    </label>
-                    <textarea required autofocus id="postTitle" name="postTitle" placeholder="Your Post's Title"><?php echo ($title) ?></textarea>
+                        <label for="postTitle">
+                            <h3>Title</h3>
+                        </label>
+                        <textarea required autofocus id="postTitle" name="postTitle" placeholder="Your Post's Title"><?php echo ($title) ?></textarea>
                     </div>
                     <!-- ADD POST FIELD -->
                     <div class="Area">
-                    <label for="post_area">
-                        <h3>Post Content</h3>
-                    </label>
-                    <textarea id="post_area" name='post_content' placeholder="Compose Your Post Here:"><?php echo ($content) ?></textarea>
+                        <label for="post_area">
+                            <h3>Post Content</h3>
+                        </label>
+                        <textarea id="post_area" name='post_content' placeholder="Compose Your Post Here:"><?php echo ($content) ?></textarea>
                     </div>
                     <div class="Area">
-                    <label for="postTags">
-                        <h3>Tags</h3>
-                    </label>
-                    <textarea id="postTags" name="postTags" placeholder="e.g. science, chemistry, atoms"><?php if(is_array($tags))echo implode(", ", $tags); else echo $tags; ?></textarea>
+                        <label for="postTags">
+                            <h3>Tags</h3>
+                        </label>
+                        <textarea id="postTags" name="postTags" placeholder="e.g. science, chemistry, atoms"><?php if (is_array($tags)) echo implode(", ", $tags);
+                                                                                                                else echo $tags; ?></textarea>
                     </div>
                     <div id="renderedContent"></div>
                     <input type="text" id="postDate" name='postDate' hidden>
                     <?php
                     if (isset($_GET['postID']))
-                        echo "<input type='hidden' id='postID' name='postID' value='".$_GET['postID']."' hidden>"
+                        echo "<input type='hidden' id='postID' name='postID' value='" . $_GET['postID'] . "' hidden>"
                     ?>
-                    <br><input class="Formbuttons create" type="submit"><input class="Formbuttons cancel" type="reset" value="Cancel">
+                    <br><input class="Formbuttons create" type="submit"><input class="Formbuttons cancel" type="reset" value="Cancel" onclick="cancelEdit()">
                 </form>
             </div>
         </div>
     </main>
     <footer id="footer" style="margin-top: 7%;">
 
-<div id="copyright">Learniverse &copy; 2023</div>
-</footer>
+        <div id="copyright">Learniverse &copy; 2023</div>
+    </footer>
 
     <div role="button" id="sidebar-tongue" style="margin-left: 0;">
         &gt;
