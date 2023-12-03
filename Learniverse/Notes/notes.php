@@ -25,7 +25,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Files</title>
+  <title>My Notes</title>
   <link rel="stylesheet" href="../theFiles.css">
   <link rel="stylesheet" href="../header-footer.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
