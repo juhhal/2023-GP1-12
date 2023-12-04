@@ -1,286 +1,671 @@
 #navbar {
-    display: block;
+  display: block;
 }
 
 .nav__menu {
-    margin: 0;
+  margin: 0;
 }
 
 body {
-    background-color: #Faf7ff !important;
+  background-color: #Faf7ff !important;
 }
 
 .gpa-container {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    line-height: 2.01;
-    color: #333;
-    font-weight: normal;
-    font-style: normal;
-    box-sizing: border-box;
-    margin-top: 10px;
-    margin-bottom: 15px;
-    font-size: 15px;
-    /* background-color: #f2f2f2; */
-    padding: 10px;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  line-height: 2.01;
+  color: #333;
+  font-weight: normal;
+  font-style: normal;
+  box-sizing: border-box;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  font-size: 15px;
+  /* background-color: #f2f2f2; */
+  padding: 10px;
 }
 
 .fieldset {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    line-height: 2.01;
-    color: #333;
-    font-weight: normal;
-    font-style: normal;
-    font-size: 15px;
-    box-sizing: border-box;
-    border: 1px solid #c1a5d2;
-    margin-top: 1em;
-    padding: 0 20px 20px 20px;
-    min-height: 160px;
-    border-radius: .5rem;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  line-height: 2.01;
+  color: #333;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 15px;
+  box-sizing: border-box;
+  border: 1px solid #c1a5d2;
+  margin-top: 1em;
+  padding: 0 20px 20px 20px;
+  min-height: 160px;
+  border-radius: .5rem;
 }
 
 .fieldset h4 {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    font-style: normal;
-    box-sizing: border-box;
-    font-family: inherit;
-    font-weight: 500;
-    line-height: 1.1;
-    color: inherit;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-size: 18px;
-    text-align: center;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  font-style: normal;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.1;
+  color: inherit;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 18px;
+  text-align: center;
 }
 
 .fieldset h4 span {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    font-style: bold;
-    font-family: inherit;
-    font-weight: 700;
-    line-height: 1.1;
-    color: #bf97d8;
-    font-size: 18px;
-    text-align: center;
-    box-sizing: border-box;
-    display: inline;
-    background: white;
-    position: relative;
-    padding: 0 10px;
-    top: -1.0em;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  font-style: bold;
+  font-family: inherit;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #bf97d8;
+  font-size: 18px;
+  text-align: center;
+  box-sizing: border-box;
+  display: inline;
+  background: white;
+  position: relative;
+  padding: 0 10px;
+  top: -1.0em;
 }
 
 .modal-footer button {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 
 .h-text {
-    color: #bf97d8;
+  color: #bf97d8;
 }
 
 .d-none,
 .dd-none {
-    display: none;
+  display: none;
 }
 
 .subjectRating {
-    width: 100%;
+  width: 100%;
 }
 
 .main-content {
-    min-height: 70vh;
-    padding: 2rem;
+  min-height: 70vh;
+  padding: 2rem;
 }
 
 .main-content h1 {
-    color: #000e23;
-    font-weight: 700;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    margin: 5% 15% 0;
+  color: #000e23;
+  font-weight: 700;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  margin: 5% 15% 0;
 }
 
 .main-content button {
-    background-color: #bf97d8;
-    border-color: #9871b1;
+  background-color: #bf97d8;
+  border-color: #9871b1;
 }
 
 .main-content button:hover,
 .main-content button:focus {
-    background-color: #9871b1;
+  background-color: #9871b1;
 }
 
 #new-gpa-btn {
-    right: 1%;
-    margin: 5% 15% 0;
-    position: absolute;
-    background-color: #fdae9b;
-    padding: 0.5rem 1rem;
-    height: fit-content;
-    border-radius: 10px;
-    color: #000e23;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  right: 1%;
+  margin: 5% 15% 0;
+  position: absolute;
+  background-color: #fdae9b;
+  padding: 0.5rem 1rem;
+  height: fit-content;
+  border-radius: 10px;
+  border: none;
+  color: #000e23;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 0.9em;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .main-content #new-gpa-btn:hover {
-    filter: brightness(0.5);
-}
+  cursor: pointer;
+  background-color: #ec947e;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);}
+
 
 #myModal {
-    opacity: 1;
-    position: absolute;
-    top: 50px;
+  opacity: 1;
+  position: absolute;
+  top: 50px;
 }
 
 .modal-lg {
-    max-width: 90%;
-    margin-top: 7%;
+  max-width: 90%;
+  margin-top: 7%;
 }
 
 
 .gpacell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background-color: rgb(255, 255, 255);
-    color: #333;
-    width: 220px;
-    height: 170px;
-    border-radius: .5rem;
-    margin: 1rem;
-    position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: rgb(255, 255, 255);
+  color: #333;
+  width: 220px;
+  height: 170px;
+  border-radius: .5rem;
+  margin: 1rem;
+  position: relative;
 }
 
 .gpacell:hover {
-    background: rgb(255, 255, 255);
-    text-decoration: none;
-    transition: all .3s ease-in-out;
-    border: 2px solid #fdaf9b68;
+  background: rgb(255, 255, 255);
+  text-decoration: none;
+  transition: all .3s ease-in-out;
+  border: 2px solid #fdaf9b68;
 }
 
 
 .gpacell .gpacell-year {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    position: absolute;
-    top: 20px;
-    font-weight: 800;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: absolute;
+  top: 20px;
+  font-weight: 800;
 }
 
 .gpacell h5 {
-    font-weight: 800;
-    font-size: 3rem;
+  font-weight: 800;
+  font-size: 3rem;
 }
 
 
 .gpacell p {
-    text-align: center;
+  text-align: center;
 }
 
 .gpacell .gpacell-add {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
 }
 
 .gallery {
-    width: 90%;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    transition: all .3s ease;
-    justify-content: space-between;
+  width: 90%;
+  margin-left: 45%;
+  margin-top: 3%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  transition: all .3s ease;
+  justify-content: space-between;
+}
+
+#load-msg{
+  align-items: center;
 }
 
 /* SIDE BAR CSS */
 
 #sidebar-tongue {
-    width: fit-content;
-    padding: 50px 3px;
-    border-radius: 2px 10px 10px 2px;
-    font-size: 1.5rem;
-    box-shadow: 0px 1px 2px 1px rgba(58, 60, 67, 0.15);
-    display: inline-block;
-    position: fixed;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: #bf97d8;
-    color: #faf7ff;
-    margin-left: 0;
-    z-index: 150;
-  }
-  
-  #sidebar-tongue:hover {
-    transition-duration: 0.3s;
-    filter: brightness(0.5);
-    cursor: pointer;
-  }
-  
-  #tools_div {
-    background-color: #bf97d8;
-    width: 12%;
-    padding: 2% 0.5% 0;
-    float: left;
-    margin-left: -13.9%;
-    transition: 0.2s;
-    box-shadow: 0px 1px 2px 1px rgba(58, 60, 67, 0.15);
-    position: fixed;
-    z-index: 100;
-    height: 99vh;
-  }
-  
-  .tool_list {
-    display: inline-block;
-    padding-inline-start: 0;
-  }
-  
-  .tool_item {
-  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
-    "sans-serif";
-    font-size: 1rem !important;
-  list-style-type: none;
-  padding: 9%;
-  margin-bottom: 5%;
-  white-space: nowrap;
-  text-indent: 1rem;
-  font-size: 0.9rem;
-  text-align: left;
+  width: fit-content;
+  padding: 50px 3px;
+  border-radius: 2px 10px 10px 2px;
+  font-size: 1.5rem;
+  box-shadow: 0px 1px 2px 1px rgba(58, 60, 67, 0.15);
+  display: inline-block;
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #bf97d8;
+  color: #faf7ff;
+  margin-left: 0;
+  z-index: 150;
+}
+
+#sidebar-tongue:hover {
+  transition-duration: 0.3s;
+  filter: brightness(0.5);
+  cursor: pointer;
+}
+
+#tools_div {
+  background-color: #bf97d8;
+  width: 12%;
+  padding: 2% 0.5% 0;
+  float: left;
+  margin-left: -13.9%;
+  transition: 0.2s;
+  box-shadow: 0px 1px 2px 1px rgba(58, 60, 67, 0.15);
+  position: fixed;
+  z-index: 100;
+  height: 99vh;
+}
+
+.tool_list {
+  display: inline-block;
+  padding-inline-start: 0;
+}
+
+.tool_item {
+font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+  "sans-serif";
+  font-size: 1rem !important;
+list-style-type: none;
+padding: 9%;
+margin-bottom: 5%;
+white-space: nowrap;
+text-indent: 1rem;
+font-size: 0.9rem;
+text-align: left;
+color: #000e23;
+width: 120%;
+transition: color 0.3s, background-color 0.3s;
+border-radius: 5%;
+}
+
+.tool_item:hover{
+cursor: pointer;
+transition-duration: 0.3s;
+color: #faf7ff !important;
+background-color: rgba(212, 179, 233, 0.933);
+}
+.tool_item:hover a{
+cursor: pointer;
+transition-duration: 0.3s;
+color: #faf7ff !important;
+background-color: rgba(212, 179, 233, 0.933);
+}
+
+.tool_item a {
+  text-decoration: none !important;
   color: #000e23;
-  width: 135%;
-  transition: color 0.3s, background-color 0.3s;
-  border-radius: 5%;
-  }
-  
-  .tool_item:hover{
+}
+
+.tool_item img {
+  width: 15%;
+  float: left;
+  margin-left: 2%;
+}
+
+
+  /* General Modal Styling */
+.swal2-popup {
+  font-family: 'Arial', sans-serif;
+  border-radius: 5px;
+}
+
+/* Title Styling */
+.swal2-title {
+  color: #333;
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+/* Input Field Styling */
+.swal2-input,
+.swal2-select,
+.swal2-radio,
+.swal2-textarea {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 10px 0;
+  padding: 10px;
+  width: 100%;
+}
+
+/* Label Styling */
+.swal2-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+/* Button Styling */ 
+#addSemesterBtn {
+  background-color: #fdae9b !important; /* SlateBlue color for the buttons */
+  border: none !important;
+  border-radius: 4px;
+  color: white;
+  outline: none !important;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
   cursor: pointer;
-  transition-duration: 0.3s;
-  color: #faf7ff !important;
-  background-color: rgba(212, 179, 233, 0.933);
-  }
-  .tool_item:hover a{
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important; /* Soft shadow for depth */
+}
+
+#addSemesterBtn:hover {
   cursor: pointer;
-  transition-duration: 0.3s;
-  color: #faf7ff !important;
-  background-color: rgba(212, 179, 233, 0.933);
-  }
-  
-  .tool_item a {
-    text-decoration: none !important;
-    color: #000e23;
-  }
-  
-  .tool_item img {
-    width: 15%;
-    float: left;
-    margin-left: 2%;
-  }
+  background-color: #ec947e !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13) !important; /* A darker shade for hover effect */
+}
+
+.addSubjectBtn{
+  background-color:#bf97d8;
+  border: none !important;
+  border-radius: 4px;
+  color: white;
+  outline: none !important;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.addSubjectBtn:hover{
+  cursor: pointer;
+  background-color: #b080ce !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13) !important;
+}
+
+
+/* Radio Button Customization */
+.swal2-radio input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+
+.swal2-radio label {
+  display: inline-block;
+  padding-left: 25px;
+  position: relative;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.swal2-radio label:before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.swal2-radio input[type="radio"]:checked + label:after {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: #6a5acd;
+  border-radius: 50%;
+  position: absolute;
+  left: 3px;
+  top: 3px;
+}
+
+
+
+/* Styling for the GPA Result Display */
+#gpaForm2 {
+  padding: 10px;
+  border-radius: 5px;
+  padding-left: 0px;
+}
+
+/* Styling Headings inside the Modal */
+h3, h4 {
+  color: #333;
+}
+
+/* Styling for individual semester sections */
+#semesterContainer {
+  padding: 15px;
+  margin-bottom: 10px;
+  margin-top: 5%;
+}
+
+/* Adjusting the layout for subjects */
+#subjectContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  text-align: center;
+}
+
+/* Styling each subject input group */
+.subjectDiv {
+  background: #eee;
+  padding: 10px;
+  border-radius: 4px;
+}
+.semester{
+  background: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 0 3px 4px rgba(0, 0, 0, 0.05);    
+  margin-bottom: 10px;
+}
+
+.swal2-container.swal2-center>.swal2-popup {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
+  justify-self: center;
+  width: 60rem;
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+/* Style for the overall SweetAlert container to make it wider */
+.swal2-popup {
+  max-width: 80% !important; /* Override SweetAlert default max-width */
+}
+
+
+
+
+/* Button styles */
+.addSubjectBtn, #addSemesterBtn {
+  flex-basis: 100%; /* Button takes full width */
+  margin-top: 10px; /* Space above the button */
+}
+
+
+
+
+
+/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+
+
+/* Base styles */
+body {
+font-family: Arial, sans-serif;
+line-height: 1.6;
+background: #f4f4f4;
+}
+
+/* Style for the form */
+#gpaForm1 {
+padding: 20px;
+max-width: 500px;
+margin: 20px auto;
+}
+
+/* Style for the form elements */
+#gpaForm1 label {
+display: block;
+margin: 10px 0 5px;
+font-weight: 600;
+color: #333;
+}
+.subject{
+  border-bottom: 1px solid rgba(114, 114, 114, 0.396) !important;
+}
+
+.subject label{
+  margin-left: 1%;
+}
+.subject select{
+  font-size: medium;
+}
+.subject input, .subject select {
+width: 5.5rem !important;
+padding: 10px;
+margin-bottom: 10px;
+border: 1px solid #ccc;
+border-radius: 4px;
+box-sizing: border-box;
+}
+#gpaForm1 input{
+  width: calc(100% - 22px);
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+input:focus, select:focus {
+border-color: #007bff;
+outline: none;
+}
+
+/* Hidden radio buttons */
+#gpaForm1 input[type="radio"] {
+display: none;
+}
+
+/* Style for radio labels */
+#gpaForm1 label.radio {
+display: inline-block;
+background: #f4f4f4;
+padding: 10px 20px;
+border: 1px solid #ccc;
+border-radius: 4px;
+margin-right: 10px;
+cursor: pointer;
+}
+#gpaForm1 label.radio:hover {
+  background: #e3e3e3;
+}
+
+/* Style for checked radio label */
+#gpaForm1 input[type="radio"]:checked + label.radio {
+background: #c691e7;
+color: white;
+border-color: #b97ede;
+}
+
+/* Adjusting margins for alignment */
+#gpaForm1 label.radio:last-child {
+margin-right: 0;
+}
+
+/* Style for buttons */
+button {
+padding: 10px 20px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+margin-right: 5px;
+}
+
+button:hover {
+opacity: 0.9;
+}
+
+button.primary {
+background-color: #fdae9b;
+color: white;
+}
+
+button.secondary {
+background-color: #e1e1e1;
+}
+.txt{
+  float: left;
+  margin-left: 4% !important;
+}
+
+.swal2-confirm.swal2-styled{
+  background-color: #7066e0 !important;
+}
+
+.swal2-cancel.swal2-styled{
+  background-color: #8e959b !important;
+}
+
+#swal2-html-container h3, #swal2-html-container b, #gpaResult{
+  float: left;
+  margin-left: 3%;
+}
+#swal2-html-container span *{
+  vertical-align: middle !important;
+}
+.semester h3{
+  float: none;
+  margin-left: 0%;
+}
+#gpaResult {
+  display: inline-block;
+  background: #f4f4f4;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+  width: 15%;
+}
+
+
+.subject {
+  align-items: center !important; /* Centers items vertically */
+  justify-content: space-between !important; /* Distributes space evenly between elements */
+  gap: 1% !important; /* Space between items */
+  margin-top: 3% !important;
+}
+
+.subject label {
+  margin-right: 2px; /* Space after labels */
+  white-space: nowrap !important; /* Prevent labels from wrapping */
+}
+
+/* Assign widths to inputs and selects to fit the desired table-like layout */
+.subject input[type="text"].subjectName,
+.subject input[type="number"].marks,
+.subject input[type="number"].hours,
+.subject select.grade,
+.subject input[type="text"].points {
+  flex: 1; 
+  width: 9% !important;/* Allows inputs to grow and take available space */
+}
+
+/* Button should take the full width */
+.addSubjectBtn {
+  flex-basis: 100%;
+  margin-top: 10px;
+}
+
+/* If you want the inputs to have a more specific width like a table column, you can set a flex-basis */
+.subject input[type="text"].subjectName { flex-basis: 30%; }
+.subject input[type="number"].marks { flex-basis: 10%; }
+.subject input[type="number"].hours { flex-basis: 10%; }
+.subject select.grade { flex-basis: 20%; }
+.subject input[type="text"].points { flex-basis: 10%; }
+
+.gpacell .gpacell-delete{
+  position: absolute;
+  bottom: 10px;
+  left: 130px;
+  background-color: #ec947e;
+}
+
+.gpacell .gpacell-delete:hover{
+  background-color: #cc7c68;
+}
