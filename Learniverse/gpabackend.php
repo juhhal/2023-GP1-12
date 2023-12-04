@@ -65,8 +65,6 @@ function insertGPA($userId, $gpa, $type, $hours, $year)
             'user_id' => $userId,
             'gpa' => $gpa,
             'type' => $type,
-            'date' => date("Y-m-d H:i:s"),
-            'hours' => $hours,
             'year' => $year,
         ];
 
@@ -197,7 +195,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["gpa"])) {
     // Returning true as a response
     echo true;
 }
-
 // Handling POST requests to retrieve all GPA records for a user
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["getall"])) {
     // Retrieving all GPA records for the user

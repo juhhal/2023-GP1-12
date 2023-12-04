@@ -461,111 +461,9 @@ if ($user == null) {
         $('#gpa-old').val(0);
         $('#hours-old').val(0);
 
-        $('.step1').removeClass('d-none');
-        $('.step2').addClass('d-none');
-        subTable.children().not(':first').remove();
-        subTable.find('input').val('');
-        $('.modal-title').text('Add New GPA');
-        CUR_GPA = -1;
-    });
-    $('#next-step').on('click', function() {
-        console.log('click next');
-        $('.step1').toggleClass('d-none');
-        $('.step2').toggleClass('d-none');
-    })
 
-    function getGPA() {
-        var selectedGpaSystem = $('input[name="gpaSystem"]:checked').val();
-        var gpa = parseInt(selectedGpaSystem);
-        return gpa;
-    }
 
-    function GPA_Ratio(subjectRating) {
-        gpa = getGPA();
-        gpaValue = 0;
-        switch (subjectRating) {
-            case 'A+':
-                gpaValue = gpa === 5 ? 5 : 4;
-                break;
-            case 'A':
-                gpaValue = gpa === 5 ? 4.75 : 3.75;
-                break;
-            case 'B+':
-                gpaValue = gpa === 5 ? 4.5 : 3.5;
-                break;
-            case 'B':
-                gpaValue = gpa === 5 ? 4 : 3;
-                break;
-            case 'C+':
-                gpaValue = gpa === 5 ? 3.5 : 2.5;
-                break;
-            case 'C':
-                gpaValue = gpa === 5 ? 3 : 2;
-                break;
-            case 'D+':
-                gpaValue = gpa === 5 ? 2.5 : 1.5;
-                break;
-            case 'D':
-                gpaValue = gpa === 5 ? 2 : 1;
-                break;
-            case 'F':
-                gpaValue = gpa === 5 ? 0 : 0;
-                break;
-            default:
-                gpaValue = gpa === 5 ? 0 : 0;
-                break;
-        }
-        return gpaValue;
-    }
 
-    function recalc() {
-        console.log("recalculating......")
-        var table = subTable;
-        var totalPoints = 0;
-        var totalHours = 0;
-        var totalDegrees = 0;
-        var count = 0;
-        table.find("tr").each(function() {
-            var currentRow = $(this);
-            var cell = currentRow.find("td:eq(0)");
-            curPoints = updateSubjectPoint(cell);
-            curHours = parseFloat(currentRow.find('.subjectHour').val());
-            if (!isNaN(curPoints) && !isNaN(curHours)) {
-                totalPoints += parseFloat(curPoints);
-                totalHours += parseFloat(curHours);
-            }
-            curDegree = parseFloat(currentRow.find('.subjectDegree').val());
-            if (!isNaN(curDegree)) {
-                totalDegrees += parseFloat(curDegree);
-                count += 1;
-            }
-        })
-        const oldgpa = parseFloat($('#gpa-old').val())
-        const oldhours = parseFloat($('#hours-old').val())
-        if (getGPA() === 100) {
-            console.log("highschool")
-            if (oldgpa !== 0) {
-                console.log("update 100 old gpa", oldgpa, oldhours);
-                totalDegrees += (oldgpa * oldhours)
-                count += oldhours
-            } else console.log("add 100 new gpa");
-            var gpa = totalDegrees / count;
-            $('#totalHour').text(count);
-            if (isNaN(gpa)) {
-                $('#totalTermRate').text('');
-            } else {
-                $('#totalTermRate').text(gpa.toFixed(2));
-            }
-            if (oldgpa !== 0) {
-                $('#gpa-new').text(gpa.toFixed(2));
-            }
-            if (isNaN(gpa)) {
-                $('#totalRate').text('');
-            } else {
-                $('#totalRate').text(gpa.toFixed(2));
-            }
-            return isNaN(gpa) ? -1 : gpa;
-        }
 
         if (oldgpa !== 0) {
             console.log("update old gpa", oldgpa, oldhours);
@@ -628,60 +526,7 @@ if ($user == null) {
         }
     }
 
-    function updateSubjectDegree(selectElement) {
-        var selectedRating = $(selectElement).val();
-        var subjectDegreeInput = $(selectElement).closest('tr').find('.subjectDegree');
-        switch (selectedRating) {
-            case 'A+':
-                subjectDegreeInput.val('95');
-                break;
-            case 'A':
-                subjectDegreeInput.val('90');
-                break;
-            case 'B+':
-                subjectDegreeInput.val('85');
-                break;
-            case 'B':
-                subjectDegreeInput.val('80');
-                break;
-            case 'C+':
-                subjectDegreeInput.val('75');
-                break;
-            case 'C':
-                subjectDegreeInput.val('70');
-                break;
-            case 'D+':
-                subjectDegreeInput.val('60');
-                break;
-            case 'D':
-                subjectDegreeInput.val('55');
-                break;
-            case 'F':
-                subjectDegreeInput.val('0');
-                break;
-            default:
-                subjectDegreeInput.val('');
-                break;
-        }
-    }
 
-    function updateSubjectPoint(inputElement) {
-        console.log("ff", getGPA());
-        var row = $(inputElement).closest('tr');
-        var subjectHour = parseFloat(row.find('.subjectHour').val());
-        var subjectRating = row.find('.subjectRating').val();
-        gpa = getGPA();
-        if (gpa === 100) return;
-        gpaValue = GPA_Ratio(subjectRating);
-        var subjectPoint = (subjectHour * gpaValue).toFixed(2);
-        if (isNaN(subjectPoint)) {
-            row.find('.subjectPoint').text('');
-            return 0;
-        } else {
-            row.find('.subjectPoint').text(subjectPoint);
-            return subjectPoint;
-        }
-    }
 
     function reinit() {
         $('.subjectDegree').on("change keyup", function() {
