@@ -578,13 +578,13 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
           <a href="theFiles.php?q=My Files"> My Files</a>
         </li>
         <li class="tool_item">
-          Quiz
+          <a href="quizes/quizes.php">Quiz</a>
         </li>
         <li class="tool_item">
           Flashcard
         </li>
         <li class="tool_item">
-          Summarization
+          <a href="summarization/summarization.php">Summarization</a>
         </li>
         <li class="tool_item">
           Study Planner
