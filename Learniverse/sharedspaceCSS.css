@@ -81,6 +81,8 @@ input {
 }
 
 .spaceDiv {
+    display: flex;
+    justify-content: space-between;
     width: 80%;
     padding: 2% 1%;
     margin-top: 1%;
@@ -108,4 +110,20 @@ input {
     filter: saturate(1.5);
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+.spaceInfo {
+    font-size: 0.9rem;
+    font-weight: normal;
+    display: flex;
+    justify-content: flex-end;
+    width: 25%;
+}
+
+.spaceInfo i {
+    margin-right: 2%;
+}
+
+.spaceInfo span {
+    margin-right: 7%;
 }

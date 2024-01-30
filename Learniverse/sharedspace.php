@@ -20,8 +20,7 @@ require 'session.php'; ?>
 
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     </script>
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
@@ -309,26 +308,50 @@ require 'session.php'; ?>
                     <label>Join a Space</label> <input id="spaceID" name="spaceID" type="text">
                     <button type="submit" class="formSubmitBTN">Join</button>
                 </form>
-                <?php
-                $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
-
-                $filter = ['admin' => $_SESSION['email']];
-                // MongoDB query
-                $query = new MongoDB\Driver\Query($filter);
-                // MongoDB collection name
-                $collectionName = "Learniverse.sharedSpace";
-                // Execute the query
-                $result = $manager->executeQuery($collectionName, $query);
-
-                ?>
                 <div id="spaces">
                     <div id="adminSpaces">
                         <span class="spacesTitle">Your Spaces:</span>
-                       
+                        <?php
+                        $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+
+                        $filter = ['admin' => $_SESSION['email']];
+                        // MongoDB query
+                        $query = new MongoDB\Driver\Query($filter);
+                        // MongoDB collection name
+                        $collectionName = "Learniverse.sharedSpace";
+                        // Execute the query
+                        $spaces = $manager->executeQuery($collectionName, $query);
+                        $space = [];
+                        foreach ($spaces as $s) {
+                            $space[] = $s;
+                        }
+                        $spaces = json_decode(json_encode($space), true);
+                        foreach ($spaces as $space) {
+                            echo "<div data-spaceID='".$space['spaceID']."' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $fetch['firstname'] . " " .  $fetch['lastname'] . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
+                        }
+                        ?>
+
                     </div>
                     <div id="otherSpaces">
                         <span class="spacesTitle">Spaces You are a Member Of:</span>
-                       
+                        <?php
+                        //get spaces where active user is a member of
+                        $filterMember = ['members' => $_SESSION['email']];
+                        $queryMember = new MongoDB\Driver\Query($filterMember);
+                        $spaces = $manager->executeQuery($collectionName, $queryMember);
+                        $space = [];
+                        foreach ($spaces as $s) {
+                            $space[] = $s;
+                        }
+                        $spaces = json_decode(json_encode($space), true);
+
+                        foreach ($spaces as $space) {
+                            $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
+                            $adminCursor = $manager->executeQuery('Learniverse.users', $query);
+                            $admin = $adminCursor->toArray()[0];
+                            echo "<div data-spaceID='".$space['spaceID']."' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
