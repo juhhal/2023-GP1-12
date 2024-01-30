@@ -1,0 +1,111 @@
+.workarea_item {
+    margin: 1%;
+    margin-left: 7%;
+    width: 85%;
+}
+
+.top-shelf {
+    display: flex;
+}
+
+#newSpaceBTN {
+    margin-left: auto;
+    margin-right: 10%;
+    margin-top: 3%;
+    background-color: #fdae9b;
+    padding: 0.5rem 1rem;
+    height: fit-content;
+    border-radius: 10px;
+    border: none;
+    /* Remove borders */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+
+#newSpaceBTN:hover {
+    cursor: pointer;
+    background-color: #ec947e;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+.formSubmitBTN {
+    margin-left: 1%;
+    margin-top: 3%;
+    width: 5rem;
+    background-color: #bf97d8;
+    padding: 0.5rem 1rem;
+    height: fit-content;
+    border-radius: 10px;
+    border: none;
+    /* Remove borders */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+.formSubmitBTN:hover {
+    cursor: pointer;
+    background-color: #9d7bb1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+input {
+    padding-top: 0.5%;
+}
+
+#spaces {
+    margin-top: 2%;
+    border-top: 1px solid rgb(197, 197, 197);
+}
+
+#adminSpaces {
+    margin-top: 2%;
+}
+
+#adminSpaces div {
+    background-color: #e8cdf9;
+}
+
+#otherSpaces {
+    margin-top: 5%;
+}
+
+#otherSpaces div {
+    background-color: #f8dfd9;
+}
+
+.spaceDiv {
+    width: 80%;
+    padding: 2% 1%;
+    margin-top: 1%;
+    border: 1px solid rgb(197, 197, 197);
+    border-radius: 5px;
+
+    font-size: 1.2em;
+    /* Smaller title size */
+    font-weight: bold;
+    /* Keeps it prominent */
+    margin-bottom: 0.3em;
+    /* Less spacing below the title */
+    color: #575757;
+    /* A color that's easy to read */
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+.spacesTitle {
+    font-size: 1rem;
+}
+
+.spaceDiv:hover {
+    filter: saturate(1.5);
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}

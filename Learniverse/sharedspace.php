@@ -1,4 +1,8 @@
-<?php require 'session.php'; ?>
+<?php
+
+use MongoDB\Driver\Manager;
+
+require 'session.php'; ?>
 <!DOCTYPE html>
 
 <head>
@@ -6,6 +10,7 @@
     <title>Shared Space</title>
     <link rel="stylesheet" href="emptyWorkspace.css">
     <link rel="stylesheet" href="header-footer.css">
+    <link rel="stylesheet" href="sharedspacecss.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
@@ -68,59 +73,6 @@
                 }
             });
 
-
-            // PROFILE DROPDOWN MENU
-            function Rename() {
-                $('#Pname').hide();
-                $('#Puser-icon').hide();
-                $("#rename-form").show();
-                $("#PRename").focus();
-                if ($("#rename-form").submitted) {
-                    cancelRename();
-                }
-            };
-
-            function cancelRename() {
-                $("#rename-form").get(0).reset();
-                $("#rename-form").hide();
-                $('#Pname').show();
-                $('#Puser-icon').show();
-            };
-
-            function validateForm(event) {
-                event.preventDefault(); // Prevent the form from submitting by default
-
-                var input = document.getElementById('PRename');
-                var value = input.value.trim(); // Trim whitespace from the input value
-
-                var errorSpan = document.getElementById('rename-error');
-
-                if (value === '') {
-                    errorSpan.textContent = 'Please enter a valid name.'; // Display the error message
-                    return false; // Cancel form submission
-                }
-
-                var nameParts = value.split(' ').filter(part => part !== ''); // Split on whitespace and remove empty parts
-
-                if (nameParts.length < 2) {
-                    errorSpan.textContent = 'Please enter both first name and last name.'; // Display the error message
-                    return false; // Cancel form submission
-                }
-
-                // Check if both names start with a letter
-                var isValid = nameParts.every(part => /^[A-Za-z]/.test(part));
-
-                if (!isValid) {
-                    errorSpan.textContent = 'Names should start with a letter.'; // Display the error message
-                    return false; // Cancel form submission
-                } else {
-                    errorSpan.textContent = ''; // Clear the error message if it's not needed
-                }
-
-                // If the validation passes, you can proceed with form submission
-                document.getElementById('rename-form').submit();
-            }
-
             window.addEventListener('scroll', function() {
                 var toolsDiv = document.querySelector('#tools_div');
                 var toolList = document.querySelector('.tool_list');
@@ -150,6 +102,59 @@
             });
         });
 
+
+        // PROFILE DROPDOWN MENU
+        function Rename() {
+            $('#Pname').hide();
+            $('#Puser-icon').hide();
+            $("#rename-form").show();
+            $("#PRename").focus();
+            if ($("#rename-form").submitted) {
+                cancelRename();
+            }
+        };
+
+        function cancelRename() {
+            $("#rename-form").get(0).reset();
+            $("#rename-form").hide();
+            $('#Pname').show();
+            $('#Puser-icon').show();
+        };
+
+        function validateForm(event) {
+            event.preventDefault(); // Prevent the form from submitting by default
+
+            var input = document.getElementById('PRename');
+            var value = input.value.trim(); // Trim whitespace from the input value
+
+            var errorSpan = document.getElementById('rename-error');
+
+            if (value === '') {
+                errorSpan.textContent = 'Please enter a valid name.'; // Display the error message
+                return false; // Cancel form submission
+            }
+
+            var nameParts = value.split(' ').filter(part => part !== ''); // Split on whitespace and remove empty parts
+
+            if (nameParts.length < 2) {
+                errorSpan.textContent = 'Please enter both first name and last name.'; // Display the error message
+                return false; // Cancel form submission
+            }
+
+            // Check if both names start with a letter
+            var isValid = nameParts.every(part => /^[A-Za-z]/.test(part));
+
+            if (!isValid) {
+                errorSpan.textContent = 'Names should start with a letter.'; // Display the error message
+                return false; // Cancel form submission
+            } else {
+                errorSpan.textContent = ''; // Clear the error message if it's not needed
+            }
+
+            // If the validation passes, you can proceed with form submission
+            document.getElementById('rename-form').submit();
+        }
+
         function w3_open() {
             document.getElementsByClassName("workarea")[0].style.marginLeft = "auto";
             document.getElementById("tools_div").style.transition = '1s';
@@ -172,8 +177,8 @@
         }
 
         function showForm() {
-            var form = $('#newSpaceForm');
-            form.show();
+            var form = $('.workarea_item form');
+            form.toggle();
         }
     </script>
 </head>
@@ -290,14 +295,42 @@
         <div class="workarea">
 
             <div class="workarea_item">
-                <h1>Shared Space</h1>
-                <button onclick="showForm()">New Space</button>
+                <div class="top-shelf">
+                    <h1>Shared Space</h1>
+                    <button id="newSpaceBTN" onclick="showForm()">New Space</button>
+                </div>
                 <form id="newSpaceForm" method="post" action="addSharedSpace.php" style="display: none;">
                     <label>Space Name</label> <input id="spaceName" name="spaceName" type="text">
-                    <h2>OR</h2>
-                    <label>Join a Space</label> <input id="spaceID" name="spaceID" type="text">
-                    <button type="submit">Next</button>
+                    <button type="submit" class="formSubmitBTN">Create</button>
+                    <h3>OR</h3>
                 </form>
+
+                <form id="joinSpaceForm" method="post" action="addSharedSpace.php" style="display: none;">
+                    <label>Join a Space</label> <input id="spaceID" name="spaceID" type="text">
+                    <button type="submit" class="formSubmitBTN">Join</button>
+                </form>
+                <?php
+                $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+
+                $filter = ['admin' => $_SESSION['email']];
+                // MongoDB query
+                $query = new MongoDB\Driver\Query($filter);
+                // MongoDB collection name
+                $collectionName = "Learniverse.sharedSpace";
+                // Execute the query
+                $result = $manager->executeQuery($collectionName, $query);
+
+                ?>
+                <div id="spaces">
+                    <div id="adminSpaces">
+                        <span class="spacesTitle">Your Spaces:</span>
+                       
+                    </div>
+                    <div id="otherSpaces">
+                        <span class="spacesTitle">Spaces You are a Member Of:</span>
+                       
+                    </div>
+                </div>
             </div>
         </div>
     </main>
