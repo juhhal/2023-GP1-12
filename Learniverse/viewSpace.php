@@ -1,6 +1,5 @@
 <?php
-session_start();
-
+require "session.php";
 //connect to db
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
@@ -310,7 +309,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                         GPA Calculator</a>
                 </li>
                 <li class="tool_item"><a href="sharedspace.php">
-                    Shared spaces</a>
+                        Shared spaces</a>
                 </li>
                 <li class="tool_item">
                     Meeting Room
@@ -324,6 +323,20 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
         <div class="workarea">
 
             <div class="workarea_item">
+                <?php
+                // MongoDB query
+                $filter = ['spaceID' => new MongoDB\BSON\Regex($_GET['space'])];
+                $query = new MongoDB\Driver\Query($filter);
+
+                // MongoDB collection name
+                $collectionName = "Learniverse.sharedSpace";
+
+                // Execute the query
+                $result = $manager->executeQuery($collectionName, $query);
+                $space = $result->toArray()[0];
+                ?>
+
+                <h1><?php echo $space->name ?></h1>
                 <!-- Tab links -->
                 <div class="tabs">
                     <button class="tablinks" onclick="openTab(event, 'Feed')">Feed</button>
@@ -341,29 +354,19 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 </div>
 
                 <div id="Members" class="tabcontent">
+                    <h3>Admin:</h3>
+                    <?php echo "<li>$space->admin</li>" ?>
                     <h3>Members:</h3>
                     <?php
-                    // MongoDB query
-                    $filter = ['spaceID' => new MongoDB\BSON\Regex($_GET['space'])];
-                    $query = new MongoDB\Driver\Query($filter);
-
-                    // MongoDB collection name
-                    $collectionName = "Learniverse.sharedSpace";
-
-                    // Execute the query
-                    $result = $manager->executeQuery($collectionName, $query);
 
                     echo "<ul>";
 
-                    // Access the 'members' array
-                    foreach ($result as $document) {
-                        $members = $document->members;
-                        // Access individual members
-                        foreach ($members as $member) {
-                            // print the member
-                            echo "<li>" . $member . "</li>";
-                        }
+                    // Access individual members
+                    foreach ($space->members as $member) {
+                        // print the member
+                        echo "<li>" . $member . "</li>";
                     }
+
                     echo "</ul>";
                     ?>
                 </div>
