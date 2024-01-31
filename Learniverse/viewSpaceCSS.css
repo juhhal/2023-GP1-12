@@ -101,6 +101,10 @@ html {
     padding: 1%;
     display: flex;
   }
+
+  .workarea_item {
+    margin-left: 7%;
+  }
   
   /* Style the tab */
   .tabs {

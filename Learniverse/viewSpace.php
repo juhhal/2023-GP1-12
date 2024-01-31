@@ -309,8 +309,8 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 <li class="tool_item"><a href="gpa.php">
                         GPA Calculator</a>
                 </li>
-                <li class="tool_item">
-                    Shared spaces
+                <li class="tool_item"><a href="sharedspace.php">
+                    Shared spaces</a>
                 </li>
                 <li class="tool_item">
                     Meeting Room
