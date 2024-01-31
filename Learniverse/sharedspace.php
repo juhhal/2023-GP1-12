@@ -282,9 +282,8 @@ require 'session.php'; ?>
                 <li class="tool_item"><a href="gpa.php">
                         GPA Calculator</a>
                 </li>
-                <li class="tool_item">
-                    Shared spaces
-                </li>
+                <li class="tool_item"><a href="sharedspace.php">
+                    Shared spaces</a></li>
                 <li class="tool_item">
                     Meeting Room
                 </li>
