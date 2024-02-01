@@ -24,7 +24,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
@@ -228,10 +228,10 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                             <li>
                                 <a href="index.php">Home</a>
                             </li>
-                            <li class="active">
+                            <li>
                                 <a href="community.php">Community</a>
                             </li>
-                            <li>
+                            <li class="active">
                                 <a href="Workspace.php">My Workspace</a>
                             </li>
                         </ul> <!-- end menu -->
@@ -266,7 +266,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                         <li class='center'>Username: <?php echo $fetch['username']; ?></li>
                         <li class='center'><?php echo $fetch['email']; ?></li>
                         <hr>
-                        <li><a href="reset.php?q=viewPost.php?postID=<?php echo $_GET['postID']; ?>"><i class='far fa-edit'></i> Change password</a></li>
+                        <li><a href="reset.php?q=viewspace.php?space=<?php echo $_GET['space']; ?>"><i class='far fa-edit'></i> Change password</a></li>
                         <li><a href='#'><i class='far fa-question-circle'></i> Help </a></li>
                         <hr>
                         <li><a href='logout.php'><i class='fas fa-sign-out-alt'></i> Sign out</a></li>
@@ -341,7 +341,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 <div class="tabs">
                     <button class="tablinks" onclick="openTab(event, 'Feed')">Feed</button>
                     <button class="tablinks" onclick="openTab(event, 'Project')">Project</button>
-                    <button class="tablinks" onclick="openTab(event, 'Members')">Members</button>
+                    <button class="tablinks" onclick="openTab(event, 'Members')">Members <?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span>"; ?></button>
                 </div>
 
                 <!-- Tab content -->
@@ -354,21 +354,135 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 </div>
 
                 <div id="Members" class="tabcontent">
-                    <h3>Admin:</h3>
-                    <?php echo "<li>$space->admin</li>" ?>
-                    <h3>Members:</h3>
+                    <button id="spaceInviteBTN"><i class="fa-solid fa-user-plus"></i> Invite Members <?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span>"; ?></button>
+                    <h3>Admin</h3>
+                    <?php echo "<li id='adminName'><i title='admin' class='fa-solid fa-user-tie'></i> $fetch->firstname $fetch->lastname </li>" ?>
+                    <h3>Members (<?php echo count($space->members) ?>)</h3>
                     <?php
 
-                    echo "<ul>";
+                    echo "<ul class='memberList'>";
 
                     // Access individual members
                     foreach ($space->members as $member) {
+                        $query = new MongoDB\Driver\Query(['email' => $member]);
+                        $memberCursor = $manager->executeQuery('Learniverse.users', $query);
+                        $memberName = $memberCursor->toArray()[0];
                         // print the member
-                        echo "<li>" . $member . "</li>";
+                        echo "<li><i title='members' class='fa-solid fa-user'></i> $memberName->firstname $memberName->lastname  </li>";
                     }
 
                     echo "</ul>";
                     ?>
+
+
+                    <!-- invite member div after clicking button -->
+
+                    <div id="overlay">
+                        <div id="modal">
+                            <h2>Invite New Members</h2>
+                            <p class="guideline">Copy and send the following Code to invite your friends to this space!</p>
+                            <input type="text" id="invitationCode" value="<?php echo $space->spaceID ?>" readonly>
+                            <button id="copyButton"><i class="fa-regular fa-copy"></i> Copy</button>
+                            <h3><?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) {
+                                    echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span> Join Requests"; ?></h3>
+                            <ul id="joinRequestsList">
+                                <?php foreach ($space->pendingMembers as $member) { ?>
+                                    <li>
+                                        <?php echo "<span class='member-email'>$member</span>"; ?>
+                                        <span>
+                                            <button class="acceptButton">Accept <i class="fa-solid fa-check"></i></button>
+                                            <button class="rejectButton">Reject <i class="fa-solid fa-xmark"></i></button>
+                                        </span>
+                                    </li>
+                            <?php
+                                    }
+                                }
+                            ?>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <script>
+                        var spaceInviteBTN = document.getElementById('spaceInviteBTN');
+                        var overlay = document.getElementById('overlay');
+                        var invitationCode = document.getElementById('invitationCode');
+                        var copyButton = document.getElementById('copyButton');
+                        var acceptButtons = document.getElementsByClassName('acceptButton');
+                        var rejectButtons = document.getElementsByClassName('rejectButton');
+                        var joinRequestsList = document.getElementById('joinRequestsList');
+
+                        spaceInviteBTN.addEventListener('click', function() {
+                            overlay.style.display = 'flex';
+                            copyButton.disabled = false;
+                            copyButton.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
+
+                            Array.from(acceptButtons).forEach(function(button) {
+                                var listItem = button.parentNode.parentNode;
+                                var member = listItem.querySelector('.member-email').textContent.trim();
+                                button.addEventListener('click', function() {
+
+                                    $.ajax({
+                                        url: "pendingMemberProcess.php",
+                                        method: "POST",
+                                        data: {
+                                            operation: "accept",
+                                            member: member,
+                                            spaceid: "<?php echo $space->spaceID ?>",
+                                            spacename: "<?php echo $space->name ?>"
+                                        },
+                                        success: function(response) {
+                                            // On successful response, remove the list item from the DOM
+                                            joinRequestsList.removeChild(listItem);
+                                            console.log(response); // Optional: Display the response in the console
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error(error); // Optional: Log any errors to the console
+                                        }
+                                    });
+                                });
+                            });
+
+                            Array.from(rejectButtons).forEach(function(button) {
+                                var listItem = button.parentNode.parentNode;
+                                var member = listItem.querySelector('.member-email').textContent.trim();
+                                button.addEventListener('click', function() {
+
+                                    $.ajax({
+                                        url: "pendingMemberProcess.php",
+                                        method: "POST",
+                                        data: {
+                                            operation: "reject",
+                                            member: member,
+                                            spaceid: "<?php echo $space->spaceID ?>",
+                                            spacename: "<?php echo $space->name ?>"
+                                        },
+                                        success: function(response) {
+                                            // On successful response, remove the list item from the DOM
+                                            joinRequestsList.removeChild(listItem);
+                                            console.log(response); // Optional: Display the response in the console
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error(error); // Optional: Log any errors to the console
+                                        }
+                                    });
+                                });
+                            });
+                        });
+
+                        overlay.addEventListener('click', function(event) {
+                            if (event.target === overlay) {
+                                overlay.style.display = 'none';
+                            }
+                        });
+
+                        copyButton.addEventListener('click', function() {
+                            invitationCode.select();
+                            document.execCommand('copy');
+
+                            copyButton.textContent = 'Copied!';
+                            copyButton.disabled = true;
+                        });
+                    </script>
                 </div>
 
     </main>
