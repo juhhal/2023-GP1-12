@@ -2,6 +2,19 @@
 require "session.php";
 //connect to db
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+// MongoDB query
+$filter = ['spaceID' => new MongoDB\BSON\Regex($_GET['space'])];
+$query = new MongoDB\Driver\Query($filter);
+
+// MongoDB collection name
+$collectionName = "Learniverse.sharedSpace";
+
+// Execute the query
+$result = $manager->executeQuery($collectionName, $query);
+$space = $result->toArray()[0];
+if ($_SESSION['email'] != $space->admin && !in_array($_SESSION['email'], $space->members)) {
+    header("Location:sharedSpace.php");
+}
 
 ?>
 
@@ -323,19 +336,6 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
         <div class="workarea">
 
             <div class="workarea_item">
-                <?php
-                // MongoDB query
-                $filter = ['spaceID' => new MongoDB\BSON\Regex($_GET['space'])];
-                $query = new MongoDB\Driver\Query($filter);
-
-                // MongoDB collection name
-                $collectionName = "Learniverse.sharedSpace";
-
-                // Execute the query
-                $result = $manager->executeQuery($collectionName, $query);
-                $space = $result->toArray()[0];
-                ?>
-
                 <h1><?php echo $space->name ?></h1>
                 <!-- Tab links -->
                 <div class="tabs">
