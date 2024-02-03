@@ -255,11 +255,71 @@ html {
 
 .memberList li {
   margin-top: 2%;
+  width: fit-content;
 }
 
 .memberList li:hover {
   color: #ec947e;
   cursor: pointer;
+}
+
+.memberName {
+  display: flex;
+}
+
+.memberInfo {
+  padding: 1% 2%;
+  margin-left: 7%;
+  position: fixed;
+  border-radius: 10px;
+  background-color: #fff;
+  display: none;
+}
+
+.memberInfo form {
+  display: inline;
+}
+
+.memberInfo form button {
+  background-color: #bf97d8;
+  padding: 0.4rem 0.7rem 0.4rem 0.5rem;
+  height: fit-content;
+  border-radius: 10px;
+  border: none;
+  /* Remove borders */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Soft shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s;
+  /* Smooth transition for hover effects */
+}
+
+.memberInfo form button:hover{
+  cursor: pointer;
+  background-color: #946aae;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+
+.kick {
+  display: block;
+  margin-top: 5%;
+  background-color:rgb(216, 84, 84);
+  color: #faf7ff;
+  padding: 0.5rem 1rem;
+  height: fit-content;
+  border-radius: 10px;
+  border: none;
+  /* Remove borders */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Soft shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s;
+  /* Smooth transition for hover effects */
+}
+
+.kick:hover{
+  cursor: pointer;
+  background-color: rgb(185, 64, 64);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13); 
 }
 
 #overlay {
