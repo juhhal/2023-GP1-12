@@ -46,6 +46,39 @@ $admin = $result->toArray()[0];
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
         $(document).ready(function() {
+
+            $('#addMessage').submit(function(e) {
+                // Prevent form submission
+                e.preventDefault();
+
+                // Get the form data
+                var message = $('#message').val();
+                var spaceID = $('#spaceID').val();
+
+                // Send AJAX request to the server
+                $.ajax({
+                    url: 'addMessage.php',
+                    type: 'POST',
+                    data: {
+                        message: message,
+                        spaceID: spaceID
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.message === "faild") {
+                            // display failure message
+                            <?php
+                            echo "showAlert(\"ERROR\", \"Something went wrong, try to write you message again.\");"
+                            ?>
+                        } else {
+                            // Display the chat message
+                            displayMessage(response.message);
+
+                        }
+                    }
+                });
+            });
+
             var dropdownButton = document.querySelector('.dropdown-button');
             var dropdownMenu = document.querySelector('.Pdropdown-menu');
             dropdownButton.addEventListener('click', function() {
@@ -226,6 +259,18 @@ $admin = $result->toArray()[0];
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
+
+        function showForm() {
+            var form = $('.workarea_item form');
+            form.toggle();
+        }
+
+        function displayMessage(messageData) {
+            var messageContainer = document.getElementById("showMessages");
+            var messageHTML = "<div class='chat'><span class='username'>" + messageData.writtenBy + "</span><br><span class='data'>" + messageData.message + "</span><span class='date'>" + messageData.date + "</span></div>";
+            messageContainer.innerHTML += messageHTML;
+            document.getElementById("message").value = "";
+        }
     </script>
 
 </head>
@@ -344,17 +389,42 @@ $admin = $result->toArray()[0];
                 <!-- Tab links -->
                 <div class="tabs">
                     <button class="tablinks" onclick="openTab(event, 'Feed')">Feed</button>
-                    <button class="tablinks" onclick="openTab(event, 'Project')">Project</button>
-                    <button class="tablinks" onclick="openTab(event, 'Members')">Members <?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span>"; ?></button>
+                    <button class="tablinks" onclick="openTab(event, 'Tasks')">Tasks</button>
+                    <button class="tablinks" onclick="openTab(event, 'Files')">Files</button>
+                    <button class="tablinks" onclick="openTab(event, 'Members')">Members<?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span>"; ?></button>
                 </div>
 
                 <!-- Tab content -->
                 <div id="Feed" class="tabcontent">
-                    <h3>Feed content</h3>
+                    <h2>Feed</h2>
+                    <div id="showMessages"><?php $feeds = $space->feed;
+                                            foreach ($feeds as $feed) {
+                                                echo "<div class='chat'><span class='username'>" . $feed->writtenBy . "</span><br><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
+                                            } ?></div>
+                    <form id="addMessage" method="post" action="addMessage.php">
+                        <input id="spaceID" name="spaceID" value="<?php echo $_GET['space']; ?>" hidden>
+                        <input required autofocus id="message" name="message" placeholder="Type a message">&nbsp; &nbsp;<button id="submitChat" type='submit'>Send</button>
+                    </form>
                 </div>
 
-                <div id="Project" class="tabcontent">
-                    <h3>Project content</h3>
+                <div id="Tasks" class="tabcontent">
+                    <h3>Tasks content</h3>
+                </div>
+
+                <div id="Files" class="tabcontent">
+                    <h3>Files</h3>
+                    <br>
+                    <button id="uploadfiles" onclick="showForm()">upload File</button>
+                    <form id="uploadNewFile" method="post" action="upload.php" style="display: none;">
+                        <br>
+                        <label>Upload a new file</label> <input id="newFile" name="newFile" type="file">
+                        <button type="submit" class="formSubmitBTN">Upload</button>
+                        <h3>OR</h3>
+                    </form>
+                    <form id="uploadExistingFile" method="post" action="upload.php" style="display: none;">
+                        <label>Upload an existing file</label> <input id="existingFile" name="existingFile" type="file">
+                        <button type="submit" class="formSubmitBTN">Upload</button>
+                    </form>
                 </div>
 
                 <div id="Members" class="tabcontent">

@@ -111,6 +111,9 @@ html {
   overflow: hidden;
   border: 1px solid #ccc;
   background-color: #bf97d8;
+  display: flex;
+  width: 75vw; /* Set width to 75% of the viewport width */
+  margin: 0 auto; /* Center the container horizontally */
 }
 
 /* Style the buttons inside the tab */
@@ -138,9 +141,18 @@ html {
 /* Style the tab content */
 .tabcontent {
   display: none;
-  padding: 6px 12px;
+  flex: 3; /* Distribute the available space equally among the content */
+  padding: 20px;
   border: 1px solid #ccc;
   border-top: none;
+}
+
+.tablinks {
+  flex: 1; /* Distribute the available space equally among the buttons */
+  text-align: center;
+  background-color: lightgray;
+  padding: 10px;
+  cursor: pointer;
 }
 
 #Feed {
@@ -148,6 +160,44 @@ html {
   padding: 6px 12px;
   border: 1px solid #ccc;
   border-top: none;
+}
+
+.chat {
+  border-bottom: 1px solid rgb(210, 208, 208);
+}
+
+.chat:last-of-type {
+  border-bottom: none;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.date {
+  float: right;
+  color: grey;
+  font-size: 0.9rem;
+  margin-left: auto;
+}
+
+#addMessage{
+  margin-top: 30px;
+}
+
+#submitChat {
+  float: right;
+  background-color: #fdae9b;
+  border-radius: 10px;
+  border: none;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  height: 25px;
+  width: 70px;
+}
+
+#message {
+  width: 50%;
+  height: 25px;
 }
 
 /* MEMBER TAB */
