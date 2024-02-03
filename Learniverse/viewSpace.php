@@ -15,6 +15,10 @@ $space = $result->toArray()[0];
 if ($_SESSION['email'] != $space->admin && !in_array($_SESSION['email'], $space->members)) {
     header("Location:sharedSpace.php");
 }
+//retrieve space admin info
+$query = new MongoDB\Driver\Query(['email' => $space->admin]);
+$result = $manager->executeQuery("Learniverse.users", $query);
+$admin = $result->toArray()[0];
 
 ?>
 
@@ -356,7 +360,7 @@ if ($_SESSION['email'] != $space->admin && !in_array($_SESSION['email'], $space-
                 <div id="Members" class="tabcontent">
                     <button id="spaceInviteBTN"><i class="fa-solid fa-user-plus"></i> Invite Members <?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span>"; ?></button>
                     <h3>Admin</h3>
-                    <?php echo "<li id='adminName'><i title='admin' class='fa-solid fa-user-tie'></i> $fetch->firstname $fetch->lastname </li>" ?>
+                    <?php echo "<li id='adminName'><i title='admin' class='fa-solid fa-user-tie'></i> $admin->firstname $admin->lastname </li>" ?>
                     <h3>Members (<?php echo count($space->members) ?>)</h3>
                     <?php
 
@@ -367,13 +371,73 @@ if ($_SESSION['email'] != $space->admin && !in_array($_SESSION['email'], $space-
                         $query = new MongoDB\Driver\Query(['email' => $member]);
                         $memberCursor = $manager->executeQuery('Learniverse.users', $query);
                         $memberName = $memberCursor->toArray()[0];
+                        $kickButton = null;
+                        if ($space->admin === $_SESSION['email'])
+                            $kickButton =  "<button class='kick'><i class='fa-solid fa-circle-exclamation'></i> kick</button>";
                         // print the member
-                        echo "<li><i title='members' class='fa-solid fa-user'></i> $memberName->firstname $memberName->lastname  </li>";
+                        echo "<div class='memberName'><li><i title='members' class='fa-solid fa-user'></i> $memberName->firstname $memberName->lastname  </li>";
+                        echo "<div class='memberInfo'>Email: <span class='member-email'>$member</span> <form action='mailto:$member'><button title='Send an Email' type='submit'><i style='color:#faf7ff' class='fa-solid fa-paper-plane'></i></button></form> 
+                               $kickButton</div></div>";
                     }
 
                     echo "</ul>";
                     ?>
+                    <script>
+                        // Get all the memberName elements
+                        const memberNames = document.querySelectorAll('.memberName');
 
+                        // Iterate over each memberName element
+                        memberNames.forEach(function(memberName) {
+                            // Find the corresponding memberInfo div
+                            const memberInfo = memberName.querySelector('.memberInfo');
+                            const memberEmail = memberInfo.querySelector('.member-email').textContent;
+
+                            memberInfo.addEventListener('mouseover', function() {
+                                memberInfo.style.display = 'block';
+                            });
+
+                            memberInfo.addEventListener('mouseout', function() {
+                                memberInfo.style.display = 'none';
+                            });
+
+                            // Find the <li> element inside memberName
+                            const listItem = memberName.querySelector('li');
+
+                            // Add event listener for hover
+                            listItem.addEventListener('mouseover', function() {
+                                memberInfo.style.display = 'block';
+                            });
+
+                            listItem.addEventListener('mouseout', function() {
+                                memberInfo.style.display = 'none';
+                            });
+
+                            // Add event listener for click
+                            listItem.addEventListener('click', function() {
+                                memberInfo.style.display = 'block';
+                            });
+
+                            <?php
+                            if ($space->admin === $_SESSION['email']) {
+                                echo "
+                                const kickBTN = memberInfo.querySelector('.kick');
+                                kickBTN.addEventListener('click', function() {
+                                    alert(memberEmail);
+                                    $.ajax({
+                                        url: 'pendingMemberProcess.php',
+                                        method: 'post',
+                                        data: {
+                                            operation: 'kick',
+                                            member: memberEmail,
+                                            spaceid: '$space->spaceID',
+                                            spacename: '$space->name'
+                                        }
+                                    });
+                                });";
+                            } ?>
+
+                        });
+                    </script>
 
                     <!-- invite member div after clicking button -->
 
@@ -495,7 +559,5 @@ if ($_SESSION['email'] != $space->admin && !in_array($_SESSION['email'], $space-
         &gt;
     </div>
 </body>
-
-</html>
 
 </html>
