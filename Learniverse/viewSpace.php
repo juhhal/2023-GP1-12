@@ -3,6 +3,11 @@ require "session.php";
 //connect to db
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 // MongoDB query
+$filter = ['email' => $_SESSION['email']];
+$query = new MongoDB\Driver\Query($filter);
+$result = $manager->executeQuery("Learniverse.users", $query);
+$user = $result->toArray()[0];
+
 $filter = ['spaceID' => new MongoDB\BSON\Regex($_GET['space'])];
 $query = new MongoDB\Driver\Query($filter);
 
@@ -42,6 +47,11 @@ $admin = $result->toArray()[0];
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- calendar -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+    <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+
 
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
@@ -267,7 +277,7 @@ $admin = $result->toArray()[0];
 
         function displayMessage(messageData) {
             var messageContainer = document.getElementById("showMessages");
-            var messageHTML = "<div class='chat'><span class='username'>" + messageData.writtenBy + "</span><br><span class='data'>" + messageData.message + "</span><span class='date'>" + messageData.date + "</span></div>";
+            var messageHTML = "<div class='chat userchat'><span class='username'>" + messageData.writtenBy + "</span><br><span class='data'>" + messageData.message + "</span><span class='date'>" + messageData.date + "</span></div>";
             messageContainer.innerHTML += messageHTML;
             document.getElementById("message").value = "";
         }
@@ -399,7 +409,10 @@ $admin = $result->toArray()[0];
                     <h2>Feed</h2>
                     <div id="showMessages"><?php $feeds = $space->feed;
                                             foreach ($feeds as $feed) {
-                                                echo "<div class='chat'><span class='username'>" . $feed->writtenBy . "</span><br><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
+                                                if ($feed->writtenBy == $user->username)
+                                                    echo "<div class='chat userchat'><span class='username'>" . $feed->writtenBy . "</span><br><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
+                                                else
+                                                    echo "<div class='chat'><span class='username'>" . $feed->writtenBy . "</span><br><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
                                             } ?></div>
                     <form id="addMessage" method="post" action="addMessage.php">
                         <input id="spaceID" name="spaceID" value="<?php echo $_GET['space']; ?>" hidden>

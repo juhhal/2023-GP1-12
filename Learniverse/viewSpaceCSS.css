@@ -112,8 +112,10 @@ html {
   border: 1px solid #ccc;
   background-color: #bf97d8;
   display: flex;
-  width: 75vw; /* Set width to 75% of the viewport width */
-  margin: 0 auto; /* Center the container horizontally */
+  width: 45vw;
+  /* Set width to 75% of the viewport width */
+  margin: 0 auto;
+  /* Center the container horizontally */
 }
 
 /* Style the buttons inside the tab */
@@ -141,14 +143,16 @@ html {
 /* Style the tab content */
 .tabcontent {
   display: none;
-  flex: 3; /* Distribute the available space equally among the content */
+  flex: 3;
+  /* Distribute the available space equally among the content */
   padding: 20px;
   border: 1px solid #ccc;
   border-top: none;
 }
 
 .tablinks {
-  flex: 1; /* Distribute the available space equally among the buttons */
+  flex: 1;
+  /* Distribute the available space equally among the buttons */
   text-align: center;
   background-color: lightgray;
   padding: 10px;
@@ -164,6 +168,16 @@ html {
 
 .chat {
   border-bottom: 1px solid rgb(210, 208, 208);
+  background-color: #eacefb;
+  border-radius: 10px;
+  padding: 10px;
+  max-width: 300px;
+  margin-bottom: 10px;
+}
+
+.userchat{
+  background-color: #f3beb1;
+  margin-left: auto;
 }
 
 .chat:last-of-type {
@@ -181,7 +195,7 @@ html {
   margin-left: auto;
 }
 
-#addMessage{
+#addMessage {
   margin-top: 30px;
 }
 
@@ -293,7 +307,7 @@ html {
   /* Smooth transition for hover effects */
 }
 
-.memberInfo form button:hover{
+.memberInfo form button:hover {
   cursor: pointer;
   background-color: #946aae;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
@@ -303,7 +317,7 @@ html {
 .kick {
   display: block;
   margin-top: 5%;
-  background-color:rgb(216, 84, 84);
+  background-color: rgb(216, 84, 84);
   color: #faf7ff;
   padding: 0.5rem 1rem;
   height: fit-content;
@@ -316,10 +330,10 @@ html {
   /* Smooth transition for hover effects */
 }
 
-.kick:hover{
+.kick:hover {
   cursor: pointer;
   background-color: rgb(185, 64, 64);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13); 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
 }
 
 #overlay {
