@@ -52,7 +52,6 @@ $admin = $result->toArray()[0];
     <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
     <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
 
-
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
         $(document).ready(function() {
@@ -281,6 +280,24 @@ $admin = $result->toArray()[0];
             messageContainer.innerHTML += messageHTML;
             document.getElementById("message").value = "";
         }
+
+        // Function to reload the content
+        function reloadMessages() {
+            $.ajax({
+                url: 'reloadChat.php', // Replace with the URL of your reload script
+                type: 'GET',
+                data: {
+                    spaceID: '<?php echo $_GET['space']; ?>'
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#showMessages').html(response);
+                }
+            });
+        }
+
+        // Reload the content every 2 seconds
+        setInterval(reloadMessages, 2000);
     </script>
 
 </head>
@@ -631,6 +648,77 @@ $admin = $result->toArray()[0];
                         });
                     </script>
                 </div>
+            </div>
+            <div class="overview">
+                <h2>overview</h2>
+                <?php
+                $labels = ["Completed Tasks", "Uncompleted Tasks"];
+                $data = [3, 7];
+
+                ?>
+                <canvas id="myChart" width="300" height="300"></canvas>
+
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+                <script>
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var chartData = {
+                        labels: <?php echo json_encode($labels); ?>,
+                        datasets: [{
+                            label: 'Overview',
+                            data: <?php echo json_encode($data); ?>,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                            ],
+                            borderWidth: 1
+                        }]
+                    };
+
+                    var myChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: chartData,
+                        options: {
+                            plugins: {
+                                datalabels: {
+                                    color: '#fff',
+                                    formatter: function(value, context) {
+                                        return context.chart.data.labels[context.dataIndex];
+                                    }
+                                }
+                            },
+                            tooltips: {
+                                callbacks: {
+                                    label: function(tooltipItem, data) {
+                                        var dataset = data.datasets[tooltipItem.datasetIndex];
+                                        var total = dataset.data.reduce(function(previousValue, currentValue) {
+                                            return previousValue + currentValue;
+                                        });
+                                        var currentValue = dataset.data[tooltipItem.index];
+                                        var percentage = Math.floor(((currentValue / total) * 100) + 0.5);
+                                        return currentValue + ' (' + percentage + '%)';
+                                    }
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </div>
 
     </main>
     <footer id="footer" style="margin-top: 7%;">

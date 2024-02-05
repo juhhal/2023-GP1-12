@@ -112,10 +112,8 @@ html {
   border: 1px solid #ccc;
   background-color: #bf97d8;
   display: flex;
-  width: 45vw;
-  /* Set width to 75% of the viewport width */
-  margin: 0 auto;
-  /* Center the container horizontally */
+  width: 45vw; /* Set width to 45% of the viewport width */
+  margin: 0 auto; /* Center the container horizontally */
 }
 
 /* Style the buttons inside the tab */
@@ -159,6 +157,7 @@ html {
   cursor: pointer;
 }
 
+/* FEED TAB */
 #Feed {
   display: block;
   padding: 6px 12px;
@@ -175,7 +174,7 @@ html {
   margin-bottom: 10px;
 }
 
-.userchat{
+.userchat {
   background-color: #f3beb1;
   margin-left: auto;
 }
@@ -213,11 +212,11 @@ html {
   width: 50%;
   height: 25px;
 }
+/* END FEED TAB */
 
 /* MEMBER TAB */
 #Members h3 {
   color: #4a4a4a;
-
 }
 
 #spaceInviteBTN {
@@ -312,7 +311,6 @@ html {
   background-color: #946aae;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
 }
-
 
 .kick {
   display: block;
@@ -436,7 +434,13 @@ html {
 
 .rejectButton:hover {
   background-color: rgb(185, 64, 64);
-
 }
 
 /* END MEMBER TAB */
+
+/* OVERVIEW SECTION*/
+#overview {
+  float:left;
+  height: 300px;
+  max-width: 500px;
+}
