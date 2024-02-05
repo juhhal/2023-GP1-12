@@ -12,13 +12,12 @@ html {
     }
 }
 
-.header_nav{
+.header_nav {
     margin-right: auto;
 }
 
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .4);
-    background-color: #bf97d8
+    background-color: #F5F5F5
 }
 
 ::-webkit-scrollbar {
@@ -27,7 +26,7 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #fdae9b
+    background-color: #bf97d8
 }
 
 
@@ -115,7 +114,7 @@ body {
     margin: auto;
 }
 
-.header_nav{
+.header_nav {
     margin-right: auto;
 }
 
@@ -142,14 +141,13 @@ body {
     margin-left: auto;
     margin-right: 5%;
     width: 17%;
-    letter-spacing: 2px;
 }
 
 #login-register a {
     display: inline-block;
     text-decoration: none;
     color: #Faf7ff;
-    padding: 4px;
+    padding: 4px 10px;
     border: 1px solid;
     border-radius: 10px;
 }
