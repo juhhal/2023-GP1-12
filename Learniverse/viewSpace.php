@@ -52,6 +52,190 @@ $admin = $result->toArray()[0];
     <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
     <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
 
+    <!-- Sweetalert2 -->
+    <script src="js/sweetalert2.all.min.js"></script>
+
+    <!-- Include FullCalendar JS & CSS library -->
+    <link href="js/fullcalendar/lib/main.css" rel="stylesheet" />
+    <script src="js/fullcalendar/lib/main.js"></script>
+    <script>
+        window.onload = function() {
+            window.scrollTo(0, 0);
+        };
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                views: {
+                    dayGridMonth: { // name of view
+                        titleFormat: {
+                            year: 'numeric',
+                            month: 'long',
+                        }
+                        // other view-specific options here
+                    }
+                },
+                initialView: 'dayGridMonth',
+                editable: true,
+                height: 650,
+                events: 'fetchEvents.php',
+
+                selectable: true,
+                select: async function(start, end, allDay) {
+                    const {
+                        value: formValues
+                    } = await Swal.fire({
+                        title: 'Add Event',
+                        confirmButtonText: 'Submit',
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        html: '<input id="swalEvtTitle" class="swal2-input" placeholder="Enter title">' +
+                            '<textarea id="swalEvtDesc" class="swal2-input" placeholder="Enter description"></textarea>' +
+                            '<div class="rem">Email Reminder &nbsp;<label class="switch"><input id="swalEvtReminder" type="checkbox" value="reminder"><span class="slider round"></span></label></div>',
+                        focusConfirm: false,
+                        preConfirm: () => {
+                            return [
+                                document.getElementById('swalEvtTitle').value,
+                                document.getElementById('swalEvtDesc').value,
+                                document.getElementById('swalEvtReminder').checked
+
+                            ]
+                        }
+                    });
+
+                    if (formValues) {
+                        // Add event
+                        fetch("eventHandler.php", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    request_type: 'addEvent',
+                                    start: start.startStr,
+                                    end: start.endStr,
+                                    event_data: formValues
+                                }),
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status == 1) {
+                                    Swal.fire('Event added successfully!', '', 'success');
+                                } else {
+                                    Swal.fire(data.error, '', 'error');
+                                }
+
+                                // Refetch events from all sources and rerender
+                                calendar.refetchEvents();
+                            })
+                            .catch(console.error);
+                    }
+                },
+
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault();
+
+                    // change the border color
+                    info.el.style.borderColor = 'white';
+
+                    Swal.fire({
+                        title: info.event.title,
+                        //text: info.event.extendedProps.description,
+                        icon: 'info',
+                        html: '<p>' + info.event.extendedProps.description + '</p>',
+                        showCloseButton: true,
+                        showCancelButton: false,
+                        showDenyButton: true,
+                        cancelButtonText: 'Close',
+                        confirmButtonText: 'Delete',
+                        denyButtonText: 'Edit',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Delete event
+                            fetch("eventHandler.php", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify({
+                                        request_type: 'deleteEvent',
+                                        event_id: info.event.id
+                                    }),
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status == 1) {
+                                        Swal.fire('Event deleted successfully!', '', 'success');
+                                    } else {
+                                        Swal.fire(data.error, '', 'error');
+                                    }
+
+                                    // Refetch events from all sources and rerender
+                                    calendar.refetchEvents();
+                                })
+                                .catch(console.error);
+                        } else if (result.isDenied) {
+                            // Edit and update event
+                            Swal.fire({
+                                title: 'Edit Event',
+                                html: '<input id="swalEvtTitle_edit" class="swal2-input" placeholder="Enter title" value="' + info.event.title + '">' +
+                                    '<textarea id="swalEvtDesc_edit" class="swal2-input" placeholder="Enter description">' + info.event.extendedProps.description + '</textarea>' +
+                                    '<div class="rem">Email Reminder &nbsp;<label class="switch"><input id="swalEvtRem_edit" type="checkbox" ' + (info.event.extendedProps.reminder === true ? 'checked' : '') + '><span class="slider round"></span></label></div>',
+                                focusConfirm: false,
+                                confirmButtonText: 'Submit',
+                                preConfirm: () => {
+                                    return [
+                                        document.getElementById('swalEvtTitle_edit').value,
+                                        document.getElementById('swalEvtDesc_edit').value,
+                                        document.getElementById('swalEvtRem_edit').checked
+
+                                    ]
+                                }
+                            }).then((result) => {
+                                if (result.value) {
+                                    // Edit event
+                                    fetch("eventHandler.php", {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type": "application/json"
+                                            },
+                                            body: JSON.stringify({
+                                                request_type: 'editEvent',
+                                                start: info.event.startStr,
+                                                end: info.event.endStr,
+                                                event_id: info.event.id,
+                                                event_data: result.value
+                                            })
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.status == 1) {
+                                                Swal.fire('Event updated successfully!', '', 'success');
+                                            } else {
+                                                Swal.fire(data.error, '', 'error');
+                                            }
+
+                                            // Refetch events from all sources and rerender
+                                            calendar.refetchEvents();
+                                        })
+                                        .catch(console.error);
+                                }
+                            });
+                        } else {
+                            Swal.close();
+                        }
+                    });
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
         $(document).ready(function() {
@@ -282,22 +466,22 @@ $admin = $result->toArray()[0];
         }
 
         // Function to reload the content
-        function reloadMessages() {
-            $.ajax({
-                url: 'reloadChat.php', // Replace with the URL of your reload script
-                type: 'GET',
-                data: {
-                    spaceID: '<?php echo $_GET['space']; ?>'
-                },
-                dataType: 'html',
-                success: function(response) {
-                    $('#showMessages').html(response);
-                }
-            });
-        }
+        // function reloadMessages() {
+        //     $.ajax({
+        //         url: 'reloadChat.php', // Replace with the URL of your reload script
+        //         type: 'GET',
+        //         data: {
+        //             spaceID: '<?php echo $_GET['space']; ?>'
+        //         },
+        //         dataType: 'html',
+        //         success: function(response) {
+        //             $('#showMessages').html(response);
+        //         }
+        //     });
+        // }
 
-        // Reload the content every 2 seconds
-        setInterval(reloadMessages, 2000);
+        // // Reload the content every 2 seconds
+        // setInterval(reloadMessages, 2000);
     </script>
 
 </head>
@@ -418,7 +602,7 @@ $admin = $result->toArray()[0];
                     <button class="tablinks" onclick="openTab(event, 'Feed')">Feed</button>
                     <button class="tablinks" onclick="openTab(event, 'Tasks')">Tasks</button>
                     <button class="tablinks" onclick="openTab(event, 'Files')">Files</button>
-                    <button class="tablinks" onclick="openTab(event, 'Members')">Members<?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span>"; ?></button>
+                    <button class="tablinks" onclick="openTab(event, 'Members')">Members <?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span>"; ?></button>
                 </div>
 
                 <!-- Tab content -->
@@ -438,7 +622,116 @@ $admin = $result->toArray()[0];
                 </div>
 
                 <div id="Tasks" class="tabcontent">
-                    <h3>Tasks content</h3>
+                    <button id="addTaskBTN"><i class="fa-solid fa-plus"></i> Add Task</button>
+                    <h3>Tasks</h3>
+                    <select id="groupBY">
+                        <option disabled selected>
+                            Group By
+                        </option>
+                        <option>
+                            Assignee
+                        </option>
+                    </select>
+                    <div class="taskDiv">
+                        <span class="taskHead">
+                            <span class="taskName">Develop a Leave Space button for members in a space</span>
+                            <span class="more"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+                        </span>
+                        <!-- <span class="creator">Creator: Alice</span> -->
+                        <span class="taskInfo">
+                            <span class="dueDate"><i class="fa-solid fa-calendar-days"></i> 2024-02-10</span>
+                            <select class="assignee">
+                                <option selected>Shouq Alotaibi</option>
+                                <option>Anwar Bafadhl</option>
+                                </option>
+                            </select>
+                        </span>
+                    </div>
+                    <div class="taskDiv">
+                        <span class="taskHead">
+                            <span class="taskName">Develop a Leave Space button for members in a space</span>
+                            <span class="more"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+                        </span>
+                        <!-- <span class="creator">Creator: Alice</span> -->
+                        <span class="taskInfo">
+                            <span class="dueDate"><i class="fa-solid fa-calendar-days"></i> 2024-02-10</span>
+                            <select class="assignee">
+                                <option>Shouq Alotaibi</option>
+                                <option selected>Anwar Bafadhl</option>
+                                </option>
+                            </select>
+                        </span>
+                    </div>
+                    <div class="taskDiv">
+                        <span class="taskHead">
+                            <span class="taskName">Develop a Leave Space button for members in a space</span>
+                            <span class="more"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+                        </span>
+                        <!-- <span class="creator">Creator: Alice</span> -->
+                        <span class="taskInfo">
+                            <span class="dueDate"><i class="fa-solid fa-calendar-days"></i> 2024-02-10</span>
+                            <select class="assignee unassigned">
+                                <option selected>Unassigned</option>
+                                <option>Shouq Alotaibi</option>
+                                <option>Anwar Bafadhl</option>
+                                </option>
+                            </select>
+                        </span>
+                    </div>
+
+                    <div class="overlay" id="addTaskDiv">
+                        <div class="modal">
+                            <h2>Add a New Task</h2>
+                            <form id="add-task-form" action="">
+                                <div class="form-inputs">
+                                    <input id="task-name-input" type="text" name="task_name" placeholder="Task name" autocomplete="off" maxlength="500" autofocus />
+                                    <input id="task-description-input" type="text" name="description" placeholder="Description" autocomplete="off" />
+                                </div>
+                                <div class="extra-fields">
+                                    <div>
+                                        <input class="due-date-picker" type="date" />
+                                        <select class="assignee-selector">
+                                            <option value="none" selected>
+                                                Unassigned
+                                            </option>
+                                            <option value="me">
+                                                Shouq Alotaibi
+                                            </option>
+                                            <option value="Anwar">
+                                                Anwar Bafadhl
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="cancel-submit-container">
+                                    <button class="cancel-button" type="button">Cancel</button>
+                                    <button class="add-task-submit-button" type="button" disabled>
+                                        Add task
+                                    </button>
+                                </div>
+                            </form>
+                            <!-- <form id="addtask-form" method="post" action="addTask.php">
+                                <input required type="text" id="taskDesc" name="taskDesc" placeholder="Task Name">
+                                <input id="taskDue" name="taskDue" type="datetime-local" title="Set the deadline of this task"><br>
+                                <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="resetAddTask()">Cancel</button>
+                            </form> -->
+                        </div>
+                    </div>
+
+                    <script>
+                        var addTaskBTN = document.getElementById('addTaskBTN');
+                        var overlayTask = document.getElementById('addTaskDiv');
+
+                        addTaskBTN.addEventListener('click', function() {
+                            overlayTask.style.display = 'flex';
+                        });
+
+                        overlayTask.addEventListener('click', function(event) {
+                            if (event.target === overlayTask) {
+                                overlayTask.style.display = 'none';
+                            }
+                        });
+                    </script>
                 </div>
 
                 <div id="Files" class="tabcontent">
@@ -516,33 +809,39 @@ $admin = $result->toArray()[0];
                             listItem.addEventListener('click', function() {
                                 memberInfo.style.display = 'block';
                             });
-
-                            <?php
-                            if ($space->admin === $_SESSION['email']) {
-                                echo "
+                            if (<?php echo ($space->admin === $_SESSION['email']) ? 1 : 0; ?>) {
                                 const kickBTN = memberInfo.querySelector('.kick');
                                 kickBTN.addEventListener('click', function() {
-                                    alert(memberEmail);
-                                    $.ajax({
-                                        url: 'pendingMemberProcess.php',
-                                        method: 'post',
-                                        data: {
-                                            operation: 'kick',
-                                            member: memberEmail,
-                                            spaceid: '$space->spaceID',
-                                            spacename: '$space->name'
+                                    Swal.fire({
+                                        title: 'Heads Up!',
+                                        text: 'Are you sure you want to kick ' + memberEmail + '?',
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes',
+                                        cancelButtonText: 'No',
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            $.ajax({
+                                                url: 'pendingMemberProcess.php',
+                                                method: 'post',
+                                                data: {
+                                                    operation: 'kick',
+                                                    member: memberEmail,
+                                                    spaceid: '<?php echo $space->spaceID ?>',
+                                                    spacename: '<?php echo $space->name ?>'
+                                                }
+                                            });
                                         }
                                     });
-                                });";
-                            } ?>
-
+                                });
+                            }
                         });
                     </script>
 
                     <!-- invite member div after clicking button -->
 
-                    <div id="overlay">
-                        <div id="modal">
+                    <div class="overlay" id="inviteDiv">
+                        <div class="modal">
                             <h2>Invite New Members</h2>
                             <p class="guideline">Copy and send the following Code to invite your friends to this space!</p>
                             <input type="text" id="invitationCode" value="<?php echo $space->spaceID ?>" readonly>
@@ -568,7 +867,7 @@ $admin = $result->toArray()[0];
 
                     <script>
                         var spaceInviteBTN = document.getElementById('spaceInviteBTN');
-                        var overlay = document.getElementById('overlay');
+                        var overlay = document.getElementById('inviteDiv');
                         var invitationCode = document.getElementById('invitationCode');
                         var copyButton = document.getElementById('copyButton');
                         var acceptButtons = document.getElementsByClassName('acceptButton');
@@ -649,74 +948,85 @@ $admin = $result->toArray()[0];
                     </script>
                 </div>
             </div>
-            <div class="overview">
-                <h2>overview</h2>
-                <?php
-                $labels = ["Completed Tasks", "Uncompleted Tasks"];
-                $data = [3, 7];
+            <div class="overview workarea_item">
+                <div class="overview-container">
+                    <div class="container calendar">
+                        <div class="wrapper">
 
-                ?>
-                <canvas id="myChart" width="300" height="300"></canvas>
+                            <!-- Calendar container -->
+                            <div id="calendar"></div>
 
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-                <script>
-                    var ctx = document.getElementById('myChart').getContext('2d');
-                    var chartData = {
-                        labels: <?php echo json_encode($labels); ?>,
-                        datasets: [{
-                            label: 'Overview',
-                            data: <?php echo json_encode($data); ?>,
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                            ],
-                            borderWidth: 1
-                        }]
-                    };
+                        </div>
+                    </div>
+                    <?php
+                    $labels = ["Completed Tasks", "Uncompleted Tasks"];
+                    $data = [3, 7];
 
-                    var myChart = new Chart(ctx, {
-                        type: 'pie',
-                        data: chartData,
-                        options: {
-                            plugins: {
-                                datalabels: {
-                                    color: '#fff',
-                                    formatter: function(value, context) {
-                                        return context.chart.data.labels[context.dataIndex];
+                    ?>
+                    <div class="container chart">
+                        <canvas id="myChart" width="150px" height="150px"></canvas>
+                    </div>
+
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+                    <script>
+                        var ctx = document.getElementById('myChart').getContext('2d');
+                        var chartData = {
+                            labels: <?php echo json_encode($labels); ?>,
+                            datasets: [{
+                                label: 'Overview',
+                                data: <?php echo json_encode($data); ?>,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                ],
+                                borderWidth: 1
+                            }]
+                        };
+
+                        var myChart = new Chart(ctx, {
+                            type: 'pie',
+                            data: chartData,
+                            options: {
+                                plugins: {
+                                    datalabels: {
+                                        color: '#fff',
+                                        formatter: function(value, context) {
+                                            return context.chart.data.labels[context.dataIndex];
+                                        }
                                     }
-                                }
-                            },
-                            tooltips: {
-                                callbacks: {
-                                    label: function(tooltipItem, data) {
-                                        var dataset = data.datasets[tooltipItem.datasetIndex];
-                                        var total = dataset.data.reduce(function(previousValue, currentValue) {
-                                            return previousValue + currentValue;
-                                        });
-                                        var currentValue = dataset.data[tooltipItem.index];
-                                        var percentage = Math.floor(((currentValue / total) * 100) + 0.5);
-                                        return currentValue + ' (' + percentage + '%)';
+                                },
+                                tooltips: {
+                                    callbacks: {
+                                        label: function(tooltipItem, data) {
+                                            var dataset = data.datasets[tooltipItem.datasetIndex];
+                                            var total = dataset.data.reduce(function(previousValue, currentValue) {
+                                                return previousValue + currentValue;
+                                            });
+                                            var currentValue = dataset.data[tooltipItem.index];
+                                            var percentage = Math.floor(((currentValue / total) * 100) + 0.5);
+                                            return currentValue + ' (' + percentage + '%)';
+                                        }
                                     }
+                                },
+                                legend: {
+                                    display: true,
+                                    position: 'bottom'
                                 }
-                            },
-                            legend: {
-                                display: true,
-                                position: 'bottom'
                             }
-                        }
-                    });
-                </script>
+                        });
+                    </script>
+                </div>
             </div>
         </div>
 
