@@ -310,22 +310,42 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
           />
           <p class="">1 from 10</p>
         </div>
+        <?php
+                    $path = '/Users/ja/Downloads/Tuesday1-3_G4.pdf';
+                    $extract_command = escapeshellcmd("python3 /Users/ja/Downloads/2023-GP1-12-merges/python/extracter.py '".$path."'");
+                    exec($extract_command, $extractedPDFText, $resultCode);
+                    $allText = implode(" ", $extractedPDFText);
+                    // Write $allText to a temporary file
+                    $tempFilePath = tempnam(sys_get_temp_dir(), 'txt');
+                    file_put_contents($tempFilePath, $allText);
+
+                    // Construct the command to call the Python script with the file path as an argument
+                    $summarize_command = "python3 /Users/ja/Downloads/2023-GP1-12-merges/python/quizzes.py '" . $tempFilePath . "'";
+                    exec($summarize_command, $summary, $resultsCode);
+                    // var_dump($summary);
+                        $temp_file_path = trim($summary[0]);
+                        $summary_data = json_decode(file_get_contents($temp_file_path), true);
+                        $summarized_text = implode(" ", $summary_data);
+
+                            unlink($temp_file_path);
+                            unlink($tempFilePath);
+        ?>
         <div class="answers-container">
           <div>
-            <h2 class="question-text">Question?</h2>
+            <h2 class="question-text"><?php echo($summary_data['question1']['question']);?></h2>
           </div>
           <div class="form" id="form1">
             <div form="form1" class="answer-container">
               <input id="answer" name="answerGroup" type="radio" />
-              <label for="answer"> Answer One </label>
+              <label for="answer"><?php echo($summary_data['question1']['choices']['a']);?></label>
             </div>
             <div form="form1" class="answer-container">
               <input id="answer1" name="answerGroup" type="radio" />
-              <label for="answer1"> Answer Two </label>
+              <label for="answer1"> <?php echo($summary_data['question1']['choices']['b']);?> </label>
             </div>
             <div form="form1" class="answer-container">
               <input id="answer2" name="answerGroup" type="radio" />
-              <label for="answer2"> Answer Three </label>
+              <label for="answer2"> <?php echo($summary_data['question1']['choices']['c']);?> </label>
             </div>
           </div>
           <div class="skip-container">
@@ -387,22 +407,11 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
       </div>
     </div>
 
-    <footer>
-    <div class="footer-div" id="socials">
-      <h4>Follow Us on Social Media</h4>
+    <footer id="footer" style="margin-top: 7%;">
 
-      <a href="https://twitter.com/learniversewebsite" target="_blank"><img src="../images/twitter.png" alt="@Learniverse"></a>
+<div id="copyright">Learniverse &copy; 2023</div>
+</footer>
 
-    </div>
-    <div class="footer-div" id="contacts">
-      <h4>Contact Us</h4>
-
-      <a href="mailto:learniverse.website@gmail.com" target="_blank"><img src="../images/gmail.png" alt="learniverse.website@gmail.com"></a>
-
-    </div>
-    <img id="footerLogo" src="../LOGO.png" alt="Learniverse">
-    <div id="copyright">Learniverse &copy; 2023</div>
-  </footer>
 
 
   <div role="button" id="sidebar-tongue" style="margin-left: 0;">
