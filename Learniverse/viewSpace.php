@@ -1,5 +1,6 @@
 <?php
 require "session.php";
+
 //connect to db
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 // MongoDB query
@@ -54,6 +55,9 @@ $admin = $result->toArray()[0];
 
     <!-- Sweetalert2 -->
     <script src="js/sweetalert2.all.min.js"></script>
+
+    <!-- Chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Include FullCalendar JS & CSS library -->
     <link href="js/fullcalendar/lib/main.css" rel="stylesheet" />
@@ -460,28 +464,28 @@ $admin = $result->toArray()[0];
 
         function displayMessage(messageData) {
             var messageContainer = document.getElementById("showMessages");
-            var messageHTML = "<div class='chat userchat'><span class='username'>" + messageData.writtenBy + "</span><br><span class='data'>" + messageData.message + "</span><span class='date'>" + messageData.date + "</span></div>";
-            messageContainer.innerHTML += messageHTML;
+            var messageElement = document.createElement("div");
+            messageElement.classList.add("chat", "userchat");
+            messageElement.innerHTML = "<span class='username'>" + messageData.writtenBy + "</span><span class='data'>" + messageData.message + "</span><span class='date'>" + messageData.date + "</span>";
+            messageContainer.appendChild(messageElement);
             document.getElementById("message").value = "";
         }
 
-        // Function to reload the content
-        // function reloadMessages() {
-        //     $.ajax({
-        //         url: 'reloadChat.php', // Replace with the URL of your reload script
-        //         type: 'GET',
-        //         data: {
-        //             spaceID: '<?php echo $_GET['space']; ?>'
-        //         },
-        //         dataType: 'html',
-        //         success: function(response) {
-        //             $('#showMessages').html(response);
-        //         }
-        //     });
-        // }
+        function reloadMessages() {
+            $.ajax({
+                url: 'reloadChat.php',
+                type: 'GET',
+                data: {
+                    spaceID: '<?php echo $_GET['space']; ?>'
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#showMessages').html(response);
+                }
+            });
+        }
 
-        // // Reload the content every 2 seconds
-        // setInterval(reloadMessages, 2000);
+        setInterval(reloadMessages, 2000);
     </script>
 
 </head>
@@ -599,7 +603,7 @@ $admin = $result->toArray()[0];
                 <h1><?php echo $space->name ?></h1>
                 <!-- Tab links -->
                 <div class="tabs">
-                    <button class="tablinks" onclick="openTab(event, 'Feed')">Feed</button>
+                    <button class="tablinks" onclick="openTab(event, 'Feed')">Chat</button>
                     <button class="tablinks" onclick="openTab(event, 'Tasks')">Tasks</button>
                     <button class="tablinks" onclick="openTab(event, 'Files')">Files</button>
                     <button class="tablinks" onclick="openTab(event, 'Members')">Members <?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span>"; ?></button>
@@ -607,13 +611,13 @@ $admin = $result->toArray()[0];
 
                 <!-- Tab content -->
                 <div id="Feed" class="tabcontent">
-                    <h2>Feed</h2>
+                    <h2>Chat</h2>
                     <div id="showMessages"><?php $feeds = $space->feed;
                                             foreach ($feeds as $feed) {
                                                 if ($feed->writtenBy == $user->username)
-                                                    echo "<div class='chat userchat'><span class='username'>" . $feed->writtenBy . "</span><br><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
+                                                    echo "<div class='chat userchat'><span class='username'>" . $feed->writtenBy . "</span><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
                                                 else
-                                                    echo "<div class='chat'><span class='username'>" . $feed->writtenBy . "</span><br><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
+                                                    echo "<div class='chat'><span class='username'>" . $feed->writtenBy . "</span><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
                                             } ?></div>
                     <form id="addMessage" method="post" action="addMessage.php">
                         <input id="spaceID" name="spaceID" value="<?php echo $_GET['space']; ?>" hidden>
@@ -958,70 +962,68 @@ $admin = $result->toArray()[0];
 
                         </div>
                     </div>
-                    <?php
-                    $labels = ["Completed Tasks", "Uncompleted Tasks"];
-                    $data = [3, 7];
 
-                    ?>
                     <div class="container chart">
-                        <canvas id="myChart" width="150px" height="150px"></canvas>
+                        <canvas id="myChart"></canvas>
+                    </div>
+                    <div class="updates-container">
+                        <div id="updates">
+                            <?php
+                            foreach ($space->members as $member) {
+                                echo $member;
+                            }
+                            ?>
+                        </div>
                     </div>
 
-                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-                    <script>
-                        var ctx = document.getElementById('myChart').getContext('2d');
-                        var chartData = {
-                            labels: <?php echo json_encode($labels); ?>,
-                            datasets: [{
-                                label: 'Overview',
-                                data: <?php echo json_encode($data); ?>,
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(255, 206, 86, 0.2)',
-                                    'rgba(75, 192, 192, 0.2)',
-                                    'rgba(153, 102, 255, 0.2)',
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(153, 102, 255, 1)',
-                                ],
-                                borderWidth: 1
-                            }]
-                        };
+                    <?php
+                    $completedCount = 8;
+                    $uncompletedCount = 7;
 
+                    $data = [$completedCount, $uncompletedCount];
+                    ?>
+
+                    <script>
+                        // Example data
+                        var data = <?php echo json_encode($data); ?>;
+
+                        // Create the chart
+                        var ctx = document.getElementById('myChart').getContext('2d');
                         var myChart = new Chart(ctx, {
                             type: 'pie',
-                            data: chartData,
+                            data: {
+                                labels: ["Completed", "Uncompleted"],
+                                datasets: [{
+                                    data: data,
+                                    backgroundColor: ["rgba(75, 192, 192, 0.2)", "rgba(255, 99, 132, 0.2)"],
+                                    borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)"],
+                                    borderWidth: 1
+                                }]
+                            },
                             options: {
                                 plugins: {
-                                    datalabels: {
-                                        color: '#fff',
-                                        formatter: function(value, context) {
-                                            return context.chart.data.labels[context.dataIndex];
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            font: {
+                                                size: 12
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                var label = context.label || '';
+                                                var value = context.parsed || 0;
+                                                var dataset = context.dataset || {};
+                                                var total = dataset.data.reduce(function(previousValue, currentValue) {
+                                                    return previousValue + currentValue;
+                                                });
+                                                var percentage = Math.round((value / total) * 100);
+                                                return label + ': ' + value + ' (' + percentage + '%)';
+                                            }
                                         }
                                     }
-                                },
-                                tooltips: {
-                                    callbacks: {
-                                        label: function(tooltipItem, data) {
-                                            var dataset = data.datasets[tooltipItem.datasetIndex];
-                                            var total = dataset.data.reduce(function(previousValue, currentValue) {
-                                                return previousValue + currentValue;
-                                            });
-                                            var currentValue = dataset.data[tooltipItem.index];
-                                            var percentage = Math.floor(((currentValue / total) * 100) + 0.5);
-                                            return currentValue + ' (' + percentage + '%)';
-                                        }
-                                    }
-                                },
-                                legend: {
-                                    display: true,
-                                    position: 'bottom'
                                 }
                             }
                         });
