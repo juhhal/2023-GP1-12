@@ -1,6 +1,5 @@
 <?php
 require "session.php";
-
 //connect to db
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 // MongoDB query
@@ -63,9 +62,6 @@ $admin = $result->toArray()[0];
     <link href="js/fullcalendar/lib/main.css" rel="stylesheet" />
     <script src="js/fullcalendar/lib/main.js"></script>
     <script>
-        window.onload = function() {
-            window.scrollTo(0, 0);
-        };
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
 
@@ -87,7 +83,7 @@ $admin = $result->toArray()[0];
                 initialView: 'dayGridMonth',
                 editable: true,
                 height: 650,
-                events: 'fetchEvents.php',
+                events: 'fetchEvents.php?spaceID=<?php echo $space->spaceID ?>',
 
                 selectable: true,
                 select: async function(start, end, allDay) {
@@ -123,7 +119,8 @@ $admin = $result->toArray()[0];
                                     request_type: 'addEvent',
                                     start: start.startStr,
                                     end: start.endStr,
-                                    event_data: formValues
+                                    event_data: formValues,
+                                    spaceID: '<?php echo $space->spaceID ?>'
                                 }),
                             })
                             .then(response => response.json())
@@ -168,7 +165,8 @@ $admin = $result->toArray()[0];
                                     },
                                     body: JSON.stringify({
                                         request_type: 'deleteEvent',
-                                        event_id: info.event.id
+                                        event_id: info.event.id,
+                                        spaceID: '<?php echo $space->spaceID ?>'
                                     }),
                                 })
                                 .then(response => response.json())
@@ -213,7 +211,8 @@ $admin = $result->toArray()[0];
                                                 start: info.event.startStr,
                                                 end: info.event.endStr,
                                                 event_id: info.event.id,
-                                                event_data: result.value
+                                                event_data: result.value,
+                                                spaceID: '<?php echo $space->spaceID ?>'
                                             })
                                         })
                                         .then(response => response.json())
@@ -464,6 +463,13 @@ $admin = $result->toArray()[0];
 
         function displayMessage(messageData) {
             var messageContainer = document.getElementById("showMessages");
+            var messageHTML = "<div class='chat userchat'><span class='username'>" + messageData.writtenBy + "</span><br><span class='data'>" + messageData.message + "</span><span class='date'>" + messageData.date + "</span></div>";
+            messageContainer.innerHTML += messageHTML;
+            document.getElementById("message").value = "";
+        }
+
+        function displayMessage(messageData) {
+            var messageContainer = document.getElementById("showMessages");
             var messageElement = document.createElement("div");
             messageElement.classList.add("chat", "userchat");
             messageElement.innerHTML = "<span class='username'>" + messageData.writtenBy + "</span><span class='data'>" + messageData.message + "</span><span class='date'>" + messageData.date + "</span>";
@@ -484,7 +490,6 @@ $admin = $result->toArray()[0];
                 }
             });
         }
-
         setInterval(reloadMessages, 2000);
     </script>
 
@@ -962,7 +967,6 @@ $admin = $result->toArray()[0];
 
                         </div>
                     </div>
-
                     <div class="container chart">
                         <canvas id="myChart"></canvas>
                     </div>
