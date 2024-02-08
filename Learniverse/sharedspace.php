@@ -8,7 +8,6 @@ require 'session.php'; ?>
 <head>
     <meta charset="UTF-8">
     <title>Shared Space</title>
-    <link rel="stylesheet" href="emptyWorkspace.css">
     <link rel="stylesheet" href="header-footer.css">
     <link rel="stylesheet" href="sharedspacecss.css">
 
@@ -252,7 +251,7 @@ require 'session.php'; ?>
 
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
+            <ul class="tool_list">
                 <li class="tool_item">
                     <a href="workspace.php"> Calendar & To-Do
                     </a>
@@ -283,7 +282,7 @@ require 'session.php'; ?>
                         GPA Calculator</a>
                 </li>
                 <li class="tool_item"><a href="sharedspace.php">
-                    Shared spaces</a></li>
+                        Shared spaces</a></li>
                 <li class="tool_item">
                     Meeting Room
                 </li>
@@ -297,7 +296,7 @@ require 'session.php'; ?>
 
             <div class="workarea_item">
                 <div class="top-shelf">
-                    <h1>Shared Space</h1>
+                    <h1>Shared Spaces</h1>
                     <button id="newSpaceBTN" onclick="showForm()">New Space</button>
                 </div>
                 <form id="newSpaceForm" method="post" action="addSharedSpace.php" style="display: none;">
@@ -329,7 +328,7 @@ require 'session.php'; ?>
                         }
                         $spaces = json_decode(json_encode($space), true);
                         foreach ($spaces as $space) {
-                            echo "<div onclick='window.location.href=\"viewspace.php?space=".$space['spaceID']."\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $fetch['firstname'] . " " .  $fetch['lastname'] . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
+                            echo "<div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $fetch['firstname'] . " " .  $fetch['lastname'] . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
                         }
                         ?>
 
@@ -351,7 +350,7 @@ require 'session.php'; ?>
                             $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
                             $adminCursor = $manager->executeQuery('Learniverse.users', $query);
                             $admin = $adminCursor->toArray()[0];
-                            echo "<div onclick='window.location.href=\"viewspace.php?space=".$space['spaceID']."\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
+                            echo "<div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
                         }
                         ?>
                     </div>

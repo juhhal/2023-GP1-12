@@ -463,17 +463,16 @@ $admin = $result->toArray()[0];
 
         function displayMessage(messageData) {
             var messageContainer = document.getElementById("showMessages");
-            var messageHTML = "<div class='chat userchat'><span class='username'>" + messageData.writtenBy + "</span><br><span class='data'>" + messageData.message + "</span><span class='date'>" + messageData.date + "</span></div>";
+            var dateString = messageData.date;
+            var date = new Date(dateString);
+            var options = {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            };
+            var time = date.toLocaleTimeString([], options);
+            var messageHTML = "<div class='chat userchat'><span class='username'>" + messageData.writtenBy + "</span><br><span class='data'>" + messageData.message + "</span><span class='date'>" + time + "</span></div>";
             messageContainer.innerHTML += messageHTML;
-            document.getElementById("message").value = "";
-        }
-
-        function displayMessage(messageData) {
-            var messageContainer = document.getElementById("showMessages");
-            var messageElement = document.createElement("div");
-            messageElement.classList.add("chat", "userchat");
-            messageElement.innerHTML = "<span class='username'>" + messageData.writtenBy + "</span><span class='data'>" + messageData.message + "</span><span class='date'>" + messageData.date + "</span>";
-            messageContainer.appendChild(messageElement);
             document.getElementById("message").value = "";
         }
 
@@ -615,19 +614,31 @@ $admin = $result->toArray()[0];
                 </div>
 
                 <!-- Tab content -->
-                <div id="Feed" class="tabcontent">
-                    <h2>Chat</h2>
-                    <div id="showMessages"><?php $feeds = $space->feed;
-                                            foreach ($feeds as $feed) {
-                                                if ($feed->writtenBy == $user->username)
-                                                    echo "<div class='chat userchat'><span class='username'>" . $feed->writtenBy . "</span><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
-                                                else
-                                                    echo "<div class='chat'><span class='username'>" . $feed->writtenBy . "</span><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
-                                            } ?></div>
+                <div id="Feed" class="tabcontent scrollable">
+                    <div id="showMessages">
+                        <?php
+                        $feeds = $space->feed;
+                        foreach ($feeds as $feed) {
+                            $time = date('h:i A', strtotime($feed->date)); // Format the date to display time only
+
+                            if ($feed->writtenBy == $user->username) {
+                                echo "<div class='chat userchat'><span class='username'>" . $feed->writtenBy . "</span><span class='data'>" . $feed->message . "</span><span class='date'>" . $time . "</span></div>";
+                            } else {
+                                echo "<div class='chat'><span class='username'>" . $feed->writtenBy . "</span><span class='data'>" . $feed->message . "</span><span class='date'>" . $time . "</span></div>";
+                            }
+                        }
+                        ?>
+                    </div>
                     <form id="addMessage" method="post" action="addMessage.php">
                         <input id="spaceID" name="spaceID" value="<?php echo $_GET['space']; ?>" hidden>
                         <input required autofocus id="message" name="message" placeholder="Type a message">&nbsp; &nbsp;<button id="submitChat" type='submit'>Send</button>
                     </form>
+                    <script>
+                        window.onload = function() {
+                            var showMessages = document.getElementById('showMessages');
+                            showMessages.scrollTop = showMessages.scrollHeight;
+                        }
+                    </script>
                 </div>
 
                 <div id="Tasks" class="tabcontent">
@@ -635,111 +646,335 @@ $admin = $result->toArray()[0];
                     <h3>Tasks</h3>
                     <select id="groupBY">
                         <option disabled selected>
-                            Group By
+                            Sort By
                         </option>
-                        <option>
+                        <option value="duedate">
+                            Due Date
+                        </option>
+                        <option value="assignee">
                             Assignee
                         </option>
+                        <option value="creator">
+                            Creator
+                        </option>
+                        <option value="incompleted">
+                            Incompleted Tasks
+                        </option>
+                        <option value="completed">
+                            Completed Tasks
+                        </option>
                     </select>
-                    <div class="taskDiv">
-                        <span class="taskHead">
-                            <span class="taskName">Develop a Leave Space button for members in a space</span>
-                            <span class="more"><i class="fa-solid fa-ellipsis-vertical"></i></span>
-                        </span>
-                        <!-- <span class="creator">Creator: Alice</span> -->
-                        <span class="taskInfo">
-                            <span class="dueDate"><i class="fa-solid fa-calendar-days"></i> 2024-02-10</span>
-                            <select class="assignee">
-                                <option selected>Shouq Alotaibi</option>
-                                <option>Anwar Bafadhl</option>
-                                </option>
-                            </select>
-                        </span>
-                    </div>
-                    <div class="taskDiv">
-                        <span class="taskHead">
-                            <span class="taskName">Develop a Leave Space button for members in a space</span>
-                            <span class="more"><i class="fa-solid fa-ellipsis-vertical"></i></span>
-                        </span>
-                        <!-- <span class="creator">Creator: Alice</span> -->
-                        <span class="taskInfo">
-                            <span class="dueDate"><i class="fa-solid fa-calendar-days"></i> 2024-02-10</span>
-                            <select class="assignee">
-                                <option>Shouq Alotaibi</option>
-                                <option selected>Anwar Bafadhl</option>
-                                </option>
-                            </select>
-                        </span>
-                    </div>
-                    <div class="taskDiv">
-                        <span class="taskHead">
-                            <span class="taskName">Develop a Leave Space button for members in a space</span>
-                            <span class="more"><i class="fa-solid fa-ellipsis-vertical"></i></span>
-                        </span>
-                        <!-- <span class="creator">Creator: Alice</span> -->
-                        <span class="taskInfo">
-                            <span class="dueDate"><i class="fa-solid fa-calendar-days"></i> 2024-02-10</span>
-                            <select class="assignee unassigned">
-                                <option selected>Unassigned</option>
-                                <option>Shouq Alotaibi</option>
-                                <option>Anwar Bafadhl</option>
-                                </option>
-                            </select>
-                        </span>
-                    </div>
-
-                    <div class="overlay" id="addTaskDiv">
-                        <div class="modal">
-                            <h2>Add a New Task</h2>
-                            <form id="add-task-form" action="">
-                                <div class="form-inputs">
-                                    <input id="task-name-input" type="text" name="task_name" placeholder="Task name" autocomplete="off" maxlength="500" autofocus />
-                                    <input id="task-description-input" type="text" name="description" placeholder="Description" autocomplete="off" />
-                                </div>
-                                <div class="extra-fields">
-                                    <div>
-                                        <input class="due-date-picker" type="date" />
-                                        <select class="assignee-selector">
-                                            <option value="none" selected>
-                                                Unassigned
-                                            </option>
-                                            <option value="me">
-                                                Shouq Alotaibi
-                                            </option>
-                                            <option value="Anwar">
-                                                Anwar Bafadhl
-                                            </option>
+                    <div class="tasksContainer">
+                        <?php foreach ($space->tasks as $task) {
+                            $due = "";
+                            if ($task->due != "") {
+                                $due = explode("T", $task->due);
+                                $due = " " . $due[0] . " at " . $due[1];
+                            } ?>
+                            <div class="taskDiv <?php echo ($task->checked) ? "checkedTask" : "uncheckedTask"; ?>">
+                                <span class="taskHead">
+                                    <input class="taskID" type="hidden" readonly value="<?php echo $task->taskID ?>" name="taskID">
+                                    <input type="checkbox" name="taskCheck" class="taskCheck" <?php echo ($task->checked) ? "checked" : ""; ?>>
+                                    <span class="taskName"><?php echo $task->task_name ?></span>
+                                    <span class="more"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+                                </span>
+                                <span class="creator"><?php
+                                                        $query = new MongoDB\Driver\Query(['email' => $task->creator]);
+                                                        $cursor = $manager->executeQuery('Learniverse.users', $query);
+                                                        $creator = $cursor->toArray()[0];
+                                                        echo " $creator->firstname $creator->lastname" ?>
+                                </span>
+                                <span class="lastEditedBy"><?php
+                                                            if ($task->lastEditedBy != "") {
+                                                                $query = new MongoDB\Driver\Query(['email' => $task->lastEditedBy]);
+                                                                $cursor = $manager->executeQuery('Learniverse.users', $query);
+                                                                $editor = $cursor->toArray()[0];
+                                                                echo " $editor->firstname $editor->lastname";
+                                                            } else echo "";  ?>
+                                </span>
+                                <span class="taskInfo">
+                                    <span class="description"><?php echo $task->description ?></span>
+                                    <span class="dueDate"><i class="fa-solid fa-calendar-days"></i><?php echo $due ?></span>
+                                    <form>
+                                        <select class="assignee <?php echo ($task->assignee === "unassigned") ? "unassigned" : ""; ?>" title="Assign to Someone Else">
+                                            <option <?php echo ($task->assignee === "unassigned") ? "selected class='unassigned'" : ""; ?> value="unassigned">Unassigned</option>
+                                            <option <?php echo ($task->assignee === $space->admin) ? "selected " : "";
+                                                    echo "value=$space->admin" ?>><?php echo "$admin->firstname $admin->lastname"; ?></option>
+                                            <?php foreach ($space->members as $member) {
+                                                $query = new MongoDB\Driver\Query(['email' => $member]);
+                                                $memberCursor = $manager->executeQuery('Learniverse.users', $query);
+                                                $memberName = $memberCursor->toArray()[0];
+                                                $selected = "";
+                                                if ($task->assignee === $member)
+                                                    $selected = "selected";
+                                            ?>
+                                                <option <?php echo "$selected value=$member"; ?>>
+                                                    <?php echo "$memberName->firstname $memberName->lastname"; ?>
+                                                </option>
+                                            <?php } ?>
                                         </select>
+                                    </form>
+                                </span>
+                            </div>
+                        <?php } ?>
+                        <div class="overlay" id="addTaskDiv">
+                            <div class="modal">
+                                <h2 id="overlayTitle">Add a New Task</h2>
+                                <form id="add-task-form" name="add-task-form" method="post">
+                                    <div class="form-inputs">
+                                        <input type="hidden" readonly value="<?php echo $space->spaceID ?>" name="spaceID">
+                                        <input type="hidden" id="taskCheck" name="taskCheck">
+                                        <input required id="task-name-input" type="text" name="task_name" placeholder="Task name" autocomplete="off" maxlength="500" autofocus />
+                                        <input id="task-description-input" type="text" name="description" placeholder="Description" autocomplete="off" />
                                     </div>
-                                </div>
-                                <div class="cancel-submit-container">
-                                    <button class="cancel-button" type="button">Cancel</button>
-                                    <button class="add-task-submit-button" type="button" disabled>
-                                        Add task
-                                    </button>
-                                </div>
-                            </form>
-                            <!-- <form id="addtask-form" method="post" action="addTask.php">
-                                <input required type="text" id="taskDesc" name="taskDesc" placeholder="Task Name">
-                                <input id="taskDue" name="taskDue" type="datetime-local" title="Set the deadline of this task"><br>
-                                <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="resetAddTask()">Cancel</button>
-                            </form> -->
+                                    <div class="extra-fields">
+                                        <div>
+                                            <input id="taskDue" class="due-date-picker" type="datetime-local" name="due" />
+                                            <select class="assignee-selector" name="assignee">
+                                                <option value="unassigned" selected>
+                                                    Unassigned
+                                                </option>
+                                                <option value="<?php echo $space->admin ?>">
+                                                    <?php echo $admin->firstname . " " . $admin->lastname ?>
+                                                </option>
+                                                <?php foreach ($space->members as $member) {
+                                                    $query = new MongoDB\Driver\Query(['email' => $member]);
+                                                    $memberCursor = $manager->executeQuery('Learniverse.users', $query);
+                                                    $memberName = $memberCursor->toArray()[0]; ?>
+                                                    <option value="<?php echo $member ?>">
+                                                        <?php echo "$memberName->firstname $memberName->lastname" ?>
+                                                    </option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="creator-editor">
+                                        <div class="creator"></div>
+                                        <div class="lastEditedBy"></div>
+                                    </div>
+                                    <div class="cancel-submit-container">
+                                        <button class="delete-task-button" type="button">Delete Task</button>
+                                        <button class="cancel-button" type="button">Cancel</button>
+                                        <button class="add-task-submit-button" type="button" disabled>Add task</button>
+                                        <button class="add-task-update-button" type="button" disabled>Update Task</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-
                     <script>
                         var addTaskBTN = document.getElementById('addTaskBTN');
                         var overlayTask = document.getElementById('addTaskDiv');
 
+                        var addTaskForm = document.getElementById('add-task-form');
+                        var taskNameINPUT = document.getElementById('task-name-input');
+                        var submitAddTaskBTN = document.getElementsByClassName('add-task-submit-button')[0];
+                        var cancelAddTaskBTN = document.getElementsByClassName('cancel-button')[0];
+
+                        $(document).ready(function() {
+                            //sort mechanism
+                            $('#groupBy').on('change', function() {
+                                var selectedValue = $(this).val();
+
+                                // Show all tasks
+                                $('.taskDiv').show();
+
+                                // Sort tasks based on the selected option
+                                if (selectedValue === 'duedate') {
+                                    $('.taskDiv').sort(function(a, b) {
+                                        var dateA = new Date($(a).find('.dueDate').text());
+                                        var dateB = new Date($(b).find('.dueDate').text());
+                                        return dateA - dateB;
+                                    }).appendTo('.tasksContainer');
+                                } else if (selectedValue === 'assignee') {
+                                    $('.taskDiv').sort(function(a, b) {
+                                        var assigneeA = $(a).find('.assignee').val();
+                                        var assigneeB = $(b).find('.assignee').val();
+                                        return assigneeA.localeCompare(assigneeB);
+                                    }).appendTo('.tasksContainer');
+                                } else if (selectedValue === 'creator') {
+                                    $('.taskDiv').sort(function(a, b) {
+                                        var creatorA = $(a).find('.creator').text().trim();
+                                        var creatorB = $(b).find('.creator').text().trim();
+                                        return creatorA.localeCompare(creatorB);
+                                    }).appendTo('.tasksContainer');
+                                } else if (selectedValue === 'incompleted') {
+                                    $('.checkedTask').hide();
+                                } else if (selectedValue === 'completed') {
+                                    $('.uncheckedTask').hide();
+                                }
+                            });
+
+                            $(".more").click(function() {
+                                $("#overlayTitle").text("Edit This Task");
+
+                                var taskDiv = $(this).closest(".taskDiv");
+                                var taskName = taskDiv.find(".taskName").text().trim();
+                                var creator = taskDiv.find(".creator").text().trim();
+                                var editor = taskDiv.find(".lastEditedBy").text().trim();
+                                var dueDate = taskDiv.find(".dueDate").text().trim().replace(" at ", "T").trim();
+                                var assignee = taskDiv.find(".assignee").val();
+                                var description = taskDiv.find(".description").text().trim();
+                                var taskID = taskDiv.find(".taskID").val();
+                                var taskCheck = taskDiv.find(".taskCheck").prop("checked");
+
+                                // Fill the overlay fields with the values
+                                $("#add-task-form #task-name-input").val(taskName);
+                                $("#add-task-form #task-description-input").val(description);
+                                $("#add-task-form #creator-input").val(creator);
+                                $("#add-task-form #taskDue").val(dueDate);
+                                $("#add-task-form .assignee-selector").val(assignee);
+                                $("#add-task-form #taskCheck").prop("checked", taskCheck);
+                                $("#add-task-form .creator").text("Creator: " + creator);
+                                if (editor != "") {
+                                    $("#add-task-form .lastEditedBy").text("Last Edited By: " + editor);
+                                    $("#add-task-form .lastEditedBy").show();
+                                } else $("#add-task-form .lastEditedBy").hide();
+
+                                //target the form submit button and change it from add to save
+                                $("#add-task-form .add-task-submit-button").hide();
+                                $("#add-task-form .add-task-update-button").show();
+                                $("#add-task-form .delete-task-button").show();
+                                $("#add-task-form .creator-editor").show();
+                                $("#add-task-form .creator").show();
+
+                                var saveBTN = $("#add-task-form .add-task-update-button");
+                                var deleteBTN = $("#add-task-form .delete-task-button");
+
+                                deleteBTN.on('click', function() {
+                                    Swal.fire({
+                                        title: 'Heads Up!',
+                                        text: 'Are you sure you want to delete this task?',
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes',
+                                        cancelButtonText: 'No',
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            $.ajax({
+                                                url: 'processSpaceTask.php',
+                                                method: 'post',
+                                                data: {
+                                                    operation: 'deleteTask',
+                                                    taskID: taskID,
+                                                    spaceID: '<?php echo $space->spaceID ?>'
+                                                },
+                                                success: function(response) {
+                                                    taskDiv.remove();
+                                                    console.log(response);
+                                                    overlayTask.style.display = 'none';
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    console.error(error);
+                                                }
+                                            });
+                                        }
+                                    });
+                                });
+                                // Enable save button when form fields change
+                                $("#add-task-form input, #add-task-form select").on("input", function() {
+                                    saveBTN.prop("disabled", false);
+                                });
+
+                                saveBTN.attr('id', 'editTask');
+                                //edit task operation starts here
+                                saveBTN.on('click', function() {
+                                    const formData = new FormData(addTaskForm);
+                                    formData.append('operation', 'editTask');
+                                    formData.append('taskID', taskID);
+
+                                    $.ajax({
+                                        url: "processSpaceTask.php",
+                                        method: "post",
+                                        data: formData,
+                                        processData: false,
+                                        contentType: false,
+                                        success: function(response) {
+                                            // Handle success response from the server
+                                            console.log(response);
+                                            overlayTask.style.display = 'none';
+                                        },
+                                        error: function(xhr, status, error) {
+                                            // Handle error response from the server
+                                            console.error(error);
+                                        }
+                                    });
+                                });
+
+                                // Show the overlay
+                                overlayTask.style.display = 'flex';
+                                $("#addTaskDiv").show();
+                            });
+                        });
+
                         addTaskBTN.addEventListener('click', function() {
                             overlayTask.style.display = 'flex';
+                            $("#overlayTitle").text("Add a New Task");
+
+                            $("#add-task-form .add-task-submit-button").show();
+                            $("#add-task-form .add-task-update-button").hide();
+                            $("#add-task-form .delete-task-button").hide();
+                            $("#add-task-form .creator-editor").hide();
                         });
 
                         overlayTask.addEventListener('click', function(event) {
                             if (event.target === overlayTask) {
                                 overlayTask.style.display = 'none';
+                                addTaskForm.reset();
                             }
                         });
+
+                        submitAddTaskBTN.addEventListener('click', function() {
+                            const formData = new FormData(addTaskForm);
+                            formData.append('operation', 'addTask');
+
+                            $.ajax({
+                                url: "processSpaceTask.php",
+                                method: "post",
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function(response) {
+                                    // Handle success response from the server
+                                    console.log(response);
+                                    overlayTask.style.display = 'none';
+                                },
+                                error: function(xhr, status, error) {
+                                    // Handle error response from the server
+                                    console.error(error);
+                                }
+                            });
+                        });
+
+                        cancelAddTaskBTN.addEventListener('click', function() {
+                            addTaskForm.reset();
+                            overlayTask.style.display = 'none';
+                        });
+
+                        taskNameINPUT.addEventListener('input', function() {
+                            if (taskNameINPUT.value.trim() !== '') {
+                                submitAddTaskBTN.disabled = false;
+                            } else {
+                                submitAddTaskBTN.disabled = true;
+                            }
+                        });
+
+                        // Get the due input element
+                        var taskDue = document.getElementById('taskDue');
+
+                        var currentDate = new Date();
+
+                        // Extract the year, month, day, hours, and minutes from the current date
+                        var year = currentDate.getFullYear();
+                        var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                        var day = String(currentDate.getDate()).padStart(2, '0');
+                        var hours = String(currentDate.getHours()).padStart(2, '0');
+                        var minutes = String(currentDate.getMinutes()).padStart(2, '0');
+
+                        const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                        // Set the minimum value to the current datetime
+                        taskDue.min = formattedDate;
                     </script>
                 </div>
 
@@ -905,10 +1140,10 @@ $admin = $result->toArray()[0];
                                         success: function(response) {
                                             // On successful response, remove the list item from the DOM
                                             joinRequestsList.removeChild(listItem);
-                                            console.log(response); // Optional: Display the response in the console
+                                            console.log(response);
                                         },
                                         error: function(xhr, status, error) {
-                                            console.error(error); // Optional: Log any errors to the console
+                                            console.error(error);
                                         }
                                     });
                                 });
@@ -970,19 +1205,66 @@ $admin = $result->toArray()[0];
                     <div class="container chart">
                         <canvas id="myChart"></canvas>
                     </div>
-                    <div class="updates-container">
-                        <div id="updates">
+                    <div class="updates container">
+                        <div id="logUpdates">
                             <?php
-                            foreach ($space->members as $member) {
-                                echo $member;
+                            $logs = $space->logUpdates;
+                            $currentDay = null;
+                            foreach ($logs as $log) {
+                                $type = $log->type;
+                                $logDate = $log->date;
+                                $day = date('F j, Y', strtotime($logDate));
+
+                                if ($day !== $currentDay) {
+                                    echo "<div class='day-label'>$day</div>";
+                                    $currentDay = $day;
+                                }
+                                switch ($type) {
+                                    case "assign":
+                                        echo "<span class='log'>" . $log->assignor . " <b>assign</b> a task for " . $log->assignee . "</span>";
+                                        break;
+                                    case "create":
+                                        echo "<span class='log'>" . $log->creator . " <b>create</b> a new task</span>";
+                                        break;
+                                    case "delete":
+                                        echo "<span class='log'>" . $log->deletor . " <b>delete</b> a task</span>";
+                                        break;
+                                    case "edit":
+                                        echo "<span class='log'>" . $log->editor . " <b>edit</b> a task</span>";
+                                        break;
+                                    case "join":
+                                        echo "<span class='log'>" . $log->memberName . " <b>join</b> this space</span>";
+                                        break;
+                                    case "leave":
+                                        echo "<span class='log'>" . $log->memberName . " <b>left</b></span>";
+                                        break;
+                                }
                             }
                             ?>
                         </div>
+                        <script>
+                            function addLogUpdateToPage(logUpdate) {
+                                var $logUpdates = $('#logUpdates');
+                                var $newLogUpdate = $('<span class="log">' + logUpdate + '</span>');
+                                $logUpdates.append($newLogUpdate);
+
+                                // Scroll to the new log update
+                                $logUpdates.animate({
+                                    scrollTop: $logUpdates.prop('scrollHeight')
+                                }, 500);
+                            }
+                        </script>
                     </div>
 
                     <?php
-                    $completedCount = 8;
-                    $uncompletedCount = 7;
+                    $tasks = $space->tasks;
+                    $count = 0;
+                    foreach ($tasks as $task) {
+                        if ($task->checked)
+                            $count++;
+                    }
+                    $completedCount = $count;
+                    $uncompletedCount = count($tasks) - $count;
 
                     $data = [$completedCount, $uncompletedCount];
                     ?>

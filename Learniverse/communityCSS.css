@@ -114,10 +114,13 @@ html {
     padding: 0.5rem 1rem;
     height: fit-content;
     border-radius: 10px;
-    border: none; /* Remove borders */
+    border: none;
+    /* Remove borders */
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
 }
 
 
@@ -125,7 +128,7 @@ html {
 .addPostBTN:hover {
     cursor: pointer;
     background-color: #ec947e;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
 }
 
 .guestCursor {
@@ -163,6 +166,7 @@ html {
 .postRating img:first-of-type {
     margin-left: 0.3rem;
 }
+
 .postAuthor,
 .postedDate {
     float: right;
@@ -172,25 +176,33 @@ html {
 }
 
 .postTitle {
-    display: block; /* or 'inline-block', depending on layout */
-    font-size: 1.2em; /* Smaller title size */
-    font-weight: bold; /* Keeps it prominent */
-    margin-bottom: 0.3em; /* Less spacing below the title */
-  }
-  
-  .postTitle a {
-    color: #575757; /* A color that's easy to read */
-    text-decoration: none; /* Ensures no underline */
-    transition: color 0.3s ease; /* Smooth transition for color change on hover */
-  }
-  
-  .postTitle a:hover,
-  .postTitle a:focus {
-    color: #383838; /* Slightly darker shade on hover for feedback */
-    /* No underline specified as per request */
-  }
+    display: block;
+    /* or 'inline-block', depending on layout */
+    font-size: 1.2em;
+    /* Smaller title size */
+    font-weight: bold;
+    /* Keeps it prominent */
+    margin-bottom: 0.3em;
+    /* Less spacing below the title */
+}
 
-.postTags{
+.postTitle a {
+    color: #575757;
+    /* A color that's easy to read */
+    text-decoration: none;
+    /* Ensures no underline */
+    transition: color 0.3s ease;
+    /* Smooth transition for color change on hover */
+}
+
+.postTitle a:hover,
+.postTitle a:focus {
+    color: #383838;
+    /* Slightly darker shade on hover for feedback */
+    /* No underline specified as per request */
+}
+
+.postTags {
     margin-top: 0.5%;
 }
 
@@ -198,23 +210,54 @@ html {
     align-items: center;
     background-color: #f1dbff;
     border-radius: 100px;
-    color:  #000e23;
+    color: #000e23;
     cursor: pointer;
     display: inline-flex;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 10px; /* Even smaller font size */
+    font-size: 10px;
+    /* Even smaller font size */
     font-weight: 600;
     justify-content: center;
-    line-height: 12px; /* Adjusted line height for smaller font */
-    padding: 2px 8px; /* Even smaller padding */
+    line-height: 12px;
+    /* Adjusted line height for smaller font */
+    padding: 2px 8px;
+    /* Even smaller padding */
     text-align: center;
     transition: background-color 0.167s cubic-bezier(0.4, 0, 0.2, 1), color 0.167s cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
     vertical-align: middle;
     margin-right: 0.5%;
 }
-  
+
 .postTag:hover,
-.postTag:focus { 
+.postTag:focus {
     background-color: #d9b3f1;
+}
+
+/* autocomplete-list search */
+#autocomplete-list {
+    position: absolute;
+    display: block;
+    width: 25%;
+    background-color: #ffffff;
+    color: grey;
+    left: 49%;
+    top: 79%;
+    box-sizing: border-box;
+}
+
+#autocomplete-list option {
+    z-index: 5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    font-size: 0.9rem;
+    display: block;
+    box-sizing: border-box;
+    margin: 2%;
+}
+
+#autocomplete-list option:hover{
+    color: #000e23;
+    cursor: pointer;
 }

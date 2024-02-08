@@ -2,7 +2,6 @@
 // Include database configuration file 
 require_once 'dbConfig.php';
 require_once 'session.php';
-
 $uid = 0;
 if (isset($_GET['spaceID']))
     $uid = $_GET['spaceID'];

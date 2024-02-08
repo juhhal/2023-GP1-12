@@ -25,6 +25,8 @@ $adminEmail = $space->admin;
 $admin = $userCollection->findOne(['email' => $adminEmail]);
 
 if ($operation === "accept") {
+    //generate a color for the member
+    // $randomColor = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT); //['email' => $member, 'color' => $randomColor]
     // Construct the update operation using $pull operator
     $updateOperation = ['$pull' => ['pendingMembers' => $member]];
     $insertOperation = ['$push' => ['members' => $member]];
@@ -76,6 +78,10 @@ if ($operation === "accept") {
     $updateOperation = ['$pull' => ['pendingMembers' => $member]];
     // Add the update operations to the bulk write operation
     $bulkWrite->update($filter, $updateOperation);
-}
+} else if ($operation === "kick") {
+    // Construct the update operation using $pull operator
+    $updateOperation = ['$pull' => ['members' => $member]];
+    $bulkWrite->update($filter, $updateOperation);
+} 
 // execute
 $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);

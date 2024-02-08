@@ -13,8 +13,7 @@ $collection = 'sharedSpace';
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
 $spaceID = $_POST['spaceID'];
-$message = $_POST['message'];
-$date = date('Y-m-d \a\t\ H:i');
+$message = htmlspecialchars($_POST['message']);$date = date('Y-m-d \a\t\ H:i');
 
 //Username for the user
 $query = new MongoDB\Driver\Query(['email' => $_SESSION['email']]);

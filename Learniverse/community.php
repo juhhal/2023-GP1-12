@@ -241,6 +241,30 @@ if (isset($_SESSION['filteredSearch'])) {
         window.addEventListener('unload', function(event) {
             <?php unset($_SESSION['filteredSearch']) ?>
         });
+
+        function suggestTitles(searchTerm) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var suggestions = JSON.parse(this.responseText);
+                    var autocompleteList = document.getElementById("autocomplete-list");
+                    autocompleteList.innerHTML = ""; // Clear previous suggestions
+                    for (var i = 0; i < suggestions.length; i++) {
+                        var suggestion = suggestions[i];
+                        var option = document.createElement("option");
+                        option.innerText = suggestion;
+                        option.title = suggestion;
+                        option.onclick = function() {
+                            document.getElementById("search").value = this.innerText;
+                            document.getElementById("searchCommunity").submit();
+                        };
+                        autocompleteList.appendChild(option);
+                    }
+                }
+            };
+            xmlhttp.open("GET", "autosuggest.php?searchTerm=" + searchTerm, true);
+            xmlhttp.send();
+        }
     </script>
 </head>
 
@@ -271,7 +295,7 @@ if (isset($_SESSION['filteredSearch'])) {
                     <label for="search">Search Community</label>
                     <div class="tooltip">
                         <input id="search" name="searchTerm" type="search" placeholder='<?php if (isset($_GET['searchTerm'])) echo $_GET['searchTerm'];
-                                                                                        else echo "Search..."; ?>' autocomplete="off" />
+                                                                                        else echo "Search..."; ?>' autocomplete="off" autocomplete="off" onkeyup="suggestTitles(this.value)" />
                         <button type="submit">Go</button>
                         <div class="tooltiptext">
                             <b>Quantum Theory</b> <i>search for titles containing Quantum Theory</i><br>
@@ -282,6 +306,7 @@ if (isset($_SESSION['filteredSearch'])) {
                     </div>
                 </form>
                 <span id="clearSearch" title="Clear Search" onclick="location.reload();">Clear Search</span>
+                <datalist id="autocomplete-list"></datalist>
                 <?php
                 require_once __DIR__ . '/vendor/autoload.php';
                 // Create a MongoDB client
@@ -332,46 +357,46 @@ if (isset($_SESSION['filteredSearch'])) {
 
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
-        <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
-          </a>
-        </li>
-        <li class="tool_item">
-          <a href="theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
-          Quiz
-        </li>
-        <li class="tool_item">
-          Flashcard
-        </li>
-        <li class="tool_item">
-          Summarization
-        </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
-        <li class="tool_item"><a href="Notes/notes.php">
-            Notes</a>
-        </li>
-        <li class="tool_item">
-          <a href="pomodoro.php">
-            Pomodoro</a>
-        </li>
-        <li class="tool_item"><a href="gpa.php">
-            GPA Calculator</a>
-        </li>
-        <li class="tool_item">
-          Shared spaces
-        </li>
-        <li class="tool_item">
-          Meeting Room
-        </li>
-        <li class="tool_item"><a href="community.php">
-            Community</a>
-        </li>
-      </ul>
+            <ul class="tool_list">
+                <li class="tool_item">
+                    <a href="workspace.php"> Calendar & To-Do
+                    </a>
+                </li>
+                <li class="tool_item">
+                    <a href="theFiles.php?q=My Files"> My Files</a>
+                </li>
+                <li class="tool_item">
+                    Quiz
+                </li>
+                <li class="tool_item">
+                    Flashcard
+                </li>
+                <li class="tool_item">
+                    Summarization
+                </li>
+                <li class="tool_item">
+                    Study Planner
+                </li>
+                <li class="tool_item"><a href="Notes/notes.php">
+                        Notes</a>
+                </li>
+                <li class="tool_item">
+                    <a href="pomodoro.php">
+                        Pomodoro</a>
+                </li>
+                <li class="tool_item"><a href="gpa.php">
+                        GPA Calculator</a>
+                </li>
+                <li class="tool_item">
+                    Shared spaces
+                </li>
+                <li class="tool_item">
+                    Meeting Room
+                </li>
+                <li class="tool_item"><a href="community.php">
+                        Community</a>
+                </li>
+            </ul>
         </div>
 
         <div class="workarea">
@@ -436,8 +461,8 @@ if (isset($_SESSION['filteredSearch'])) {
     </main>
     <footer id="footer" style="margin-top: 7%;">
 
-<div id="copyright">Learniverse &copy; 2023</div>
-</footer>
+        <div id="copyright">Learniverse &copy; 2023</div>
+    </footer>
 
     <div role="button" id="sidebar-tongue" style="margin-left: 0;">
         &gt;

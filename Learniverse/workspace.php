@@ -11,6 +11,20 @@ $cursor = $manager->executeQuery('Learniverse.To-do-list', $query);
 $result_array = $cursor->toArray();
 $result_json = json_decode(json_encode($result_array), true);
 $todo = $result_json[0]['todo_list'][0]['tasks'];
+//sort based on due date
+function compareDueDate($a, $b)
+{
+    $dueA = strtotime($a['due']);
+    $dueB = strtotime($b['due']);
+
+    if ($dueA == $dueB) {
+        return 0;
+    }
+
+    return ($dueA < $dueB) ? -1 : 1;
+}
+
+usort($todo, 'compareDueDate');
 ?>
 
 
@@ -39,13 +53,27 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
     <!-- Include FullCalendar JS & CSS library -->
     <link href="js/fullcalendar/lib/main.css" rel="stylesheet" />
     <script src="js/fullcalendar/lib/main.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                views: {
+                    dayGridMonth: { // name of view
+                        titleFormat: {
+                            year: 'numeric',
+                            month: 'long',
+                        }
+                        // other view-specific options here
+                    }
+                },
                 initialView: 'dayGridMonth',
+                editable: true,
                 height: 650,
                 events: 'fetchEvents.php',
 
@@ -206,8 +234,8 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
             var dropdownButton = document.querySelector('.dropdown-button');
             var dropdownMenu = document.querySelector('.Pdropdown-menu');
             dropdownButton.addEventListener('click', function() {
-            dropdownMenu.classList.toggle('show');
-        });
+                dropdownMenu.classList.toggle('show');
+            });
             $("#rename-form").hide();
             if ($("#rename-form").css("display") === "none" || $("#rename-form").is(":hidden"))
                 cancelRename();
@@ -312,38 +340,38 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
         };
 
         function validateForm(event) {
-    event.preventDefault(); // Prevent the form from submitting by default
+            event.preventDefault(); // Prevent the form from submitting by default
 
-    var input = document.getElementById('PRename');
-    var value = input.value.trim(); // Trim whitespace from the input value
+            var input = document.getElementById('PRename');
+            var value = input.value.trim(); // Trim whitespace from the input value
 
-    var errorSpan = document.getElementById('rename-error');
+            var errorSpan = document.getElementById('rename-error');
 
-    if (value === '') {
-        errorSpan.textContent = 'Please enter a valid name.'; // Display the error message
-        return false; // Cancel form submission
-    }
+            if (value === '') {
+                errorSpan.textContent = 'Please enter a valid name.'; // Display the error message
+                return false; // Cancel form submission
+            }
 
-    var nameParts = value.split(' ').filter(part => part !== ''); // Split on whitespace and remove empty parts
+            var nameParts = value.split(' ').filter(part => part !== ''); // Split on whitespace and remove empty parts
 
-    if (nameParts.length < 2) {
-        errorSpan.textContent = 'Please enter both first name and last name.'; // Display the error message
-        return false; // Cancel form submission
-    }
+            if (nameParts.length < 2) {
+                errorSpan.textContent = 'Please enter both first name and last name.'; // Display the error message
+                return false; // Cancel form submission
+            }
 
-    // Check if both names start with a letter
-    var isValid = nameParts.every(part => /^[A-Za-z]/.test(part));
+            // Check if both names start with a letter
+            var isValid = nameParts.every(part => /^[A-Za-z]/.test(part));
 
-    if (!isValid) {
-        errorSpan.textContent = 'Names should start with a letter.'; // Display the error message
-        return false; // Cancel form submission
-    } else {
-        errorSpan.textContent = ''; // Clear the error message if it's not needed
-    }
+            if (!isValid) {
+                errorSpan.textContent = 'Names should start with a letter.'; // Display the error message
+                return false; // Cancel form submission
+            } else {
+                errorSpan.textContent = ''; // Clear the error message if it's not needed
+            }
 
-    // If the validation passes, you can proceed with form submission
-    document.getElementById('rename-form').submit();
-}
+            // If the validation passes, you can proceed with form submission
+            document.getElementById('rename-form').submit();
+        }
 
         function hamster() {
             if (document.querySelectorAll(".task").length < 1) {
@@ -373,7 +401,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
             $("#addtask-span").hide();
             var addTaskName = document.getElementById('taskDesc');
             var submitTaskBTN = document.getElementById('submitTaskBTN');
-            
+
             addTaskName.focus();
             addTaskName.addEventListener('input', function() {
                 if (addTaskName.value.trim() !== '') {
@@ -569,46 +597,45 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
     </header>
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
-        <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
-          </a>
-        </li>
-        <li class="tool_item">
-          <a href="theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
-          <a href="quizes/quizes.php">Quiz</a>
-        </li>
-        <li class="tool_item">
-          Flashcard
-        </li>
-        <li class="tool_item">
-          <a href="summarization/summarization.php">Summarization</a>
-        </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
-        <li class="tool_item"><a href="Notes/notes.php">
-            Notes</a>
-        </li>
-        <li class="tool_item">
-          <a href="pomodoro.php">
-            Pomodoro</a>
-        </li>
-        <li class="tool_item"><a href="gpa.php">
-            GPA Calculator</a>
-        </li>
-        <li class="tool_item">
-          Shared spaces
-        </li>
-        <li class="tool_item">
-          Meeting Room
-        </li>
-        <li class="tool_item"><a href="community.php">
-            Community</a>
-        </li>
-      </ul>
+            <ul class="tool_list">
+                <li class="tool_item">
+                    <a href="workspace.php"> Calendar & To-Do
+                    </a>
+                </li>
+                <li class="tool_item">
+                    <a href="theFiles.php?q=My Files"> My Files</a>
+                </li>
+                <li class="tool_item">
+                    Quiz
+                </li>
+                <li class="tool_item">
+                    Flashcard
+                </li>
+                <li class="tool_item">
+                    Summarization
+                </li>
+                <li class="tool_item">
+                    Study Planner
+                </li>
+                <li class="tool_item"><a href="Notes/notes.php">
+                        Notes</a>
+                </li>
+                <li class="tool_item">
+                    <a href="pomodoro.php">
+                        Pomodoro</a>
+                </li>
+                <li class="tool_item"><a href="gpa.php">
+                        GPA Calculator</a>
+                </li>
+                <li class="tool_item"><a href="sharedspace.php">
+                        Shared spaces</a></li>
+                <li class="tool_item">
+                    Meeting Room
+                </li>
+                <li class="tool_item"><a href="community.php">
+                        Community</a>
+                </li>
+            </ul>
         </div>
 
         <div class="workarea">
@@ -629,6 +656,12 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
             <div class="workarea_item" id="todo_area">
                 <h3>My To-Do List</h3>
                 <div class="todolist">
+                    <select id="todoView">
+                        <option selected>All Tasks</option>
+                        <option>Today</option>
+                        <option>Next 7 days</option>
+                        <option>Next Month</option>
+                    </select>
                     <ul>
 
                         <div id='notasks'><img src='images/hotballoon.png'>
@@ -728,19 +761,68 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                                 });
                             });
                         </script>
-                        <!-- <li>
-                            <img src="images/bin.png" id="deleteBTN">
-                            <img src="images/rescheduling.png" id="reschedule" onclick="reschedule(this);"><img src="images/edit.png" onclick="editTask();">
-                            <input id="task11" type="checkbox" onchange="ischecked(this.id);"> <label id="label11" for="task11"> Start coding AI project.</label>
-                            <form id='editTask-form' method='post' action='editTask.php'>
-                                <label for="taskRename">Task Name:</label> <input type="text" id="taskRename" name="taskRename" placeholder="Enter the task description">
-                                <label for="newDue">Due: </label> <input id="newDue" name="newDue" type="datetime-local"><br>
-                                <input id="oldName" name="oldName" type="hidden" value="Code GP1 new interface">
-                                <button type="submit">Confirm</button> <button type="reset" onclick="$('#editTask-form').hide();">Cancel</button>
-                            </form>
-                        </li> -->
-
                     </ul>
+                    <script>
+                        // Get references to the HTML elements
+                        var todoViewSelect = document.getElementById("todoView");
+                        var taskList = document.querySelector(".todolist ul");
+
+                        // Function to update the task list based on the selected view
+                        function updateTaskList() {
+                            // Get the selected view option
+                            var selectedView = todoViewSelect.value;
+
+                            // Get all task items
+                            var taskItems = document.querySelectorAll(".todolist ul li.task");
+
+                            // Loop through each task item and show/hide based on the selected view
+                            taskItems.forEach(function(taskItem) {
+                                var taskDueDate = taskItem.querySelector(".due").textContent;
+                                var components = taskDueDate.split(" at ");
+                                var dueDate = new Date(components[0] + "T" + components[1]);
+                                var today = new Date();
+                                var nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                                var nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
+                                if (selectedView === "Today" && !isSameDate(dueDate, today)) {
+                                    taskItem.style.display = "none";
+                                } else if (selectedView === "Next 7 days" && (dueDate < today || dueDate > nextWeek)) {
+                                    taskItem.style.display = "none";
+                                } else if (selectedView === "Next Month" && (dueDate < today || dueDate > nextMonth)) {
+                                    taskItem.style.display = "none";
+                                } else {
+                                    taskItem.style.display = "block";
+                                }
+                            });
+
+                            // Show/hide the "No Tasks" message based on the number of visible tasks
+                            var visibleTasks = document.querySelectorAll(".todolist ul li.task[style='display: block;']");
+                            var noTasksMessage = document.getElementById("notasks");
+
+                            if (visibleTasks.length === 0) {
+                                noTasksMessage.style.display = "block";
+                            } else {
+                                noTasksMessage.style.display = "none";
+                            }
+                        }
+
+                        // Helper function to check if two dates have the same day, month, and year
+                        function isSameDate(date1, date2) {
+                            return (
+                                date1.getFullYear() === date2.getFullYear() &&
+                                date1.getMonth() === date2.getMonth() &&
+                                date1.getDate() === date2.getDate()
+                            );
+                        }
+
+                        // Update the task list when the view selection changes
+                        todoViewSelect.addEventListener("change", function() {
+                            updateTaskList();
+                        });
+
+                        // Initial update of the task list
+                        updateTaskList();
+                    </script>
                     <button id="addtaskBTN" onclick="addTask()">+ </button><label for="addtaskBTN" id="addtask-span"> Add Task</label>
 
                     <form id="addtask-form" method="post" action="addTask.php">
@@ -750,22 +832,22 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
                     </form>
                     <script>
                         document.addEventListener('DOMContentLoaded', function() {
-                             // Get the due input element
-                             taskDue = document.getElementById('taskDue');
+                            // Get the due input element
+                            taskDue = document.getElementById('taskDue');
 
-var currentDate = new Date();
+                            var currentDate = new Date();
 
-// Extract the year, month, day, hours, and minutes from the current date
-var year = currentDate.getFullYear();
-var month = String(currentDate.getMonth() + 1).padStart(2, '0');
-var day = String(currentDate.getDate()).padStart(2, '0');
-var hours = String(currentDate.getHours()).padStart(2, '0');
-var minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                            // Extract the year, month, day, hours, and minutes from the current date
+                            var year = currentDate.getFullYear();
+                            var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                            var day = String(currentDate.getDate()).padStart(2, '0');
+                            var hours = String(currentDate.getHours()).padStart(2, '0');
+                            var minutes = String(currentDate.getMinutes()).padStart(2, '0');
 
-const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+                            const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
 
-// Set the minimum value to the current datetime
-taskDue.min = formattedDate;
+                            // Set the minimum value to the current datetime
+                            taskDue.min = formattedDate;
                         });
                     </script>
                 </div>

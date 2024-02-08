@@ -25,10 +25,11 @@ $feeds = $space->feed;
 // Generate the HTML for the updated messages
 $html = '';
 foreach ($feeds as $feed) {
+  $time = date('h:i A', strtotime($feed->date));
   if ($feed->writtenBy == $user->username)
-    $html .= "<div class='chat userchat'><span class='username'>" . $feed->writtenBy . "</span><br><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
+    $html .= "<div class='chat userchat'><span class='username'>" . $feed->writtenBy . "</span><br><span class='data'>" . $feed->message . "</span><span class='date'>" . $time . "</span></div>";
   else
-    $html .= "<div class='chat'><span class='username'>" . $feed->writtenBy . "</span><br><span class='data'>" . $feed->message . "</span><span class='date'>" . $feed->date . "</span></div>";
+    $html .= "<div class='chat'><span class='username'>" . $feed->writtenBy . "</span><br><span class='data'>" . $feed->message . "</span><span class='date'>" . $time . "</span></div>";
 }
 
 // Return the generated HTML

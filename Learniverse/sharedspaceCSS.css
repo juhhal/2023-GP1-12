@@ -1,3 +1,107 @@
+html {
+    font-size: 100%;
+    width: 99%;
+    height: 99%;
+    font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+        "sans-serif";
+    color: #000e23;
+    background-color: #faf7ff;
+}
+
+@media only screen and (max-width: 991px) {
+    .nav__menu {
+        visibility: hidden;
+    }
+}
+
+#sidebar-tongue {
+    width: fit-content;
+    padding: 50px 3px;
+    border-radius: 2px 10px 10px 2px;
+    font-size: 1.5rem;
+    box-shadow: 0px 1px 2px 1px rgba(58, 60, 67, 0.15);
+    display: inline-block;
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #bf97d8;
+    color: #faf7ff;
+    margin-left: 0;
+    z-index: 150;
+}
+
+#sidebar-tongue:hover {
+    transition-duration: 0.3s;
+    filter: brightness(0.5);
+    cursor: pointer;
+}
+
+#tools_div {
+    background-color: #bf97d8;
+    width: 12%;
+    padding: 2% 0.5% 0;
+    float: left;
+    margin-left: -13.9%;
+    transition: 0.2s;
+    box-shadow: 0px 1px 2px 1px rgba(58, 60, 67, 0.15);
+    position: fixed;
+    z-index: 100;
+    height: 99vh;
+}
+
+.tool_list {
+    display: inline-block;
+    padding-inline-start: 0;
+}
+
+.tool_item {
+    font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+        "sans-serif";
+    font-size: 1rem !important;
+    list-style-type: none;
+    padding: 9%;
+    margin-bottom: 5%;
+    white-space: nowrap;
+    text-indent: 1rem;
+    font-size: 0.9rem;
+    text-align: left;
+    color: #000e23;
+    width: 110%;
+    transition: color 0.3s, background-color 0.3s;
+    border-radius: 5%;
+}
+
+.tool_item:hover {
+    cursor: pointer;
+    transition-duration: 0.3s;
+    color: #faf7ff !important;
+    background-color: rgba(212, 179, 233, 0.933);
+}
+
+.tool_item:hover a {
+    cursor: pointer;
+    transition-duration: 0.3s;
+    color: #faf7ff !important;
+    background-color: rgba(212, 179, 233, 0.933);
+}
+
+.tool_item a {
+    text-decoration: none;
+    color: #000e23;
+}
+
+.tool_item img {
+    width: 15%;
+    float: left;
+    margin-left: 2%;
+}
+
+.workarea {
+    padding: 1%;
+    display: flex;
+}
+
 .workarea_item {
     margin: 1%;
     margin-left: 7%;

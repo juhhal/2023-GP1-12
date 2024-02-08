@@ -8,21 +8,33 @@ $bulkWrite = new MongoDB\Driver\BulkWrite;
 if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
     // save space name received from POST
     $spaceName = $_POST['spaceName'];
-
+    $spaceID  = uniqid();
     // Create space object
     $space = [
-        'spaceID' => uniqid(),
+        'spaceID' => $spaceID,
         'name' => $spaceName,
         'admin' => $_SESSION['email'],
         'members' => [],
         'pendingMembers' => [],
-        'projects' => [],
+        'tasks' => [],
+        'files' => [],
         'feed' => [],
     ];
     $bulkWrite->insert($space);
 
     // Insert the document into the collection
     $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
+    $spaceCalendar =   [
+        "user_id" => $spaceID,
+        "counter" => 0,
+        "List" => [
+            []
+        ]
+    ];
+    $bulk = new MongoDB\Driver\BulkWrite;
+    $bulk->insert($spaceCalendar);
+    $result = $manager->executeBulkWrite("Learniverse.calendar", $bulk);
+
 
 } elseif (isset($_POST['spaceID']) && $_POST['spaceID'] != "") {
 
