@@ -337,7 +337,7 @@ require 'session.php'; ?>
                         <span class="spacesTitle">Spaces You are a Member Of:</span>
                         <?php
                         //get spaces where active user is a member of
-                        $filterMember = ['members' => $_SESSION['email']];
+                        $filterMember = ['members.email' => $_SESSION['email']];
                         $queryMember = new MongoDB\Driver\Query($filterMember);
                         $spaces = $manager->executeQuery($collectionName, $queryMember);
                         $space = [];
@@ -351,6 +351,27 @@ require 'session.php'; ?>
                             $adminCursor = $manager->executeQuery('Learniverse.users', $query);
                             $admin = $adminCursor->toArray()[0];
                             echo "<div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
+                        }
+                        ?>
+                    </div>
+                    <div id="pendingSpaces">
+                        <span class="spacesTitle">Spaces You Applied to Join:</span>
+                        <?php
+                        //get spaces where active user is a member of
+                        $filterMember = ['pendingMembers' => $_SESSION['email']];
+                        $queryMember = new MongoDB\Driver\Query($filterMember);
+                        $spaces = $manager->executeQuery($collectionName, $queryMember);
+                        $space = [];
+                        foreach ($spaces as $s) {
+                            $space[] = $s;
+                        }
+                        $spaces = json_decode(json_encode($space), true);
+
+                        foreach ($spaces as $space) {
+                            $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
+                            $adminCursor = $manager->executeQuery('Learniverse.users', $query);
+                            $admin = $adminCursor->toArray()[0];
+                            echo "<div class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
                         }
                         ?>
                     </div>
