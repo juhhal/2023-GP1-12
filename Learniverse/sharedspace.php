@@ -305,11 +305,12 @@ require 'session.php'; ?>
                     <h3>OR</h3>
                 </form>
 
-                <form id="joinSpaceForm" method="post" action="addSharedSpace.php" style="display: none;">
-                    <label>Join a Space</label> <input id="spaceID" name="spaceID" type="text">
+                <form id="joinSpaceForm" method="post" style="display: none;">
+                    <label>Join a Space</label> <input required id="spaceID" name="spaceID" type="text">
                     <button type="submit" class="formSubmitBTN">Join</button>
                 </form>
                 <div id="spaces">
+                    <p class="errorMessage" style="color:red"></p>
                     <div id="adminSpaces">
                         <span class="spacesTitle">Your Spaces:</span>
                         <?php
@@ -331,7 +332,21 @@ require 'session.php'; ?>
                             echo "<div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $fetch['firstname'] . " " .  $fetch['lastname'] . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
                         }
                         ?>
-
+                        <script>
+                            $("#joinSpaceForm").on("submit", function() {
+                                $.ajax({
+                                    url: "addSharedSpace.php",
+                                    method: "post",
+                                    data: {
+                                        spaceID: $("#spaceID").val()
+                                    },
+                                    success: function(response) {
+                                        $("#joinSpaceForm").css("display", "block");
+                                        $(".errorMessage").text("*" + response);
+                                    },
+                                });
+                            });
+                        </script>
                     </div>
                     <div id="otherSpaces">
                         <span class="spacesTitle">Spaces You are a Member Of:</span>

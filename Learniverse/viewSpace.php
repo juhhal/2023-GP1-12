@@ -189,7 +189,7 @@ $admin = $result->toArray()[0];
                                         request_type: 'deleteEvent',
                                         event_id: info.event.id,
                                         spaceID: '<?php echo $space->spaceID ?>',
-                                        color: '<?php echo $color?>'
+                                        color: '<?php echo $color ?>'
                                     }),
                                 })
                                 .then(response => response.json())
@@ -1181,80 +1181,103 @@ $admin = $result->toArray()[0];
                                         },
                                         success: function(response) {
                                             // On successful response, remove the list item from the DOM
-                                            memberCount++;
-                                            pmemberCount--;
-                                            console.log("added member");
-                                            joinRequestsList.removeChild(listItem);
-                                            updateMemberCount();
-                                            var newMember = $("<div>")
-                                                .addClass("memberName")
-                                                .append(
-                                                    $("<li style='color:" + response.color + "'>").html("<i title='members' class='fa-solid fa-user'></i> " + response.name)
-                                                );
-                                            var kick = null;
-                                            if (<?php echo ($space->admin === $_SESSION['email']) ? 1 : 0 ?>)
-                                                kick = $("<button>").addClass("kick").html("<i class='fa-solid fa-circle-exclamation'></i> kick");
-                                            kick.on('click', function() {
-                                                Swal.fire({
-                                                    title: 'Heads Up!',
-                                                    text: 'Are you sure you want to kick ' + response.name + '?',
-                                                    icon: 'warning',
-                                                    showCancelButton: true,
-                                                    confirmButtonText: 'Yes',
-                                                    cancelButtonText: 'No',
-                                                }).then((result) => {
-                                                    if (result.isConfirmed) {
-                                                        $.ajax({
-                                                            url: 'pendingMemberProcess.php',
-                                                            method: 'post',
-                                                            data: {
-                                                                operation: 'kick',
-                                                                member: member,
-                                                                spaceid: '<?php echo $space->spaceID ?>',
-                                                                spacename: '<?php echo $space->name ?>'
-                                                            },
-                                                            success: function(response) {
-                                                                newMember.remove();
-                                                                memberCount--;
-                                                                updateMemberCount();
-                                                                console.log("kicked a member");
-                                                            }
-                                                        });
+                                            if (response != "already a member!") {
+                                                memberCount++;
+                                                pmemberCount--;
+                                                console.log("added member");
+                                                joinRequestsList.removeChild(listItem);
+                                                updateMemberCount();
+                                                var newMember = $("<div>")
+                                                    .addClass("memberName")
+                                                    .append(
+                                                        $("<li style='color:" + response.color + "'>").html("<i title='members' class='fa-solid fa-user'></i> " + response.name)
+                                                    );
+                                                var kick = null;
+                                                if (<?php echo ($space->admin === $_SESSION['email']) ? 1 : 0 ?>)
+                                                    kick = $("<button>").addClass("kick").html("<i class='fa-solid fa-circle-exclamation'></i> kick");
+                                                kick.on('click', function() {
+                                                    Swal.fire({
+                                                        title: 'Heads Up!',
+                                                        text: 'Are you sure you want to kick ' + response.name + '?',
+                                                        icon: 'warning',
+                                                        showCancelButton: true,
+                                                        confirmButtonText: 'Yes',
+                                                        cancelButtonText: 'No',
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            $.ajax({
+                                                                url: 'pendingMemberProcess.php',
+                                                                method: 'post',
+                                                                data: {
+                                                                    operation: 'kick',
+                                                                    member: member,
+                                                                    spaceid: '<?php echo $space->spaceID ?>',
+                                                                    spacename: '<?php echo $space->name ?>'
+                                                                },
+                                                                success: function(response) {
+                                                                    newMember.remove();
+                                                                    memberCount--;
+                                                                    updateMemberCount();
+                                                                    console.log("kicked a member");
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                });
+
+                                                var memberInfoDiv = $("<div>")
+                                                    .addClass("memberInfo")
+                                                    .html(
+                                                        "Email: <span class='member-email'>" + member + "</span> <form action='mailto:" + member + "'><button title='Send an Email' type='submit'><i style='color:#faf7ff' class='fa-solid fa-paper-plane'></i></button></form>"
+                                                    )
+                                                    .append(kick);
+
+                                                memberInfoDiv.hover(
+                                                    function() {
+                                                        memberInfoDiv.css("display", "block")
+                                                    },
+                                                    function() {
+                                                        //hover-out event
+                                                        memberInfoDiv.css("display", "none");
+                                                    });
+
+
+                                                newMember.append(memberInfoDiv);
+
+                                                newMember.hover(
+                                                    function() {
+                                                        memberInfoDiv.css("display", "block")
+                                                    },
+                                                    function() {
+                                                        //hover-out event
+                                                        memberInfoDiv.css("display", "none");
+                                                    });
+
+
+                                                memberList.append(newMember);
+                                                console.log(response);
+                                            } else { //already a member, auto reject
+                                                $.ajax({
+                                                    url: "pendingMemberProcess.php",
+                                                    method: "POST",
+                                                    data: {
+                                                        operation: "reject",
+                                                        member: member,
+                                                        spaceid: "<?php echo $space->spaceID ?>",
+                                                        spacename: "<?php echo $space->name ?>"
+                                                    },
+                                                    success: function(response) {
+                                                        // On successful response, remove the list item from the DOM
+                                                        pmemberCount --;
+                                                        updateMemberCount();
+                                                        joinRequestsList.removeChild(listItem);
+                                                        console.log(response); // Optional: Display the response in the console
+                                                    },
+                                                    error: function(xhr, status, error) {
+                                                        console.error(error); // Optional: Log any errors to the console
                                                     }
                                                 });
-                                            });
-
-                                            var memberInfoDiv = $("<div>")
-                                                .addClass("memberInfo")
-                                                .html(
-                                                    "Email: <span class='member-email'>" + member + "</span> <form action='mailto:" + member + "'><button title='Send an Email' type='submit'><i style='color:#faf7ff' class='fa-solid fa-paper-plane'></i></button></form>"
-                                                )
-                                                .append(kick);
-
-                                            memberInfoDiv.hover(
-                                                function() {
-                                                    memberInfoDiv.css("display", "block")
-                                                },
-                                                function() {
-                                                    //hover-out event
-                                                    memberInfoDiv.css("display", "none");
-                                                });
-
-
-                                            newMember.append(memberInfoDiv);
-
-                                            newMember.hover(
-                                                function() {
-                                                    memberInfoDiv.css("display", "block")
-                                                },
-                                                function() {
-                                                    //hover-out event
-                                                    memberInfoDiv.css("display", "none");
-                                                });
-
-
-                                            memberList.append(newMember);
-                                            console.log(response);
+                                            }
                                         },
                                         error: function(xhr, status, error) {
                                             console.error(error);

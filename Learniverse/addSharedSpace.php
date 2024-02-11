@@ -19,7 +19,7 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
         'tasks' => [],
         'files' => [],
         'feed' => [],
-        'logUpdates'=>[]
+        'logUpdates' => []
     ];
     $bulkWrite->insert($space);
 
@@ -35,8 +35,6 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
     $bulk = new MongoDB\Driver\BulkWrite;
     $bulk->insert($spaceCalendar);
     $result = $manager->executeBulkWrite("Learniverse.calendar", $bulk);
-
-
 } elseif (isset($_POST['spaceID']) && $_POST['spaceID'] != "") {
 
     // Define the query filter
@@ -47,17 +45,29 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
 
     // Execute the query
     $cursor = $manager->executeQuery('Learniverse.sharedSpace', $query);
+    $result = $cursor->toArray();
+    if(empty($result)){
+        echo "No such Space found.";
+        exit();
+    }
     // Get the first document from the result
-    $space = $cursor->toArray()[0];
-
+    $space = $result[0];
     // Convert the document to an object
     $spaceObject = (object) $space;
 
+    $found = false;
+    foreach ($spaceObject->members as $member) {
+        if ($member->email === $_SESSION['email']) {
+            $found = true;
+            break;
+        }
+    }
+
     if ($spaceObject->admin === $_SESSION['email'])
         echo "youre this space admin";
-    elseif (in_array($_SESSION['email'], $spaceObject->members))
-        echo "youre already member of this space";
-    elseif (in_array($_SESSION['email'], $spaceObject->pendingMembers))
+    elseif ($found) {
+        echo "youre already a member of this space";
+    } elseif (in_array($_SESSION['email'], $spaceObject->pendingMembers))
         echo "You already requested to join this space. please wait admin approval";
     else {
         // Create an update query with the $push operator
@@ -68,8 +78,6 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
 
         // Insert the document into the collection
         $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
-        header("Location:sharedSpace.php");
+        echo "Requesting..";
     }
 }
-
-header("Location:sharedSpace.php");
