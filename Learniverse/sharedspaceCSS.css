@@ -176,12 +176,17 @@ input {
     background-color: #e8cdf9;
 }
 
-#otherSpaces {
+#otherSpaces,
+#pendingSpaces {
     margin-top: 5%;
 }
 
 #otherSpaces div {
     background-color: #f8dfd9;
+}
+
+#pendingSpaces div {
+    background-color: #b6b5b4;
 }
 
 .spaceDiv {

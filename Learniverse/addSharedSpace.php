@@ -19,6 +19,7 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
         'tasks' => [],
         'files' => [],
         'feed' => [],
+        'logUpdates'=>[]
     ];
     $bulkWrite->insert($space);
 
@@ -53,11 +54,11 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
     $spaceObject = (object) $space;
 
     if ($spaceObject->admin === $_SESSION['email'])
-        echo ("<script>alert('YOUR AN ADMIN')</script>");
+        echo "youre this space admin";
     elseif (in_array($_SESSION['email'], $spaceObject->members))
-        echo ("<script>alert('YOUR A MEMBER')</script>");
+        echo "youre already member of this space";
     elseif (in_array($_SESSION['email'], $spaceObject->pendingMembers))
-        echo ("<script>alert('AWATING ADMIN APPROVAL')</script>");
+        echo "You already requested to join this space. please wait admin approval";
     else {
         // Create an update query with the $push operator
         $updateQuery = ['$push' => ['pendingMembers' => $_SESSION['email']]];
@@ -67,6 +68,7 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
 
         // Insert the document into the collection
         $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
+        header("Location:sharedSpace.php");
     }
 }
 

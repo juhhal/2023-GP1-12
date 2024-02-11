@@ -89,16 +89,14 @@ if ($operation === 'addTask') {
         $bulk->update(
             ['spaceID' => $spaceID],
             ['$push' => ['logUpdates' => [
-                "type" => "assign",
-                "assignee" => $taskAssignee,
+                "type" => "create",
                 "assignor" => $_SESSION['email'],
                 "date" => $string
             ]]]
         );
         $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
-        echo $msg;
     } else {
-        echo "Failed to add/edit task";
+        echo "Failed to add task";
     }
 } elseif ($operation === "editTask") {
     $taskID = $_POST['taskID'];
@@ -178,12 +176,22 @@ if ($operation === 'addTask') {
         }
     }
 
-    $msg = "Edited Task Successfully";
     $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
     if ($result->getModifiedCount() > 0) {
-        echo $msg;
+        $dateTime = new DateTime();
+        $string = $dateTime->format('Y-m-d H:i:s');
+        $bulk = new MongoDB\Driver\BulkWrite();
+        $bulk->update(
+            ['spaceID' => $spaceID],
+            ['$push' => ['logUpdates' => [
+                "type" => "edit",
+                "editor" => $_SESSION['email'],
+                "date" => $string
+            ]]]
+        );
+        $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
     } else {
-        echo "Failed to add/edit task";
+        echo "Failed to edit task";
     }
 } elseif ($operation === 'deleteTask') {
     $taskID = $_POST['taskID'];
@@ -203,12 +211,22 @@ if ($operation === 'addTask') {
     ];
 
     $bulkWrite->update($filter, $pullOperation);
-    $msg = "Deleted Task Successfully";
 
     $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
     if ($result->getModifiedCount() > 0) {
-        echo $msg;
+        $dateTime = new DateTime();
+        $string = $dateTime->format('Y-m-d H:i:s');
+        $bulk = new MongoDB\Driver\BulkWrite();
+        $bulk->update(
+            ['spaceID' => $spaceID],
+            ['$push' => ['logUpdates' => [
+                "type" => "delete",
+                "deletor" => $_SESSION['email'],
+                "date" => $string
+            ]]]
+        );
+        $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
     } else {
-        echo "Failed to add/edit task";
+        echo "Failed to delete task";
     }
 }

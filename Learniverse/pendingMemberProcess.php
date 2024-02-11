@@ -1,87 +1,251 @@
 <?php
+require "session.php";
 require_once __DIR__ . '/vendor/autoload.php';
 
+use MongoDB\Driver\Query;
 use PHPMailer\PHPMailer\PHPMailer;
-
 //establish connection
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 //create a bulk writer to update data in the db
-$bulkWrite = new MongoDB\Driver\BulkWrite;
-// access the space id, member, and operation (Accept/Reject) from ajax request
-$member = $_POST['member'];
-$spaceid = $_POST['spaceid'];
-$spacename = $_POST['spacename'];
+$bulkWrite = new MongoDB\Driver\BulkWrite(); // Instantiate the BulkWrite object
+$spaceID = $_POST['spaceID'];
 $operation = $_POST['operation'];
-$filter = ["spaceID" => $spaceid];
 
-//find the space to get its info
-$connection = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
-// Select the database and collection
-$database = $connection->Learniverse;
-$spaceCollection = $database->sharedSpace;
-$userCollection = $database->users;
-$space = $spaceCollection->findOne(['spaceID' => $spaceid]);
-$adminEmail = $space->admin;
-$admin = $userCollection->findOne(['email' => $adminEmail]);
+$msg = "";
+// Add task request
+if ($operation === 'addTask') {
+    $bulk = new MongoDB\Driver\BulkWrite();
+    $taskName = $_POST['task_name'];
+    $taskDesc = $_POST['description'];
+    $taskDue = $_POST['due'];
+    $taskAssignee = $_POST['assignee'];
 
-if ($operation === "accept") {
-    //generate a color for the member
-    // $randomColor = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT); //['email' => $member, 'color' => $randomColor]
-    // Construct the update operation using $pull operator
-    $updateOperation = ['$pull' => ['pendingMembers' => $member]];
-    $insertOperation = ['$push' => ['members' => $member]];
-    // Add the update operations to the bulk write operation
-    $bulkWrite->update($filter, $updateOperation);
-    $bulkWrite->update($filter, $insertOperation);
+    // Retrieve task data and create task object
+    $task = [
+        "taskID" => uniqid(),
+        "task_name" => htmlspecialchars($taskName, ENT_QUOTES, 'UTF-8'),
+        "creator" => $_SESSION["email"],
+        "description" => $taskDesc,
+        "due" => $taskDue,
+        "checked" => false,
+        "assignee" => $taskAssignee,
+        "lastEditedBy" => ""
+    ];
 
-    //send alert email of acceptance to member
-    $query = new MongoDB\Driver\Query(['email' => $member]);
-    $cursor = $manager->executeQuery("Learniverse.users", $query);
-    $data = $cursor->toArray();
 
-    $firstname = $data[0]->firstname;
-    $lastname = $data[0]->lastname;
-    $smtpUsername = 'Learniverse.website@gmail.com';
-    $smtpPassword = 'hnrl utwf fxup rnyd';
-    $smtpHost = 'smtp.gmail.com';
-    $smtpPort = 587;
+    // Target the space of the task
+    $bulkWrite->update(
+        ['spaceID' => $spaceID],
+        ['$push' => ['tasks' => $task]]
+    );
+    $msg = "Added Task Sucessfully";
+    $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
+    if ($result->getModifiedCount() > 0) {
+        $dateTime = new DateTime();
+        $string = $dateTime->format('Y-m-d H:i:s');
+        $bulk->update(
+            ['spaceID' => $spaceID],
+            ['$push' => ['logUpdates' => [
+                "type" => "create",
+                "creator" => $_SESSION['email'],
+                "date" => $string
+            ]]]
+        );
+        if ($taskAssignee != "unassigned") {
+            //send alert email of assignment to member
+            $query = new MongoDB\Driver\Query(['email' => $taskAssignee]);
+            $cursor = $manager->executeQuery("Learniverse.users", $query);
+            $data = $cursor->toArray();
 
-    // Create a new PHPMailer instance
-    $mail = new PHPMailer;
+            $firstname = $data[0]->firstname;
+            $lastname = $data[0]->lastname;
+            $smtpUsername = 'Learniverse.website@gmail.com';
+            $smtpPassword = 'hnrl utwf fxup rnyd';
+            $smtpHost = 'smtp.gmail.com';
+            $smtpPort = 587;
 
-    // Enable SMTP debugging
-    $mail->SMTPDebug = 0;
 
-    // Set the SMTP settings
-    $mail->isSMTP();
-    $mail->Host = $smtpHost;
-    $mail->Port = $smtpPort;
-    $mail->SMTPSecure = 'tls';
-    $mail->SMTPAuth = true;
-    $mail->Username = $smtpUsername;
-    $mail->Password = $smtpPassword;
+            // Create a new PHPMailer instance
+            $mail = new PHPMailer;
 
-    // Set the email content
-    $mail->setFrom('Learniverse.website@gmail.com');
-    $mail->addAddress($member);
-    $mail->Subject = 'You have been added to a new Space!';
-    $mail->Body = "Dear " . $firstname . " " . $lastname . ",\n\nYou have been added to $spacename by $admin->firstname $admin->lastname! \n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
+            // Enable SMTP debugging
+            $mail->SMTPDebug = 0;
 
-    // Send the email
-    if ($mail->send()) {
-        echo "acceptance mail sent";
+            // Set the SMTP settings
+            $mail->isSMTP();
+            $mail->Host = $smtpHost;
+            $mail->Port = $smtpPort;
+            $mail->SMTPSecure = 'tls';
+            $mail->SMTPAuth = true;
+            $mail->Username = $smtpUsername;
+            $mail->Password = $smtpPassword;
+
+            // Set the email content
+            $mail->setFrom('Learniverse.website@gmail.com');
+            $mail->addAddress($taskAssignee);
+            $mail->Subject = 'You have been assigned a Task!';
+            $mail->Body = "Dear " . $firstname . " " . $lastname . ",\n\nYou have been assigned a task, come and check it out! \n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
+
+            // Send the email
+            if ($mail->send()) {
+                echo "acceptance mail sent";
+                $bulk->update(
+                    ['spaceID' => $spaceID],
+                    ['$push' => ['logUpdates' => [
+                        "type" => "assign",
+                        "assignor" => $_SESSION['email'],
+                        "assignee" => $taskAssignee,
+                        "date" => $string
+                    ]]]
+                );
+            } else {
+                echo "acceptance mail NOT sent";
+            }
+        }
+        $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
     } else {
-        echo "acceptance mail NOT sent";
+        echo "Failed to add task";
     }
-} else if ($operation === "reject") {
-    // Construct the update operation using $pull operator
-    $updateOperation = ['$pull' => ['pendingMembers' => $member]];
-    // Add the update operations to the bulk write operation
-    $bulkWrite->update($filter, $updateOperation);
-} else if ($operation === "kick") {
-    // Construct the update operation using $pull operator
-    $updateOperation = ['$pull' => ['members' => $member]];
-    $bulkWrite->update($filter, $updateOperation);
-} 
-// execute
-$result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
+} elseif ($operation === "editTask") {
+    $bulk = new MongoDB\Driver\BulkWrite();
+    $taskID = $_POST['taskID'];
+    $taskCheck = $_POST['taskCheck'];
+    $taskName = $_POST['task_name'];
+    $taskDesc = $_POST['description'];
+    $taskDue = $_POST['due'];
+    $taskAssignee = $_POST['assignee'];
+
+    // Define the filter to match the document and the specific task within the tasks array
+    $filter = [
+        "spaceID" => $spaceID,
+        "tasks.taskID" => $taskID
+    ];
+    // Define the update operation using the $set operator
+    $updateOperation = [
+        '$set' => [
+            'tasks.$[element].task_name' => $taskName,
+            'tasks.$[element].description' => $taskDesc,
+            'tasks.$[element].due' => $taskDue,
+            'tasks.$[element].checked' => $taskCheck,
+            "tasks.$[element].assignee" => $taskAssignee,
+            "tasks.$[element].lastEditedBy" => $_SESSION['email']
+        ]
+    ];
+
+    // Define the array filters for the update operation
+    $arrayFilters = [
+        [
+            'element.taskID' => $taskID
+        ]
+    ];
+
+
+    // Add the update operation to the bulk write
+    $bulkWrite->update($filter, $updateOperation, ['multi' => false, 'arrayFilters' => $arrayFilters]);
+
+    
+    $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
+    if ($result->getModifiedCount() > 0) {
+        $dateTime = new DateTime();
+        $string = $dateTime->format('Y-m-d H:i:s');
+        $bulk = new MongoDB\Driver\BulkWrite();
+        $bulk->update(
+            ['spaceID' => $spaceID],
+            ['$push' => ['logUpdates' => [
+                "type" => "edit",
+                "editor" => $_SESSION['email'],
+                "date" => $string
+            ]]]
+        );
+        if ($taskAssignee != "unassigned") {
+            //send alert email of assignment to member
+            $query = new MongoDB\Driver\Query(['email' => $taskAssignee]);
+            $cursor = $manager->executeQuery("Learniverse.users", $query);
+            $data = $cursor->toArray();
+
+            $firstname = $data[0]->firstname;
+            $lastname = $data[0]->lastname;
+            $smtpUsername = 'Learniverse.website@gmail.com';
+            $smtpPassword = 'hnrl utwf fxup rnyd';
+            $smtpHost = 'smtp.gmail.com';
+            $smtpPort = 587;
+
+
+            // Create a new PHPMailer instance
+            $mail = new PHPMailer;
+
+            // Enable SMTP debugging
+            $mail->SMTPDebug = 0;
+
+            // Set the SMTP settings
+            $mail->isSMTP();
+            $mail->Host = $smtpHost;
+            $mail->Port = $smtpPort;
+            $mail->SMTPSecure = 'tls';
+            $mail->SMTPAuth = true;
+            $mail->Username = $smtpUsername;
+            $mail->Password = $smtpPassword;
+
+            // Set the email content
+            $mail->setFrom('Learniverse.website@gmail.com');
+            $mail->addAddress($taskAssignee);
+            $mail->Subject = 'You have been assigned a Task!';
+            $mail->Body = "Dear " . $firstname . " " . $lastname . ",\n\nYou have been assigned a task, come and check it out! \n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
+
+            // Send the email
+            if ($mail->send()) {
+                echo "acceptance mail sent";
+                $bulk->update(
+                    ['spaceID' => $spaceID],
+                    ['$push' => ['logUpdates' => [
+                        "type" => "assign",
+                        "assignor" => $_SESSION['email'],
+                        "assignee" => $taskAssignee,
+                        "date" => $string
+                    ]]]
+                );
+            } else {
+                echo "acceptance mail NOT sent";
+            }
+        }
+        $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
+    } else {
+        echo "Failed to edit task";
+    }
+} elseif ($operation === 'deleteTask') {
+    $taskID = $_POST['taskID'];
+    // Define the filter to match the document containing the tasks array
+    $filter = [
+        // Add your filter conditions to match the document
+        'spaceID' => $spaceID
+    ];
+
+    // Define the pull operation to remove the specific task from the tasks array
+    $pullOperation = [
+        '$pull' => [
+            'tasks' => [
+                'taskID' => $taskID
+            ]
+        ]
+    ];
+
+    $bulkWrite->update($filter, $pullOperation);
+
+    $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
+    if ($result->getModifiedCount() > 0) {
+        $dateTime = new DateTime();
+        $string = $dateTime->format('Y-m-d H:i:s');
+        $bulk = new MongoDB\Driver\BulkWrite();
+        $bulk->update(
+            ['spaceID' => $spaceID],
+            ['$push' => ['logUpdates' => [
+                "type" => "delete",
+                "deletor" => $_SESSION['email'],
+                "date" => $string
+            ]]]
+        );
+        $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
+    } else {
+        echo "Failed to delete task";
+    }
+}

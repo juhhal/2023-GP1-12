@@ -176,7 +176,8 @@ html {
   padding: 10px;
   max-width: 300px;
   margin-bottom: 10px;
-  word-wrap: break-word; /* Add this property to wrap long text */
+  word-wrap: break-word;
+  /* Add this property to wrap long text */
 }
 
 .userchat {
@@ -193,14 +194,16 @@ html {
 }
 
 .data {
-  display: block; /* Add this property to ensure the message is displayed on a separate line */
+  display: block;
+  /* Add this property to ensure the message is displayed on a separate line */
 }
 
 .date {
   float: none;
   color: grey;
   font-size: 0.9rem;
-  margin-top: 5px; /* Adjust the margin as needed */
+  margin-top: 5px;
+  /* Adjust the margin as needed */
 }
 
 #submitChat {
@@ -220,12 +223,15 @@ html {
 #message {
   width: 50%;
   height: 25px;
-  word-wrap: break-word; /* Add this property to wrap long text in the input field */
+  word-wrap: break-word;
+  /* Add this property to wrap long text in the input field */
 }
 
 .scrollable {
-  max-height: 300px; /* Set the maximum height of the scrollable area */
-  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 300px;
+  /* Set the maximum height of the scrollable area */
+  overflow-y: auto;
+  /* Enable vertical scrolling */
 }
 
 /* Add this CSS selector to hide the scrollbar when not scrolling */
@@ -320,6 +326,7 @@ html {
   border-radius: 10px;
   background-color: #fff;
   display: none;
+  z-index: 2;
 }
 
 .memberInfo form {
@@ -784,6 +791,25 @@ html {
   padding-right: 20px;
 }
 
+#leaveSpaceBTN {
+  float: right;
+  margin-right: 8%;
+  padding: 0.5rem 1rem;
+  background-color: rgb(216, 84, 84);
+  border-radius: 10px;
+  border: none;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Soft shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#leaveSpaceBTN:hover {
+  cursor: pointer;
+  background-color: rgb(185, 59, 59);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
 .overview-container {
   display: flex;
   width: auto;
@@ -799,7 +825,8 @@ html {
 
 .chart {
   flex: 1;
-  margin-right: 10px; /* Adjust the margin as needed */
+  margin-right: 10px;
+  /* Adjust the margin as needed */
 }
 
 .calendar {
@@ -840,7 +867,8 @@ html {
   background-color: rgb(239, 233, 233);
   text-align: center;
   width: 35%;
-  height: 200px; /* Set the desired height */
+  height: 200px;
+  /* Set the desired height */
   overflow-y: scroll;
 }
 

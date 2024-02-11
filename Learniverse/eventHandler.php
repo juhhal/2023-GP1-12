@@ -6,9 +6,10 @@ require_once 'session.php';
 $jsonStr = file_get_contents('php://input');
 $jsonObj = json_decode($jsonStr);
 $uid = 0;
-
+$color = 'blue';
 if (property_exists($jsonObj, 'spaceID')) {
     $uid = $jsonObj->spaceID;
+    $color = $jsonObj->color;
 } else {
     $uid = $_SESSION['email'];
 }
@@ -38,7 +39,7 @@ if ($jsonObj->request_type == 'addEvent') {
         $id = $result_json[0]['counter'];
         $incrementedID = intval($id) + 1;
 
-        $event = ['id' => $id, 'title' => $eventTitle, 'description' => $eventDesc, 'reminder' => $eventRem, 'start' => $start, 'end' => $end];
+        $event = ['id' => $id, 'title' => $eventTitle, 'description' => $eventDesc, 'reminder' => $eventRem, 'start' => $start, 'end' => $end, 'color' => $color];
         $id++;
         $bulk->update(
             [

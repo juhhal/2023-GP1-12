@@ -17,7 +17,18 @@ $collectionName = "Learniverse.sharedSpace";
 // Execute the query
 $result = $manager->executeQuery($collectionName, $query);
 $space = $result->toArray()[0];
-if ($_SESSION['email'] != $space->admin && !in_array($_SESSION['email'], $space->members)) {
+$memberCount = count($space->members);
+$pmemberCount = count($space->pendingMembers);
+
+$found = false;
+foreach ($space->members as $member) {
+    if ($member->email === $_SESSION['email']) {
+        $found = true;
+        break;
+    }
+}
+
+if ($_SESSION['email'] != $space->admin && !$found) {
     header("Location:sharedSpace.php");
 }
 //retrieve space admin info
@@ -62,9 +73,12 @@ $admin = $result->toArray()[0];
     <link href="js/fullcalendar/lib/main.css" rel="stylesheet" />
     <script src="js/fullcalendar/lib/main.js"></script>
     <script>
+        var memberCount = <?php echo $memberCount ?>;
+        var pmemberCount = <?php echo $pmemberCount ?>;
+
+
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
-
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 headerToolbar: {
                     left: 'prev,next today',
@@ -110,6 +124,12 @@ $admin = $result->toArray()[0];
 
                     if (formValues) {
                         // Add event
+                        //get event color
+                        <?php $color = "blue";
+                        if ($space->admin != $_SESSION['email'])
+                            foreach ($space->members as $member)
+                                if ($member->email === $_SESSION['email']) $color = $member->color;
+                        ?>
                         fetch("eventHandler.php", {
                                 method: "POST",
                                 headers: {
@@ -120,7 +140,8 @@ $admin = $result->toArray()[0];
                                     start: start.startStr,
                                     end: start.endStr,
                                     event_data: formValues,
-                                    spaceID: '<?php echo $space->spaceID ?>'
+                                    spaceID: '<?php echo $space->spaceID ?>',
+                                    color: '<?php echo $color ?>'
                                 }),
                             })
                             .then(response => response.json())
@@ -237,6 +258,8 @@ $admin = $result->toArray()[0];
             });
 
             calendar.render();
+            //end calendar
+
         });
     </script>
     <!-- SHOUQ SECTION: -->
@@ -610,7 +633,7 @@ $admin = $result->toArray()[0];
                     <button class="tablinks" onclick="openTab(event, 'Feed')">Chat</button>
                     <button class="tablinks" onclick="openTab(event, 'Tasks')">Tasks</button>
                     <button class="tablinks" onclick="openTab(event, 'Files')">Files</button>
-                    <button class="tablinks" onclick="openTab(event, 'Members')">Members <?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span>"; ?></button>
+                    <button class="tablinks" onclick="openTab(event, 'Members')">Members <?php if ($space->admin === $_SESSION['email'] && ($pmemberCount) > 0) echo "<span class= 'pendingNotif'></span>"; ?></button>
                 </div>
 
                 <!-- Tab content -->
@@ -701,14 +724,14 @@ $admin = $result->toArray()[0];
                                             <option <?php echo ($task->assignee === $space->admin) ? "selected " : "";
                                                     echo "value=$space->admin" ?>><?php echo "$admin->firstname $admin->lastname"; ?></option>
                                             <?php foreach ($space->members as $member) {
-                                                $query = new MongoDB\Driver\Query(['email' => $member]);
+                                                $query = new MongoDB\Driver\Query(['email' => $member->email]);
                                                 $memberCursor = $manager->executeQuery('Learniverse.users', $query);
                                                 $memberName = $memberCursor->toArray()[0];
                                                 $selected = "";
-                                                if ($task->assignee === $member)
+                                                if ($task->assignee === $member->email)
                                                     $selected = "selected";
                                             ?>
-                                                <option <?php echo "$selected value=$member"; ?>>
+                                                <option <?php echo "$selected value=$member->email"; ?>>
                                                     <?php echo "$memberName->firstname $memberName->lastname"; ?>
                                                 </option>
                                             <?php } ?>
@@ -738,10 +761,10 @@ $admin = $result->toArray()[0];
                                                     <?php echo $admin->firstname . " " . $admin->lastname ?>
                                                 </option>
                                                 <?php foreach ($space->members as $member) {
-                                                    $query = new MongoDB\Driver\Query(['email' => $member]);
+                                                    $query = new MongoDB\Driver\Query(['email' => $member->email]);
                                                     $memberCursor = $manager->executeQuery('Learniverse.users', $query);
                                                     $memberName = $memberCursor->toArray()[0]; ?>
-                                                    <option value="<?php echo $member ?>">
+                                                    <option value="<?php echo $member->email ?>">
                                                         <?php echo "$memberName->firstname $memberName->lastname" ?>
                                                     </option>
                                                 <?php } ?>
@@ -995,31 +1018,41 @@ $admin = $result->toArray()[0];
                 </div>
 
                 <div id="Members" class="tabcontent">
-                    <button id="spaceInviteBTN"><i class="fa-solid fa-user-plus"></i> Invite Members <?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span>"; ?></button>
+                    <button id="spaceInviteBTN"><i class="fa-solid fa-user-plus"></i> Invite Members <?php if ($space->admin === $_SESSION['email'] && ($pmemberCount) > 0) echo "<span class= 'pendingNotif'></span>"; ?></button>
                     <h3>Admin</h3>
                     <?php echo "<li id='adminName'><i title='admin' class='fa-solid fa-user-tie'></i> $admin->firstname $admin->lastname </li>" ?>
-                    <h3>Members (<?php echo count($space->members) ?>)</h3>
+                    <h3 id="memberCOUNT"></h3>
                     <?php
 
                     echo "<ul class='memberList'>";
 
                     // Access individual members
                     foreach ($space->members as $member) {
-                        $query = new MongoDB\Driver\Query(['email' => $member]);
+                        $query = new MongoDB\Driver\Query(['email' => $member->email]);
                         $memberCursor = $manager->executeQuery('Learniverse.users', $query);
                         $memberName = $memberCursor->toArray()[0];
                         $kickButton = null;
                         if ($space->admin === $_SESSION['email'])
                             $kickButton =  "<button class='kick'><i class='fa-solid fa-circle-exclamation'></i> kick</button>";
                         // print the member
-                        echo "<div class='memberName'><li><i title='members' class='fa-solid fa-user'></i> $memberName->firstname $memberName->lastname  </li>";
-                        echo "<div class='memberInfo'>Email: <span class='member-email'>$member</span> <form action='mailto:$member'><button title='Send an Email' type='submit'><i style='color:#faf7ff' class='fa-solid fa-paper-plane'></i></button></form> 
+                        echo "<div class='memberName'><li style='color:$member->color'><i title='members' class='fa-solid fa-user'></i> $memberName->firstname $memberName->lastname  </li>";
+                        echo "<div class='memberInfo'>Email: <span class='member-email'>$member->email</span> <form action='mailto:$member->email'><button title='Send an Email' type='submit'><i style='color:#faf7ff' class='fa-solid fa-paper-plane'></i></button></form> 
                                $kickButton</div></div>";
                     }
 
                     echo "</ul>";
                     ?>
                     <script>
+                        function updateMemberCount() {
+                            $("#memberCOUNT").text("Members (" + memberCount + ")");
+                            $(".pendingNotif").text(pmemberCount);
+
+                            if (pmemberCount === 0) {
+                                $(".pendingNotif").remove();
+                                $("#joinrequtitle").remove();
+                            }
+                        }
+                        updateMemberCount();
                         // Get all the memberName elements
                         const memberNames = document.querySelectorAll('.memberName');
 
@@ -1073,6 +1106,12 @@ $admin = $result->toArray()[0];
                                                     member: memberEmail,
                                                     spaceid: '<?php echo $space->spaceID ?>',
                                                     spacename: '<?php echo $space->name ?>'
+                                                },
+                                                success: function(response) {
+                                                    memberName.remove();
+                                                    memberCount--;
+                                                    updateMemberCount();
+                                                    console.log("kicked a member");
                                                 }
                                             });
                                         }
@@ -1090,8 +1129,8 @@ $admin = $result->toArray()[0];
                             <p class="guideline">Copy and send the following Code to invite your friends to this space!</p>
                             <input type="text" id="invitationCode" value="<?php echo $space->spaceID ?>" readonly>
                             <button id="copyButton"><i class="fa-regular fa-copy"></i> Copy</button>
-                            <h3><?php if ($space->admin === $_SESSION['email'] && count($space->pendingMembers) > 0) {
-                                    echo "<span class= 'pendingNotif'>" . count($space->pendingMembers) . "</span> Join Requests"; ?></h3>
+                            <h3 id="joinrequtitle"><?php if ($space->admin === $_SESSION['email'] && ($pmemberCount) > 0) {
+                                                        echo "<span class= 'pendingNotif'></span> Join Requests"; ?></h3>
                             <ul id="joinRequestsList">
                                 <?php foreach ($space->pendingMembers as $member) { ?>
                                     <li>
@@ -1102,14 +1141,15 @@ $admin = $result->toArray()[0];
                                         </span>
                                     </li>
                             <?php
-                                    }
-                                }
+                                                        }
+                                                    }
                             ?>
                             </ul>
                         </div>
                     </div>
 
                     <script>
+                        updateMemberCount();
                         var spaceInviteBTN = document.getElementById('spaceInviteBTN');
                         var overlay = document.getElementById('inviteDiv');
                         var invitationCode = document.getElementById('invitationCode');
@@ -1117,7 +1157,7 @@ $admin = $result->toArray()[0];
                         var acceptButtons = document.getElementsByClassName('acceptButton');
                         var rejectButtons = document.getElementsByClassName('rejectButton');
                         var joinRequestsList = document.getElementById('joinRequestsList');
-
+                        var memberList = $(".memberList");
                         spaceInviteBTN.addEventListener('click', function() {
                             overlay.style.display = 'flex';
                             copyButton.disabled = false;
@@ -1127,7 +1167,6 @@ $admin = $result->toArray()[0];
                                 var listItem = button.parentNode.parentNode;
                                 var member = listItem.querySelector('.member-email').textContent.trim();
                                 button.addEventListener('click', function() {
-
                                     $.ajax({
                                         url: "pendingMemberProcess.php",
                                         method: "POST",
@@ -1139,7 +1178,79 @@ $admin = $result->toArray()[0];
                                         },
                                         success: function(response) {
                                             // On successful response, remove the list item from the DOM
+                                            memberCount++;
+                                            pmemberCount--;
+                                            console.log("added member");
                                             joinRequestsList.removeChild(listItem);
+                                            updateMemberCount();
+                                            var newMember = $("<div>")
+                                                .addClass("memberName")
+                                                .append(
+                                                    $("<li style='color:"+response.color+"'>").html("<i title='members' class='fa-solid fa-user'></i> " + response.name)
+                                                );
+                                            var kick = null;
+                                            if (<?php echo ($space->admin === $_SESSION['email']) ? 1 : 0 ?>)
+                                                kick = $("<button>").addClass("kick").html("<i class='fa-solid fa-circle-exclamation'></i> kick");
+                                            kick.on('click', function() {
+                                                Swal.fire({
+                                                    title: 'Heads Up!',
+                                                    text: 'Are you sure you want to kick ' + response.name + '?',
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonText: 'Yes',
+                                                    cancelButtonText: 'No',
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        $.ajax({
+                                                            url: 'pendingMemberProcess.php',
+                                                            method: 'post',
+                                                            data: {
+                                                                operation: 'kick',
+                                                                member: member,
+                                                                spaceid: '<?php echo $space->spaceID ?>',
+                                                                spacename: '<?php echo $space->name ?>'
+                                                            },
+                                                            success: function(response) {
+                                                                newMember.remove();
+                                                                memberCount--;
+                                                                updateMemberCount();
+                                                                console.log("kicked a member");
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            });
+
+                                            var memberInfoDiv = $("<div>")
+                                                .addClass("memberInfo")
+                                                .html(
+                                                    "Email: <span class='member-email'>" + member + "</span> <form action='mailto:" + member + "'><button title='Send an Email' type='submit'><i style='color:#faf7ff' class='fa-solid fa-paper-plane'></i></button></form>"
+                                                )
+                                                .append(kick);
+
+                                            memberInfoDiv.hover(
+                                                function() {
+                                                    memberInfoDiv.css("display", "block")
+                                                },
+                                                function() {
+                                                    //hover-out event
+                                                    memberInfoDiv.css("display", "none");
+                                                });
+
+
+                                            newMember.append(memberInfoDiv);
+
+                                            newMember.hover(
+                                                function() {
+                                                    memberInfoDiv.css("display", "block")
+                                                },
+                                                function() {
+                                                    //hover-out event
+                                                    memberInfoDiv.css("display", "none");
+                                                });
+
+
+                                            memberList.append(newMember);
                                             console.log(response);
                                         },
                                         error: function(xhr, status, error) {
@@ -1165,6 +1276,8 @@ $admin = $result->toArray()[0];
                                         },
                                         success: function(response) {
                                             // On successful response, remove the list item from the DOM
+                                            pmemberCount -= 1;
+                                            updateMemberCount();
                                             joinRequestsList.removeChild(listItem);
                                             console.log(response); // Optional: Display the response in the console
                                         },
@@ -1193,6 +1306,7 @@ $admin = $result->toArray()[0];
                 </div>
             </div>
             <div class="overview workarea_item">
+                <button id="leaveSpaceBTN"><?php echo ($space->admin === $_SESSION['email']) ? 'Delete' : 'Leave' ?> Space</button>
                 <div class="overview-container">
                     <div class="container calendar">
                         <div class="wrapper">
@@ -1243,6 +1357,36 @@ $admin = $result->toArray()[0];
                             ?>
                         </div>
                         <script>
+                            $("#leaveSpaceBTN").on('click', function() {
+                                Swal.fire({
+                                    title: 'Heads Up!',
+                                    text: 'Are you sure you want to <?php echo ($space->admin === $_SESSION['email']) ? "permenantly delete $space->name " : "leave $space->name " ?>?',
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Yes',
+                                    cancelButtonText: 'No',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $.ajax({
+                                            url: 'pendingMemberProcess.php',
+                                            method: 'post',
+                                            data: {
+                                                operation: '<?php echo ($space->admin === $_SESSION['email']) ? 'deleteSpace' : 'kick'; ?>',
+                                                member: '<?php echo $_SESSION['email'] ?>',
+                                                spaceid: '<?php echo $space->spaceID ?>',
+                                                spacename: '<?php echo $space->name ?>'
+                                            },
+                                            success: function(response) {
+                                                console.log(response);
+                                            },
+                                            error: function(xhr, status, error) {
+                                                console.error(error);
+                                            }
+                                        });
+                                    }
+                                });
+                            });
+
                             function addLogUpdateToPage(logUpdate) {
                                 var $logUpdates = $('#logUpdates');
                                 var $newLogUpdate = $('<span class="log">' + logUpdate + '</span>');
