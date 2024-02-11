@@ -1,5 +1,6 @@
 <?php
 require "session.php";
+if (!isset($_GET['space'])) header('Location:sharedspace.php');
 //connect to db
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 // MongoDB query
@@ -125,7 +126,7 @@ $admin = $result->toArray()[0];
                     if (formValues) {
                         // Add event
                         //get event color
-                        <?php $color = "blue";
+                        <?php $color = "#3788d8";
                         if ($space->admin != $_SESSION['email'])
                             foreach ($space->members as $member)
                                 if ($member->email === $_SESSION['email']) $color = $member->color;
@@ -187,15 +188,16 @@ $admin = $result->toArray()[0];
                                     body: JSON.stringify({
                                         request_type: 'deleteEvent',
                                         event_id: info.event.id,
-                                        spaceID: '<?php echo $space->spaceID ?>'
+                                        spaceID: '<?php echo $space->spaceID ?>',
+                                        color: '<?php echo $color?>'
                                     }),
                                 })
                                 .then(response => response.json())
-                                .then(data => {
-                                    if (data.status == 1) {
+                                .then(response => {
+                                    if (response.status == 1) {
                                         Swal.fire('Event deleted successfully!', '', 'success');
                                     } else {
-                                        Swal.fire(data.error, '', 'error');
+                                        Swal.fire(response.error, '', 'error');
                                     }
 
                                     // Refetch events from all sources and rerender
@@ -233,7 +235,8 @@ $admin = $result->toArray()[0];
                                                 end: info.event.endStr,
                                                 event_id: info.event.id,
                                                 event_data: result.value,
-                                                spaceID: '<?php echo $space->spaceID ?>'
+                                                spaceID: '<?php echo $space->spaceID ?>',
+                                                color: '<?php echo $color ?>'
                                             })
                                         })
                                         .then(response => response.json())
@@ -1186,7 +1189,7 @@ $admin = $result->toArray()[0];
                                             var newMember = $("<div>")
                                                 .addClass("memberName")
                                                 .append(
-                                                    $("<li style='color:"+response.color+"'>").html("<i title='members' class='fa-solid fa-user'></i> " + response.name)
+                                                    $("<li style='color:" + response.color + "'>").html("<i title='members' class='fa-solid fa-user'></i> " + response.name)
                                                 );
                                             var kick = null;
                                             if (<?php echo ($space->admin === $_SESSION['email']) ? 1 : 0 ?>)

@@ -6,7 +6,7 @@ require_once 'session.php';
 $jsonStr = file_get_contents('php://input');
 $jsonObj = json_decode($jsonStr);
 $uid = 0;
-$color = 'blue';
+$color = '#3788d8';
 if (property_exists($jsonObj, 'spaceID')) {
     $uid = $jsonObj->spaceID;
     $color = $jsonObj->color;
@@ -82,7 +82,7 @@ if ($jsonObj->request_type == 'addEvent') {
 
     if (!empty($eventTitle)) {
         // Update event data into the database 
-        $event = ['id' => $event_id, 'title' => $eventTitle, 'description' => $eventDesc,  'reminder' => $eventRem, 'start' => $start, 'end' => $end];
+        $event = ['id' => $event_id, 'title' => $eventTitle, 'description' => $eventDesc,  'reminder' => $eventRem, 'start' => $start, 'end' => $end, 'color' => $color];
         $bulk->update(
             [
                 'user_id' => $uid,
