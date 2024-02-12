@@ -47,14 +47,16 @@ if (isset($_SESSION['email'])) {
     <script src="jquery.js"></script>
     <script>
         $(document).ready(function() {
-            $("#rename-form").hide();
+            if (<?php echo isset($_SESSION['email']) ? 1 : 0 ?>) {
+                $("#rename-form").hide();
 
-            if ($("#rename-form").css("display") === "none" || $("#rename-form").is(":hidden"))
-                cancelRename();
+                if ($("#rename-form").css("display") === "none" || $("#rename-form").is(":hidden"))
+                    cancelRename();
 
-            document.querySelector(".Pdropdown-menu").addEventListener("mouseleave", function() {
-                cancelRename();
-            });
+                document.querySelector(".Pdropdown-menu").addEventListener("mouseleave", function() {
+                    cancelRename();
+                });
+            }
         });
 
         // PROFILE DROPDOWN MENU
@@ -154,7 +156,7 @@ if (isset($_SESSION['email'])) {
                             <li class="center">Username: ' . $fetch['username'] . '</li>
                             <li class="center">' . $fetch['email'] . '</li>
                             <hr>';
-                        echo "<li><a href='reset.php?q=index.php'><i class='far fa-edit'></i> Change password</a></li>";
+                    echo "<li><a href='reset.php?q=index.php'><i class='far fa-edit'></i> Change password</a></li>";
                     echo '
     
                             <li><a href="#"><i class="far fa-question-circle"></i> Help </a></li>
@@ -201,8 +203,8 @@ if (isset($_SESSION['email'])) {
     </main>
     <footer id="footer" style="margin-top: 7%;">
 
-<div id="copyright">Learniverse &copy; 2023</div>
-</footer>
+        <div id="copyright">Learniverse &copy; 2023</div>
+    </footer>
 </body>
 
 </html>
