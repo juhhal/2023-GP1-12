@@ -253,7 +253,7 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
           <a href="theFiles.php?q=My Files"> My Files</a>
         </li>
         <li class="tool_item">
-          <a href="quizes/quizes.php">Quiz</a>
+          <a href="/quizes/">Quiz</a>
         </li>
         <li class="tool_item">
           Flashcard
@@ -286,10 +286,101 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
       </ul>
         </div>
 
-    <div class="container">
-      <div class="title-container">
-        <h1 class="title">Title</h1>
+        <div class="container">
+      <div class="btn-container">
+        <button id="upload-btn">Upload</button>
+        <input id="file-upload" type="file" hidden />
       </div>
+      <div class="intro-card-container">
+        <div class="intro-card">
+          <h2>Hello User 👋</h2>
+          <p>How would you like to learn?</p>
+          <a href="/quizes/quiz.php">
+            <div>
+              <h4>✍️ Quiz ?</h4>
+              <p>
+                Strengthen your understanding on every concept by solving
+                multiple choice questions
+              </p>
+            </div>
+          </a>
+          <img class="close-icon" src="icons/close.svg" alt="" />
+        </div>
+      </div>
+
+      <table class="table" id="myTable">
+        <thead>
+          <tr>
+            <th class="table__col-1" scope="col">File Name</th>
+            <th class="table__col-2" scope="col">Score</th>
+            <th class="table__col-3" scope="col">Upload Time</th>
+            <th class="table__col-4" scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mark</td>
+            <td>100</td>
+            <td>2/2/2024</td>
+            <td>
+              <img class="view-icon" src="icons/view.svg" alt="" />
+              <img
+                id="trash-icon"
+                class="trash-icon"
+                src="icons/trash.svg"
+                alt=""
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="questions-modal-container">
+        <div class="questions-modal">
+          <h2>Quiz</h2>
+          <div class="question">
+            <h5>What is the capital of Canada?</h5>
+            <p>Answer</p>
+          </div>
+          <div class="question">
+            <h5>What is the longest river in the world?</h5>
+            <p>Answer</p>
+          </div>
+          <div class="question">
+            <h5>Which desert is the largest in the world?</h5>
+            <p>Answer</p>
+          </div>
+          <div class="question">
+            <h5>What country has the most natural lakes?</h5>
+            <p>Answer</p>
+          </div>
+          <div class="question">
+            <h5>In which continent is the Amazon Rainforest located?</h5>
+            <p>Answer</p>
+          </div>
+          <div class="question">
+            <h5>What is the smallest country in the world?</h5>
+            <p>Answer</p>
+          </div>
+          <div class="question">
+            <h5>Mount Everest is located in which mountain range?</h5>
+            <p>Answer</p>
+          </div>
+          <div class="question">
+            <h5>What is the capital city of Australia?</h5>
+            <p>Answer</p>
+          </div>
+          <img class="close-icon" src="icons/close.svg" alt="" />
+        </div>
+      </div>
+    </div>
+
+    <footer>
+    <div class="footer-div" id="socials">
+      <h4>Follow Us on Social Media</h4>
+
+      <a href="https://twitter.com/learniversewebsite" target="_blank"><img src="../images/twitter.png" alt="@Learniverse"></a>
+
+    </div>
       <div class="questions-count">
         <div class="question-count"></div>
         <div class="question-count"></div>
@@ -335,79 +426,18 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
       </div>
     </div>
 
-    <footer>
-    <div class="footer-div" id="socials">
-      <h4>Follow Us on Social Media</h4>
+    <footer id="footer" style="margin-top: 7%;">
 
-      <a href="https://twitter.com/learniversewebsite" target="_blank"><img src="../images/twitter.png" alt="@Learniverse"></a>
+<div id="copyright">Learniverse &copy; 2023</div>
+</footer>
 
-    </div>
-      <div class="questions-count">
-        <div class="question-count"></div>
-        <div class="question-count"></div>
-        <div class="question-count"></div>
-        <div class="question-count"></div>
-        <div class="question-count"></div>
-        <div class="question-count"></div>
-        <div class="question-count"></div>
-        <div class="question-count"></div>
-        <div class="question-count"></div>
-        <div class="question-count"></div>
-      </div>
-      <div class="question-container">
-        <div class="question-progress">
-          <img
-            src="sky-spark.svg"
-            alt="spark"
-          />
-          <p class="">1 from 10</p>
-        </div>
-        <div class="answers-container">
-          <div>
-            <h2 class="question-text">Question?</h2>
-          </div>
-          <div class="form" id="form1">
-            <div form="form1" class="answer-container">
-              <input id="answer" name="answerGroup" type="radio" />
-              <label for="answer"> Answer One </label>
-            </div>
-            <div form="form1" class="answer-container">
-              <input id="answer1" name="answerGroup" type="radio" />
-              <label for="answer1"> Answer Two </label>
-            </div>
-            <div form="form1" class="answer-container">
-              <input id="answer2" name="answerGroup" type="radio" />
-              <label for="answer2"> Answer Three </label>
-            </div>
-          </div>
-          <div class="skip-container">
-            <p class="">Skip</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <footer>
-    <div class="footer-div" id="socials">
-      <h4>Follow Us on Social Media</h4>
-
-      <a href="https://twitter.com/learniversewebsite" target="_blank"><img src="../images/twitter.png" alt="@Learniverse"></a>
-
-    </div>
-    <div class="footer-div" id="contacts">
-      <h4>Contact Us</h4>
-
-      <a href="mailto:learniverse.website@gmail.com" target="_blank"><img src="../images/gmail.png" alt="learniverse.website@gmail.com"></a>
-
-    </div>
-    <img id="footerLogo" src="../LOGO.png" alt="Learniverse">
-    <div id="copyright">Learniverse &copy; 2023</div>
-  </footer>
 
 
   <div role="button" id="sidebar-tongue" style="margin-left: 0;">
     &gt;
   </div>
+
+  <script src="./index.js"></script>
 </body>
 </html>
   

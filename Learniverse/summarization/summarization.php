@@ -252,7 +252,7 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
           <a href="theFiles.php?q=My Files"> My Files</a>
         </li>
         <li class="tool_item">
-          <a href="quizes/quizes.php">Quiz</a>
+          <a href="quizes/">Quiz</a>
         </li>
         <li class="tool_item">
           Flashcard
