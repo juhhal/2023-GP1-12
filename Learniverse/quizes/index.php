@@ -462,12 +462,14 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
                 Swal.fire({
                         html: 'Uploaded Successfully!',
                         showCancelButton: false,
-                        showConfirmButton: false,
                         cancelButtonText: 'Close',
                         buttonsStyling: false,
                         showCloseButton: true
                     });  
-                    window.location.href = '/thefiles.php';
+                introCard.style.display = "flex";
+                introCardContainer.style.background = "rgba(0, 0, 0, 0.2)";
+                introCardContainer.style.zIndex = "1000";
+                container.style.zIndex = "-1000";
             }
         })
       })
