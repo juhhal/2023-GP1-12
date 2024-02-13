@@ -15,6 +15,7 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
   <link rel="stylesheet" href="../header-footer.css">
   <link rel="stylesheet" href="../theFiles.css">
   <link rel="stylesheet" href="index.css">
+  <script src="../js/sweetalert2.all.min.js"></script>
   <script src="../jquery.js"></script>
   <script type='text/javascript'>
     $(document).ready(function() {
@@ -178,7 +179,7 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
                 <a href="#">Community</a>
               </li>
               <li class="active">
-                <a href="../workspace.php">My Workspace</a>
+                <a href="/workspace.php">My Workspace</a>
               </li>
             </ul> <!-- end menu -->
           </nav>
@@ -246,11 +247,11 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
   <div id="tools_div">
         <ul class="tool_list">
         <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
+          <a href="/workspace.php"> Calendar & To-Do
           </a>
         </li>
         <li class="tool_item">
-          <a href="theFiles.php?q=My Files"> My Files</a>
+          <a href="/theFiles.php"> My Files</a>
         </li>
         <li class="tool_item">
           <a href="/quizes/">Quiz</a>
@@ -287,10 +288,10 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
         </div>
 
         <div class="container">
-      <div class="btn-container">
+      <form enctype="multipart/form-data" id="uploadFORM" class="btn-container">
         <button id="upload-btn">Upload</button>
         <input id="file-upload" type="file" hidden />
-      </div>
+      </form>
       <div class="intro-card-container">
         <div class="intro-card">
           <h2>Hello User 👋</h2>
@@ -319,9 +320,9 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
         </thead>
         <tbody>
           <tr>
-            <td>Mark</td>
-            <td>100</td>
-            <td>2/2/2024</td>
+            <td></td>
+            <td></td>
+            <td></td>
             <td>
               <img class="view-icon" src="icons/view.svg" alt="" />
               <img
@@ -438,6 +439,40 @@ $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
   </div>
 
   <script src="./index.js"></script>
+  <script type="text/javascript">
+    const form = document.querySelector('#uploadFORM');
+    const uploadedFile = document.querySelector('#file-upload');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault(); 
+    });
+    
+    uploadedFile.addEventListener('change', e => {
+      e.preventDefault();
+      const formdata = new FormData(form);
+      formdata.append('file', uploadedFile.files[0]);
+
+        $.ajax({
+            url: '../upload.php',
+            data: formdata,
+            method: 'POST',
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                Swal.fire({
+                        html: 'Uploaded Successfully!',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        cancelButtonText: 'Close',
+                        buttonsStyling: false,
+                        showCloseButton: true
+                    });  
+                    window.location.href = '/thefiles.php';
+            }
+        })
+      })
+    
+  </script>
 </body>
 </html>
   

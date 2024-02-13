@@ -53,9 +53,9 @@ if (uploadBtn) {
   });
 }
 
-fileUpload.addEventListener("change", function () {
-  introCard.style.display = "flex";
-  introCardContainer.style.background = "rgba(0, 0, 0, 0.2)";
-  introCardContainer.style.zIndex = "1000";
-  container.style.zIndex = "-1000";
-});
+// fileUpload.addEventListener("change", function () {
+//   introCard.style.display = "flex";
+//   introCardContainer.style.background = "rgba(0, 0, 0, 0.2)";
+//   introCardContainer.style.zIndex = "1000";
+//   container.style.zIndex = "-1000";
+// });
