@@ -12,16 +12,16 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 def summarize(path: str) -> str:
     try:
         logging.info("Reading text from file.")
-        with open(path, 'r') as file:
+        with open(path, 'r', encoding='latin-1') as file:
             text = file.read()
 
         logging.info("Creating OpenAI client and generating response.")
-        client = OpenAI(api_key = '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')
+        client = OpenAI(api_key = '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')
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo-1106",
+            model="gpt-3.5-turbo-0125",
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": "You are a multiple choice quiz generator designed to output JSON written in this format question number (for example: question1) until 10,  and includes the following entities: question content (question), 3 multiple choices (choices), number of correct choice (correct), and a score for the quality of the question from 1 to 10 (score)."},
+                {"role": "system", "content": "You are a multiple choice quiz generator designed to output JSON and never return an empty response, write in this format question number (for example: question1) until 10,  and includes the following entities: question content (question), 3 multiple choices (choices), number of correct choice (correct), and a score for the quality of the question from 1 to 10 (score)."},
                 {"role": "user", "content": text}
             ]
         )
@@ -31,11 +31,11 @@ def summarize(path: str) -> str:
         with open(temp_file.name, 'w') as file:
             file.write(response.choices[0].message.content)
 
-        logging.info("quiz generating complete.")
+        logging.info("Summarization complete.")
         return temp_file.name
     
     except Exception as e:
-        logging.error("An error occurred during quiz generating: %s", str(e))
+        logging.error("An error occurred during summarization: %s", str(e))
         return ''
 
 if __name__ == "__main__":
@@ -45,4 +45,4 @@ if __name__ == "__main__":
         logging.info("Temporary file path: %s", temp_file_path)
         print(temp_file_path)
     else:
-        logging.error("No file path provided for quiz generating.")
+        logging.error("No file path provided for summarization.")

@@ -12,16 +12,16 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 def summarize(path: str) -> str:
     try:
         logging.info("Reading text from file.")
-        with open(path, 'r') as file:
+        with open(path, 'r', encoding='latin-1') as file:
             text = file.read()
 
         logging.info("Creating OpenAI client and generating response.")
-        client = OpenAI(api_key = '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')
+        client = OpenAI(api_key = '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')
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo-1106",
+            model="gpt-3.5-turbo-0125",
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": "You are a summarizer designed to output JSON with all the summary written inside this key (summary)."},
+                {"role": "system", "content": "You are a summarizer designed to output JSON with all the summary written inside this key (summary) and never return an empty response."},
                 {"role": "user", "content": text}
             ]
         )

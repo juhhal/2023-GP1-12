@@ -1,182 +1,277 @@
 .container {
-    max-width: 1440px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 10px;
-    padding-right: 10px;
-    min-height: 90vh;
-  }
-  
-  .title-container {
-    position: relative;
-    margin-top: 16px;
-    margin-bottom: 16px;
-  }
-  .title {
-    text-align: center;
-    font-size: 30px;
-  }
-  .x-icon {
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-  .questions-count {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .question-count:first-child {
-    max-width: 130px;
-    width: 100%;
-    height: 10px;
-    border-radius: 32px;
-    background-color: #6961f0;
-  }
-  .question-count {
-    max-width: 130px;
-    width: 100%;
-    height: 10px;
-    border-radius: 32px;
-    background-color: rgba(96, 97, 240, 0.12);
-  }
-  
-  .question-container {
-    max-width: 900px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  /* mt-3 flex gap-2 */
-  .question-progress {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  /* text-[#748094] */
-  .question-progress p {
-    color: #748094;
-  }
-  .answers-container {
-    margin-top: 80px;
-  }
-  .question-text {
-    text-align: center;
-    font-weight: bold;
-    font-size: 18px;
-  }
-  .form {
-    margin-top: 40px;
-  }
-  .answer-container {
-    display: flex;
-    gap: 12px;
-    border-radius: 13px;
-    background-color: white;
-    width: 100%;
-    padding: 20px;
-    cursor: pointer;
-    margin-top: 10px;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  }
-  .answer-container label {
-    width: 100%;
-    height: 100%;
-  }
-  label,
-  input {
-    cursor: pointer;
-  }
-  .skip-container {
-    margin-top: 40px;
-    padding: 12px;
-    cursor: pointer;
-    color: #748094;
-  }
-  .summarize-heading {
-    text-align: center;
-    margin-top: 80px;
-  }
-  
-  .summarize-heading h1 {
-    text-align: center;
-    margin-top: 80px;
-    font-size: 50px;
-    margin-bottom: 0px;
-  }
-  .button-container {
-    text-align: center;
-    margin-top: 80px;
-  }
-  .custom-file-upload {
-    border: 1px solid #6961f0;
-    display: inline-block;
-    padding: 8px 16px;
-    cursor: pointer;
-    color: #6961f0;
-    border-radius: 5px;
-  }
-  input[type="file"] {
-    display: none;
-  }
-  .summary-container {
-    margin-top: 50px;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: white;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
-      rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-    padding: 15px;
-    margin-bottom: 30px;
-    border-radius: 15px;
-  }
-  .summarize-container {
-    display: flex;
-    justify-content: center;
-    justify-items: center;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    height: 300px;
-    padding: 20px;
-    font-size: 16px;
-    line-height: 25px;
-    margin-top: 20px;
-  }
-  input[type="file"] {
-    display: none;
-  }
-  .button-container label {
-    display: block;
-    position: relative;
-    background-color: #bf97d8;
-    color: #ffffff;
-    font-size: 1.12em;
-    font-weight: 500;
-    text-align: center;
-    width: 18.75em;
-    padding: 1.12em 0;
-    margin: auto;
-    border-radius: 0.31em;
-    cursor: pointer;
-  }
-  #num-of-files {
-    font-weight: 400;
-    text-align: center;
-    margin: 1.25em 0 1.87em 0;
-  }
-  ul {
-    list-style-type: none;
-    padding-left: 0px;
-  }
-  .container li {
-    font-weight: 500;
-    background-color: #eff5ff;
-    color: #025bee;
-    margin-bottom: 1em;
-    padding: 1.1em;
-    border-radius: 0.3em;
-    display: flex;
-    justify-content: space-between;
-  }
-  
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+  min-height: 90vh;
+}
+
+.title-container {
+  position: relative;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+.title {
+  text-align: center;
+  font-size: 30px;
+}
+.x-icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.questions-count {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.question-count:first-child {
+  max-width: 130px;
+  width: 100%;
+  height: 10px;
+  border-radius: 32px;
+  background-color: #6961f0;
+}
+.question-count {
+  max-width: 130px;
+  width: 100%;
+  height: 10px;
+  border-radius: 32px;
+  background-color: rgba(96, 97, 240, 0.12);
+}
+
+.question-container {
+  max-width: 900px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* mt-3 flex gap-2 */
+.question-progress {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+/* text-[#748094] */
+.question-progress p {
+  color: #748094;
+}
+.answers-container {
+  margin-top: 80px;
+}
+.question-text {
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+.form {
+  margin-top: 40px;
+}
+.answer-container {
+  display: flex;
+  gap: 12px;
+  border-radius: 13px;
+  background-color: white;
+  width: 100%;
+  padding: 20px;
+  cursor: pointer;
+  margin-top: 10px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.answer-container label {
+  width: 100%;
+  height: 100%;
+}
+label,
+input {
+  cursor: pointer;
+}
+.skip-container {
+  margin-top: 40px;
+  padding: 12px;
+  cursor: pointer;
+  color: #748094;
+}
+.summarize-heading {
+  text-align: center;
+  margin-top: 80px;
+}
+
+.summarize-heading h1 {
+  text-align: center;
+  margin-top: 80px;
+  font-size: 50px;
+  margin-bottom: 0px;
+}
+.button-container {
+  text-align: center;
+  margin-top: 50px;
+}
+.custom-file-upload {
+  border: 1px solid #6961f0;
+  display: inline-block;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #6961f0;
+  border-radius: 5px;
+}
+input[type="file"] {
+  display: none;
+}
+.summary-container {
+  margin-top: 50px;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  padding: 15px;
+  margin-bottom: 30px;
+  border-radius: 15px;
+}
+
+.summary-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.text-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center align the content vertically */
+}
+
+.summarize-container {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  height: 300px;
+  font-size: 16px;
+  line-height: 25px;
+  margin-top: 20px;
+  width: 90%;
+
+  box-shadow: inset rgba(194, 194, 194, 0.05) 0px 6px 12px 0px,
+    inset rgba(173, 173, 173, 0.08) 0px 0px 0px 1px;
+}
+
+.summarize-container textarea {
+  width: 100%; /* Make the input element fill the width of the parent div */
+  height: 100%; /* Make the input element fill the height of the parent div */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  border: none; /* Remove default input border */
+  padding: 5px; /* Add padding for better appearance */
+  box-shadow: inset rgba(194, 194, 194, 0.05) 0px 6px 12px 0px,
+    inset rgba(173, 173, 173, 0.08) 0px 0px 0px 1px;
+  outline: none;
+  text-align: left !important;
+  vertical-align: top !important;
+  font-weight: 300;
+}
+
+.sum {
+  margin-left: -70%;
+  margin-bottom: -10px;
+}
+
+.containers {
+  display: flex;
+  align-items: center; /* This will vertically center align the items */
+  justify-content: flex-start; /* This will align items to the start of the container */
+  margin-right: -50%;
+  margin-top: -2%;
+}
+
+.copy,
+.download {
+  position: relative;
+  background-color: #bf97d8;
+  color: #ffffff;
+  font-size: 0.9em;
+  font-weight: 300;
+  text-align: center;
+  width: 7.75em;
+  height: 2em;
+  margin-right: -70%;
+  border-radius: 0.31em;
+  cursor: pointer;
+  border: none;
+  margin-right: 10px; /* Adjust margin between buttons */
+  /* Remove float, inline-block, and position if you use flex */
+}
+
+#cont {
+  margin-top: 5px;
+  /* padding-left: 10px; */
+}
+
+#summary {
+  padding-left: 10px;
+}
+
+.copy:hover,
+.download:hover {
+  box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+    0 4px 6px 0 rgb(93 100 148 / 20%);
+}
+
+input[type="file"] {
+  display: none;
+}
+.button-container label {
+  display: block;
+  position: relative;
+  background-color: #bf97d8;
+  color: #ffffff;
+  font-size: 1.12em;
+  font-weight: 500;
+  text-align: center;
+  width: 18.75em;
+  padding: 1.12em 0;
+  margin: auto;
+  border-radius: 0.31em;
+  cursor: pointer;
+}
+#num-of-files {
+  font-weight: 400;
+  text-align: center;
+  margin: 1.25em 0 1.87em 0;
+}
+ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
+.container li {
+  font-weight: 500;
+  background-color: #eff5ff;
+  color: #025bee;
+  margin-bottom: 1em;
+  padding: 1.1em;
+  border-radius: 0.3em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.iconpdf,
+.iconp {
+  margin-right: 10px;
+}
+
+.iconpdf {
+  margin-left: 150px;
+}
+/* Base styles for icons */
+.iconpdf,
+.iconp {
+  color: lightgrey; /* Set the default color to light grey */
+  cursor: pointer;
+  transition: color 0.3s ease; /* Smooth transition for color */
+}
+
+/* Hover styles */
+.iconpdf:hover,
+.iconp:hover {
+  color: darkgrey; /* Change color to dark grey on hover */
+}

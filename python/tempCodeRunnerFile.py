@@ -1,16 +1,24 @@
+import sys
+from pptx import Presentation
 
-def summarize(file_path='/Users/ja/Desktop/untitled folder 2/pathed.txt'):
-    # Read the text from the file
-    with open(file_path, 'r') as file:
-        text = file.read() 
-    # Your summarization logic here
-    client = OpenAI()
-    response = client.chat.completions.create(
-    model="gpt-3.5-turbo-1106",
-    response_format={ "type": "json_object" },
-    messages=[
-        {"role": "system", "content": "You are a summarizer designed to output JSON written in this format summarization content (summary) and a score for the quality of the summarization and the coverage of it from 1 to 10 (score)."},
-        {"role": "user", "content": text}
-    ]
-    )
-    print(response.choices[0].message.content)
+def extract_text_from_pptx(pptx_file: str) -> str:
+    try:
+        prs = Presentation(pptx_file)
+        extracted_text = []
+
+        for slide in prs.slides:
+            for shape in slide.shapes:
+                if hasattr(shape, "text"):
+                    extracted_text.append(shape.text)
+        
+        return '\n'.join(extracted_text)
+
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return ''
+
+if __name__ == '__main__':
+    file_path = '/Users/ja/Downloads/2023-GP1-12-merges/2023-GP1-12-main/Learniverse/summarization/images/Roadmap.pptx'
+    pptx_text = extract_text_from_pptx(file_path)
+    print(pptx_text)
+

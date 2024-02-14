@@ -1,0 +1,10 @@
+Transformations 
+are considered lazy as they are
+only computed
+
+128,125,800,000
+
+
+/Users/ja/Desktop/scal.txt
+
+/Users/ja/Downloads/2023-GP1-12-merges/2023-GP1-12-main/Learniverse/summarization/images/scal.txt
