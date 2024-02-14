@@ -1,5 +1,9 @@
 <?php
 require "session.php";
+
+// Set the timezone to Asia/Riyadh (Saudi Arabia)
+date_default_timezone_set('Asia/Riyadh');
+
 if (!isset($_GET['space'])) header('Location:sharedspace.php');
 //connect to db
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
@@ -277,13 +281,25 @@ $admin = $result->toArray()[0];
                 var message = $('#message').val();
                 var spaceID = $('#spaceID').val();
 
+                var currentDate = new Date();
+
+                // Extract the year, month, day, hours, and minutes from the current date
+                var year = currentDate.getFullYear();
+                var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                var day = String(currentDate.getDate()).padStart(2, '0');
+                var hours = String(currentDate.getHours()).padStart(2, '0');
+                var minutes = String(currentDate.getMinutes()).padStart(2, '0');
+
+                const date = `${year}-${month}-${day}T${hours}:${minutes}`;
+
                 // Send AJAX request to the server
                 $.ajax({
                     url: 'addMessage.php',
                     type: 'POST',
                     data: {
                         message: message,
-                        spaceID: spaceID
+                        spaceID: spaceID,
+                        date: date
                     },
                     dataType: 'json',
                     success: function(response) {
@@ -490,13 +506,12 @@ $admin = $result->toArray()[0];
         function displayMessage(messageData) {
             var messageContainer = document.getElementById("showMessages");
             var dateString = messageData.date;
-            var date = new Date(dateString);
             var options = {
                 hour: 'numeric',
                 minute: '2-digit',
                 hour12: true
             };
-            var time = date.toLocaleTimeString([], options);
+            var time = new Date(dateString).toLocaleTimeString([], options);
             var messageHTML = "<div class='chat userchat'><span class='username'>" + messageData.writtenBy + "</span><br><span class='data'>" + messageData.message + "</span><span class='date'>" + time + "</span></div>";
             messageContainer.innerHTML += messageHTML;
             document.getElementById("message").value = "";
@@ -515,7 +530,7 @@ $admin = $result->toArray()[0];
                 }
             });
         }
-        setInterval(reloadMessages, 2000);
+        //setInterval(reloadMessages, 2000);
     </script>
 
 </head>
@@ -644,13 +659,32 @@ $admin = $result->toArray()[0];
                     <div id="showMessages">
                         <?php
                         $feeds = $space->feed;
+
                         foreach ($feeds as $feed) {
+                            $filter = ['username' => $feed->writtenBy];
+                            $query = new MongoDB\Driver\Query($filter);
+                            $result = $manager->executeQuery("Learniverse.users", $query);
+                            $chatUser = $result->toArray()[0];
+                            $members = $space->members;
+
+                            $userColor = ""; // Initialize userColor variable
+
+                            foreach ($members as $member) {
+                                if ($member->email === $chatUser->email) {
+                                    $userColor = $member->color;
+                                    break; // Exit the loop once the color is found
+                                } else if ($space->admin === $chatUser->email) {
+                                    $userColor = $space->color;
+                                    break;
+                                }
+                            }
+
                             $time = date('h:i A', strtotime($feed->date)); // Format the date to display time only
 
                             if ($feed->writtenBy == $user->username) {
-                                echo "<div class='chat userchat'><span class='username'>" . $feed->writtenBy . "</span><span class='data'>" . $feed->message . "</span><span class='date'>" . $time . "</span></div>";
+                                echo "<div class='chat userchat'><span class='data'>" . $feed->message . "</span><span class='date'>" . $time . "</span></div>";
                             } else {
-                                echo "<div class='chat'><span class='username'>" . $feed->writtenBy . "</span><span class='data'>" . $feed->message . "</span><span class='date'>" . $time . "</span></div>";
+                                echo "<div class='chat'><span class='username' style='color:" . $userColor . "';>" . $feed->writtenBy . "</span><span class='data'>" . $feed->message . "</span><span class='date'>" . $time . "</span></div>";
                             }
                         }
                         ?>
@@ -659,12 +693,35 @@ $admin = $result->toArray()[0];
                         <input id="spaceID" name="spaceID" value="<?php echo $_GET['space']; ?>" hidden>
                         <input required autofocus id="message" name="message" placeholder="Type a message">&nbsp; &nbsp;<button id="submitChat" type='submit'>Send</button>
                     </form>
-                    <script>
+                    <script src="web.js"></script>
+                    <!--<script>
                         window.onload = function() {
                             var showMessages = document.getElementById('showMessages');
                             showMessages.scrollTop = showMessages.scrollHeight;
                         }
-                    </script>
+
+                        var socket = new WebSocket("ws://localhost:3000"); // Replace with your WebSocket server URL
+
+                        socket.onopen = function() {
+                            console.log("WebSocket connection established.");
+                        };
+
+                        socket.onmessage = function(event) {
+                            var messageData = JSON.parse(event.data);
+
+                            // Process the received message data and update the chat interface
+                            displayMessage(messageData);
+                        };
+
+                        socket.onclose = function(event) {
+                            console.log("WebSocket connection closed with code: " + event.code);
+                        };
+
+                        function displayMessage(messageData) {
+                            // Implement your logic to display the message in the chat interface
+                            console.log("Received message:", messageData);
+                        }
+                    </script>-->
                 </div>
 
                 <div id="Tasks" class="tabcontent">
@@ -1005,20 +1062,165 @@ $admin = $result->toArray()[0];
                 </div>
 
                 <div id="Files" class="tabcontent">
-                    <h3>Files</h3>
-                    <br>
-                    <button id="uploadfiles" onclick="showForm()">upload File</button>
-                    <form id="uploadNewFile" method="post" action="upload.php" style="display: none;">
+                    <div class="showFiles">
+                        <?php
+                        $files = $space->files;
+                        foreach ($files as $file) {
+                        ?>
+                            <span class="box" id="box_<?php echo $file->fileID; ?>">
+                                <iframe style="overflow: hidden;" src="<?php echo "FILES/" . $file->file_name; ?>"></iframe>
+                                <span class="collection">
+                                    <a target='_blank' class="file" href="<?php echo "FILES/" . $file->file_name; ?>"><?php echo $file->file_name; ?></a>
+                                    <img class="icon deleteic" src="images/delete.jpeg" id="deleteFile" onclick="DeleteFile('<?php echo $file->fileID; ?>', '<?php echo $file->file_path; ?>');">
+                                </span>
+                            </span>
+                        <?php } ?>
+                    </div>
+                    <form id="uploadNewFile" method="post" action="uploadFilesSharedSpace.php" enctype="multipart/form-data">
                         <br>
-                        <label>Upload a new file</label> <input id="newFile" name="newFile" type="file">
+                        <label>Upload a new file</label>
+                        <input id="newFile" name="newFile" type="file">
+                        <input id="spaceID" name="spaceID" value="<?php echo $space->spaceID ?>" hidden>
                         <button type="submit" class="formSubmitBTN">Upload</button>
                         <h3>OR</h3>
                     </form>
-                    <form id="uploadExistingFile" method="post" action="upload.php" style="display: none;">
-                        <label>Upload an existing file</label> <input id="existingFile" name="existingFile" type="file">
+                    <form id="uploadExistingFileForm" method="post" action="uploadFilesSharedSpace.php">
+                        <input id="spaceID" name="spaceID" value="<?php echo $space->spaceID ?>" hidden>
+                        <label>Choose an existing file</label>
+                        <select id="existingFile" name="existingFile">
+                            <?php
+                            $fileString = "Assignment_5.pdf//-//Assignment6.pdf//-//";
+
+                            // Split the file string into an array of file names
+                            $files = explode('//-', $fileString);
+
+                            // Remove empty values from the array
+                            $files = array_filter($files);
+
+                            $fileCount = $user->files_count;
+                            $fileName = "";
+
+                            foreach ($files as $file) {
+                                $fileName = str_replace('//', '', $file); // Remove the '//' separator
+                                if ($fileName === "");
+                                else {
+                                    echo "<option value='" . $user->_id . "-" . $fileCount . "'>" . $fileName . "</option>";
+                                    $fileCount--;
+                                }
+                            }
+                            ?>
+                        </select>
+                        <input id="fileName" name="fileName" value="<?php echo $fileName; ?>" hidden>
                         <button type="submit" class="formSubmitBTN">Upload</button>
                     </form>
                 </div>
+                <script>
+                    $(document).ready(function() {
+                        $('#uploadNewFile').submit(function(e) {
+                            // Prevent form submission
+                            e.preventDefault();
+
+                            // Get the form data
+                            var formData = new FormData(this);
+                            var spaceID = $('#spaceID').val();
+
+                            // Append the spaceID to the form data
+                            formData.append('spaceID', spaceID);
+
+                            // Send AJAX request to the server
+                            $.ajax({
+                                url: 'uploadFilesSharedSpace.php',
+                                type: 'POST',
+                                data: formData,
+                                dataType: 'json',
+                                processData: false,
+                                contentType: false,
+                                success: function(response) {
+                                    if (response.message === "success") {
+                                        var addedFile = response.file;
+                                        var fileElement = $('<span>').addClass('box').attr('id', 'box_' + addedFile.fileID);
+                                        var iframeElement = $('<iframe>').css('overflow', 'hidden').attr('src', 'FILES/' + addedFile.file_name);
+                                        var collectionElement = $('<span>').addClass('collection');
+                                        var fileLink = $('<a>').attr('target', '_blank').addClass('file').attr('href', 'FILES/' + addedFile.file_name).text(addedFile.file_name);
+
+                                        collectionElement.append(fileLink);
+                                        fileElement.append(iframeElement, collectionElement);
+                                        $('.showFiles').append(fileElement);
+                                    } else {
+                                        console.log('File upload failed.');
+                                    }
+                                }
+                            });
+                        });
+                        $('#uploadExistingFileForm').submit(function(e) {
+                            // Prevent form submission
+                            e.preventDefault();
+
+                            // Get the form data
+                            var formData = new FormData(this);
+                            var spaceID = $('#spaceID').val();
+                            var existingFile = $('#existingFile option:selected').text();
+                            var fileName = $('#fileName').val();
+
+                            // Append the spaceID, fileName, and existingFile to the form data
+                            formData.append('spaceID', spaceID);
+                            formData.append('fileName', fileName);
+                            formData.append('existingFile', existingFile);
+
+                            // Send AJAX request to the server
+                            $.ajax({
+                                url: 'uploadFilesSharedSpace.php',
+                                type: 'POST',
+                                data: formData,
+                                dataType: 'json',
+                                processData: false,
+                                contentType: false,
+                                success: function(response) {
+                                    if (response.message === "success") {
+                                        var addedFile = response.file;
+                                        var fileElement = $('<span>').addClass('box').attr('id', 'box_' + addedFile.fileID);
+                                        var iframeElement = $('<iframe>').css('overflow', 'hidden').attr('src', addedFile.file_path);
+                                        var collectionElement = $('<span>').addClass('collection');
+                                        var fileLink = $('<a>').attr('target', '_blank').addClass('file').attr('href', addedFile.file_path).text(addedFile.file_name);
+
+                                        collectionElement.append(fileLink);
+                                        fileElement.append(iframeElement, collectionElement);
+                                        $('.showFiles').append(fileElement);
+                                    } else {
+                                        console.log('File upload failed.');
+                                    }
+                                }
+                            });
+                        });
+                    });
+
+                    function DeleteFile(fileId, file_path) {
+                        // Send an AJAX request to the server to delete the file
+                        $.ajax({
+                            url: 'deleteFile.php',
+                            type: 'POST',
+                            data: {
+                                fileId: fileId,
+                                file_path: file_path
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.success) {
+                                    // File deleted successfully
+                                    // Hide the file from display
+                                    $('#box_' + fileId).hide();
+                                } else {
+                                    // File deletion failed
+                                    console.log('File deletion failed.');
+                                }
+                            },
+                            error: function() {
+                                // AJAX request failed
+                                console.log('File deletion failed. Server error.');
+                            }
+                        });
+                    }
+                </script>
 
                 <div id="Members" class="tabcontent">
                     <button id="spaceInviteBTN"><i class="fa-solid fa-user-plus"></i> Invite Members <?php if ($space->admin === $_SESSION['email'] && ($pmemberCount) > 0) echo "<span class= 'pendingNotif'></span>"; ?></button>
@@ -1268,7 +1470,7 @@ $admin = $result->toArray()[0];
                                                     },
                                                     success: function(response) {
                                                         // On successful response, remove the list item from the DOM
-                                                        pmemberCount --;
+                                                        pmemberCount--;
                                                         updateMemberCount();
                                                         joinRequestsList.removeChild(listItem);
                                                         console.log(response); // Optional: Display the response in the console
@@ -1344,8 +1546,6 @@ $admin = $result->toArray()[0];
                     </div>
                     <div class="container chart">
                         <canvas id="myChart"></canvas>
-                    </div>
-                    <div class="updates container">
                         <div id="logUpdates">
                             <?php
                             $logs = $space->logUpdates;
@@ -1361,28 +1561,117 @@ $admin = $result->toArray()[0];
                                 }
                                 switch ($type) {
                                     case "assign":
-                                        echo "<span class='log'>" . $log->assignor . " <b>assign</b> a task for " . $log->assignee . "</span>";
-                                        break;
+                                        if ($_SESSION['email'] === $log->assignee) {
+                                            $filter = ['email' => $log->assignor];
+                                            $query = new MongoDB\Driver\Query($filter);
+                                            $result = $manager->executeQuery("Learniverse.users", $query);
+                                            $assignor = $result->toArray()[0] ?? null;
+
+                                            if ($assignor) {
+                                                $assignorName = $assignor->firstname ?? '' . ' ' . $assignor->lastname ?? '';
+                                                echo "<span class='log assign-log'>" . $assignorName . " <b>ASSIGNED</b> a task for you</span>";
+                                            }
+                                            break;
+                                        } else if ($_SESSION['email'] === $log->assignor) {
+                                            $filter = ['email' => $log->assignee];
+                                            $query = new MongoDB\Driver\Query($filter);
+                                            $result = $manager->executeQuery("Learniverse.users", $query);
+                                            $assignee = $result->toArray()[0] ?? null;
+
+                                            if ($assignee) {
+                                                $assigneeName = $assignee->firstname ?? '' . ' ' . $assignee->lastname ?? '';
+                                                echo "<span class='log assign-log'>You <b>ASSIGNED</b> a task for " . $assigneeName . "</span>";
+                                            }
+                                            break;
+                                        }
+
+                                        if ($log->assignor === $log->assignee) {
+                                            break;
+                                        } else {
+                                            $filter = ['email' => $log->assignee];
+                                            $query = new MongoDB\Driver\Query($filter);
+                                            $result = $manager->executeQuery("Learniverse.users", $query);
+                                            $assignee = $result->toArray()[0] ?? null;
+                                            $assigneeName = $assignee ? ($assignee->firstname ?? '') . ' ' . ($assignee->lastname ?? '') : '';
+
+                                            $filter = ['email' => $log->assignor];
+                                            $query = new MongoDB\Driver\Query($filter);
+                                            $result = $manager->executeQuery("Learniverse.users", $query);
+                                            $assignor = $result->toArray()[0] ?? null;
+                                            $assignorName = $assignor ? ($assignor->firstname ?? '') . ' ' . ($assignor->lastname ?? '') : '';
+
+                                            echo "<span class='log assign-log'>" . $assignorName . " <b>ASSIGNED</b> a task for " . $assigneeName . "</span>";
+                                            break;
+                                        }
                                     case "create":
-                                        echo "<span class='log'>" . $log->creator . " <b>create</b> a new task</span>";
+                                        $filter = ['email' => $log->creator];
+                                        $query = new MongoDB\Driver\Query($filter);
+                                        $result = $manager->executeQuery("Learniverse.users", $query);
+                                        $creator = $result->toArray()[0] ?? null;
+                                        if ($creator) {
+                                            $creatorName = $creator->firstname . ' ' . $creator->lastname;
+                                            if ($_SESSION['email'] === $log->creator) {
+                                                echo "<span class='log create-log'>You <b>CREATED</b> a new task</span>";
+                                            } else {
+                                                echo "<span class='log create-log'>" . $creatorName . " <b>CREATED</b> a new task</span>";
+                                            }
+                                        }
                                         break;
                                     case "delete":
-                                        echo "<span class='log'>" . $log->deletor . " <b>delete</b> a task</span>";
+                                        $filter = ['email' => $log->deletor];
+                                        $query = new MongoDB\Driver\Query($filter);
+                                        $result = $manager->executeQuery("Learniverse.users", $query);
+                                        $deletor = $result->toArray()[0] ?? null;
+                                        if ($deletor) {
+                                            $deletorName = $deletor->firstname . ' ' . $deletor->lastname;
+                                            if ($_SESSION['email'] === $log->deletor) {
+                                                echo "<span class='log delete-log'>You <b>DELETED</b> a task</span>";
+                                            } else {
+                                                echo "<span class='log delete-log'>" . $deletorName . " <b>DELETED</b> a task</span>";
+                                            }
+                                        }
                                         break;
                                     case "edit":
-                                        echo "<span class='log'>" . $log->editor . " <b>edit</b> a task</span>";
+                                        $filter = ['email' => $log->editor];
+                                        $query = new MongoDB\Driver\Query($filter);
+                                        $result = $manager->executeQuery("Learniverse.users", $query);
+                                        $editor = $result->toArray()[0] ?? null;
+                                        if ($editor) {
+                                            $editorName = $editor->firstname . ' ' . $editor->lastname;
+                                            if ($_SESSION['email'] === $log->editor) {
+                                                echo "<span class='log edit-log'>You <b>EDITED</b> a task</span>";
+                                            } else {
+                                                echo "<span class='log edit-log'>" . $editorName . " <b>EDITED</b> a task</span>";
+                                            }
+                                        }
                                         break;
                                     case "join":
-                                        echo "<span class='log'>" . $log->memberName . " <b>join</b> this space</span>";
+                                        $filter = ['email' => $log->memberName];
+                                        $query = new MongoDB\Driver\Query($filter);
+                                        $result = $manager->executeQuery("Learniverse.users", $query);
+                                        $member = $result->toArray()[0] ?? null;
+                                        if ($member) {
+                                            $memberName = $member->firstname . ' ' . $member->lastname;
+                                            echo "<span class='log join-log'>" . $memberName . " <b>JOINED</b> this space</span>";
+                                        }
                                         break;
                                     case "leave":
-                                        echo "<span class='log'>" . $log->memberName . " <b>left</b></span>";
+                                        $filter = ['email' => $log->memberName];
+                                        $query = new MongoDB\Driver\Query($filter);
+                                        $result = $manager->executeQuery("Learniverse.users", $query);
+                                        $member = $result->toArray()[0] ?? null;
+                                        if ($member) {
+                                            $memberName = $member->firstname . ' ' . $member->lastname;
+                                            echo "<span class='log leave-log'>" . $memberName . " <b>LEFT</b></span>";
+                                        }
                                         break;
                                 }
                             }
                             ?>
                         </div>
                         <script>
+                            var logUpdatesDiv = document.getElementById("logUpdates");
+                            logUpdatesDiv.scrollTop = logUpdatesDiv.scrollHeight;
                             $("#leaveSpaceBTN").on('click', function() {
                                 Swal.fire({
                                     title: 'Heads Up!',
