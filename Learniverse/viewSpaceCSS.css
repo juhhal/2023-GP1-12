@@ -184,7 +184,7 @@ html {
   background-color: #f3beb1;
   margin-left: auto;
 }
-F
+
 .chat:last-of-type {
   border-bottom: none;
 }
@@ -775,6 +775,13 @@ F
   cursor: pointer;
   background-color: rgb(185, 59, 59);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+.checkedTask {
+  font-style: italic;
+  text-decoration: line-through;
+  color: gray;
+  background-color: #d4d4d4;
 }
 
 /* END TASKS TAB */

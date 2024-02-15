@@ -9,11 +9,13 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
     // save space name received from POST
     $spaceName = $_POST['spaceName'];
     $spaceID  = uniqid();
+    $spaceColor = $_POST['color'];
     // Create space object
     $space = [
         'spaceID' => $spaceID,
         'name' => $spaceName,
         'admin' => $_SESSION['email'],
+        'color' => $spaceColor,
         'members' => [],
         'pendingMembers' => [],
         'tasks' => [],
@@ -25,6 +27,7 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
 
     // Insert the document into the collection
     $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
+    echo "Creating..";
     $spaceCalendar =   [
         "user_id" => $spaceID,
         "counter" => 0,
@@ -35,6 +38,7 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
     $bulk = new MongoDB\Driver\BulkWrite;
     $bulk->insert($spaceCalendar);
     $result = $manager->executeBulkWrite("Learniverse.calendar", $bulk);
+    exit();
 } elseif (isset($_POST['spaceID']) && $_POST['spaceID'] != "") {
 
     // Define the query filter
@@ -46,7 +50,7 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
     // Execute the query
     $cursor = $manager->executeQuery('Learniverse.sharedSpace', $query);
     $result = $cursor->toArray();
-    if(empty($result)){
+    if (empty($result)) {
         echo "No such Space found.";
         exit();
     }

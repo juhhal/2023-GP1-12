@@ -10,9 +10,10 @@ $color = '#3788d8';
 if (property_exists($jsonObj, 'spaceID')) {
     $uid = $jsonObj->spaceID;
     $color = $jsonObj->color;
-} else {
-    $uid = $_SESSION['email'];
-}
+    if (property_exists($jsonObj, 'member'))
+        $uid = $jsonObj->member;
+} else $uid = $_SESSION['email'];
+
 
 if ($jsonObj->request_type == 'addEvent') {
     $start = $jsonObj->start;

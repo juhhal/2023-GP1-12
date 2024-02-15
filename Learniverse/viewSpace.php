@@ -120,7 +120,7 @@ $admin = $result->toArray()[0];
                         preConfirm: () => {
                             return [
                                 document.getElementById('swalEvtTitle').value,
-                                document.getElementById('swalEvtDesc').value,
+                                document.getElementById('swalEvtDesc').value + ": Event Added By <?php echo "$user->firstname $user->lastname" ?>, From Space: <?php echo $space->name ?>",
                                 document.getElementById('swalEvtReminder').checked
 
                             ]
@@ -130,10 +130,10 @@ $admin = $result->toArray()[0];
                     if (formValues) {
                         // Add event
                         //get event color
-                        <?php $color = "#3788d8";
+                        <?php $color = "#3788d8"; //default color
                         if ($space->admin != $_SESSION['email'])
                             foreach ($space->members as $member)
-                                if ($member->email === $_SESSION['email']) $color = $member->color;
+                                if ($member->email === $_SESSION['email']) $color = $member->color; //get member color
                         ?>
                         fetch("eventHandler.php", {
                                 method: "POST",
@@ -153,6 +153,44 @@ $admin = $result->toArray()[0];
                             .then(data => {
                                 if (data.status == 1) {
                                     Swal.fire('Event added successfully!', '', 'success');
+                                    //save event to admins workspace
+                                    fetch("eventHandler.php", {
+                                        method: "post",
+                                        headers: {
+                                            "Content-Type": "application/json"
+                                        },
+                                        body: JSON.stringify({
+                                            request_type: 'addEvent',
+                                            start: start.startStr,
+                                            end: start.endStr,
+                                            event_data: formValues,
+                                            spaceID: '<?php echo $space->spaceID ?>',
+                                            color: '<?php echo $space->color ?>',
+                                            member: '<?php echo $space->admin ?>'
+                                        })
+                                    });
+                                    <?php
+                                    foreach ($space->members as $m) { ?>
+                                        fetch("eventHandler.php", {
+                                            method: "post",
+                                            headers: {
+                                                "Content-Type": "application/json"
+                                            },
+                                            body: JSON.stringify({
+                                                request_type: 'addEvent',
+                                                start: start.startStr,
+                                                end: start.endStr,
+                                                event_data: formValues,
+                                                spaceID: '<?php echo $space->spaceID ?>',
+                                                color: '<?php echo $space->color ?>',
+                                                member: '<?php echo $m->email ?>'
+                                            }),
+                                            success: function(response) {
+                                                console.log(response);
+                                            }
+                                        });
+                                    <?php }
+                                    ?>
                                 } else {
                                     Swal.fire(data.error, '', 'error');
                                 }
@@ -272,7 +310,6 @@ $admin = $result->toArray()[0];
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
         $(document).ready(function() {
-
             $('#addMessage').submit(function(e) {
                 // Prevent form submission
                 e.preventDefault();
@@ -290,8 +327,7 @@ $admin = $result->toArray()[0];
                 var hours = String(currentDate.getHours()).padStart(2, '0');
                 var minutes = String(currentDate.getMinutes()).padStart(2, '0');
 
-                const date = `${year}-${month}-${day}T${hours}:${minutes}`;
-
+                var messgaeDate = `${year}-${month}-${day}T${hours}:${minutes}`;
                 // Send AJAX request to the server
                 $.ajax({
                     url: 'addMessage.php',
@@ -299,7 +335,7 @@ $admin = $result->toArray()[0];
                     data: {
                         message: message,
                         spaceID: spaceID,
-                        date: date
+                        date: messgaeDate
                     },
                     dataType: 'json',
                     success: function(response) {
@@ -506,12 +542,13 @@ $admin = $result->toArray()[0];
         function displayMessage(messageData) {
             var messageContainer = document.getElementById("showMessages");
             var dateString = messageData.date;
+            var date = new Date(dateString);
             var options = {
                 hour: 'numeric',
                 minute: '2-digit',
                 hour12: true
             };
-            var time = new Date(dateString).toLocaleTimeString([], options);
+            var time = date.toLocaleTimeString([], options);
             var messageHTML = "<div class='chat userchat'><span class='username'>" + messageData.writtenBy + "</span><br><span class='data'>" + messageData.message + "</span><span class='date'>" + time + "</span></div>";
             messageContainer.innerHTML += messageHTML;
             document.getElementById("message").value = "";
@@ -530,7 +567,7 @@ $admin = $result->toArray()[0];
                 }
             });
         }
-        //setInterval(reloadMessages, 2000);
+        // setInterval(reloadMessages, 2000);
     </script>
 
 </head>
@@ -659,7 +696,6 @@ $admin = $result->toArray()[0];
                     <div id="showMessages">
                         <?php
                         $feeds = $space->feed;
-
                         foreach ($feeds as $feed) {
                             $filter = ['username' => $feed->writtenBy];
                             $query = new MongoDB\Driver\Query($filter);
@@ -728,8 +764,8 @@ $admin = $result->toArray()[0];
                     <button id="addTaskBTN"><i class="fa-solid fa-plus"></i> Add Task</button>
                     <h3>Tasks</h3>
                     <select id="groupBY">
-                        <option disabled selected>
-                            Sort By
+                        <option selected>
+                            Sort By (none)
                         </option>
                         <option value="duedate">
                             Due Date
@@ -800,6 +836,44 @@ $admin = $result->toArray()[0];
                                 </span>
                             </div>
                         <?php } ?>
+                        <script>
+                            var assigneeSelects = document.querySelectorAll('.assignee');
+
+                            // Loop through each assignee select element
+                            assigneeSelects.forEach(function(select) {
+                                // Add onchange event listener
+                                select.addEventListener('change', function() {
+                                    // Get the task ID from the hidden input within the taskDiv
+                                    var taskID = $(this).closest('.taskDiv').find('.taskID').val();
+
+                                    // Get the selected value of the assignee select
+                                    var selectedValue = $(this).val();
+
+                                    // Create an object with the data to be sent in the AJAX request
+                                    var requestData = {
+                                        operation: "updateAssignee",
+                                        spaceID: '<?php echo $space->spaceID ?>',
+                                        taskID: taskID,
+                                        assignee: selectedValue
+                                    };
+
+                                    // Send the AJAX request
+                                    $.ajax({
+                                        url: 'processSpaceTask.php', // Replace with your PHP file handling the AJAX request
+                                        type: 'POST',
+                                        data: requestData,
+                                        success: function(response) {
+                                            // Handle the AJAX response
+                                            console.log(response);
+                                        },
+                                        error: function(xhr, status, error) {
+                                            // Handle AJAX errors
+                                            console.error(error);
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
                         <div class="overlay" id="addTaskDiv">
                             <div class="modal">
                                 <h2 id="overlayTitle">Add a New Task</h2>
@@ -1221,7 +1295,6 @@ $admin = $result->toArray()[0];
                         });
                     }
                 </script>
-
                 <div id="Members" class="tabcontent">
                     <button id="spaceInviteBTN"><i class="fa-solid fa-user-plus"></i> Invite Members <?php if ($space->admin === $_SESSION['email'] && ($pmemberCount) > 0) echo "<span class= 'pendingNotif'></span>"; ?></button>
                     <h3>Admin</h3>
@@ -1693,6 +1766,7 @@ $admin = $result->toArray()[0];
                                             },
                                             success: function(response) {
                                                 console.log(response);
+                                                window.location.href = "sharedspace.php";
                                             },
                                             error: function(xhr, status, error) {
                                                 console.error(error);

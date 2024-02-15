@@ -299,8 +299,9 @@ require 'session.php'; ?>
                     <h1>Shared Spaces</h1>
                     <button id="newSpaceBTN" onclick="showForm()">New Space</button>
                 </div>
-                <form id="newSpaceForm" method="post" action="addSharedSpace.php" style="display: none;">
+                <form id="newSpaceForm" style="display: none;">
                     <label>Space Name</label> <input id="spaceName" name="spaceName" type="text">
+                    <input id="color" type="color" name="color">
                     <button type="submit" class="formSubmitBTN">Create</button>
                     <h3>OR</h3>
                 </form>
@@ -309,10 +310,10 @@ require 'session.php'; ?>
                     <label>Join a Space</label> <input required id="spaceID" name="spaceID" type="text">
                     <button type="submit" class="formSubmitBTN">Join</button>
                 </form>
+                <p class="errorMessage" style="color:red"></p>
                 <div id="spaces">
-                    <p class="errorMessage" style="color:red"></p>
                     <div id="adminSpaces">
-                        <span class="spacesTitle">Your Spaces:</span>
+                        <span class="spacesTitle">Owned Spaces:</span>
                         <?php
                         $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
@@ -329,10 +330,26 @@ require 'session.php'; ?>
                         }
                         $spaces = json_decode(json_encode($space), true);
                         foreach ($spaces as $space) {
-                            echo "<div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $fetch['firstname'] . " " .  $fetch['lastname'] . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
+                            echo "<div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $fetch['firstname'] . " " .  $fetch['lastname'] . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div>";
                         }
                         ?>
                         <script>
+                            $("#newSpaceForm").on("submit", function() {
+                                $.ajax({
+                                    url: "addSharedSpace.php",
+                                    method: "post",
+                                    data: {
+                                        spaceName: $("#spaceName").val(),
+                                        color: $("#color").val()
+                                    },
+                                    success: function(response) {
+                                        console.log(response);
+                                        $("#newSpaceForm").css("display", "block");
+                                        $(".errorMessage").text("*" + response);
+                                    },
+                                });
+                            });
+
                             $("#joinSpaceForm").on("submit", function() {
                                 $.ajax({
                                     url: "addSharedSpace.php",
@@ -349,7 +366,7 @@ require 'session.php'; ?>
                         </script>
                     </div>
                     <div id="otherSpaces">
-                        <span class="spacesTitle">Spaces You are a Member Of:</span>
+                        <span class="spacesTitle">Joined Spaces:</span>
                         <?php
                         //get spaces where active user is a member of
                         $filterMember = ['members.email' => $_SESSION['email']];
@@ -365,12 +382,12 @@ require 'session.php'; ?>
                             $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
                             $adminCursor = $manager->executeQuery('Learniverse.users', $query);
                             $admin = $adminCursor->toArray()[0];
-                            echo "<div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
+                            echo "<div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div>";
                         }
                         ?>
                     </div>
                     <div id="pendingSpaces">
-                        <span class="spacesTitle">Spaces You Applied to Join:</span>
+                        <span class="spacesTitle">Pending Spaces:</span>
                         <?php
                         //get spaces where active user is a member of
                         $filterMember = ['pendingMembers' => $_SESSION['email']];
@@ -386,7 +403,7 @@ require 'session.php'; ?>
                             $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
                             $adminCursor = $manager->executeQuery('Learniverse.users', $query);
                             $admin = $adminCursor->toArray()[0];
-                            echo "<div class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . (count($space['members']) + 1) . "</span></span></div>";
+                            echo "<div class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span></span></div>";
                         }
                         ?>
                     </div>

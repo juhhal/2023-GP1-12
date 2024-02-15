@@ -379,6 +379,12 @@ usort($todo, 'compareDueDate');
             } else {
                 $("#notasks").hide();
             }
+
+            if (document.querySelectorAll(".stask").length < 1) {
+                $("#nostasks").show();
+            } else {
+                $("#nostasks").hide();
+            }
         };
 
         function ischecked(id) {
@@ -394,6 +400,35 @@ usort($todo, 'compareDueDate');
             };
             updateStatus(id);
         };
+
+        function ischeckedSpace(spaceID, taskID, elementID) {
+            var checkbox = document.getElementById(elementID);
+            var label = document.getElementById("label" + elementID.slice(4));
+
+            $.ajax({
+                url: "processSpaceTask.php",
+                method: "post",
+                data: {
+                    operation: "checkTask",
+                    taskID: taskID,
+                    spaceID: spaceID,
+                    checked: checkbox.checked
+                },
+                success: function(response) {
+                    console.log(response);
+                    if (response === "checked task: true" || response === "checked task: false") {
+                        if (response === "checked task: true" && checkbox != null && checkbox.checked) {
+                            checkbox.style.accentColor = '#fdae9b';
+                            label.style.fontStyle = 'italic';
+                            label.style.textDecoration = 'line-through';
+                        } else {
+                            label.style.fontStyle = 'normal';
+                            label.style.textDecoration = 'none';
+                        }
+                    }
+                }
+            });
+        }
 
         function addTask() {
             $("#addtask-form").show();
@@ -654,36 +689,37 @@ usort($todo, 'compareDueDate');
             <!-- ##################################################### -->
             <!-- TODO -->
             <div class="workarea_item" id="todo_area">
-                <h3>My To-Do List</h3>
-                <div class="todolist">
-                    <select id="todoView">
-                        <option selected>All Tasks</option>
-                        <option>Today</option>
-                        <option>Next 7 days</option>
-                        <option>Next Month</option>
-                    </select>
-                    <ul>
+                <div class="list">
+                    <h3>My To-Do List</h3>
+                    <div class="todolist">
+                        <select id="todoView">
+                            <option selected>All Tasks</option>
+                            <option>Today</option>
+                            <option>Next 7 days</option>
+                            <option>Next Month</option>
+                        </select>
+                        <ul>
 
-                        <div id='notasks'><img src='images/hotballoon.png'>
-                            <p><i>Poof!</i></p>
-                            <p>Your to-do list is a clean slate, ready for you to conquer new horizons.</p>
-                        </div>
+                            <div id='notasks'><img src='images/hotballoon.png'>
+                                <p><i>Poof!</i></p>
+                                <p>Your to-do list is a clean slate, ready for you to conquer new horizons.</p>
+                            </div>
 
-                        <?php
-                        //print all tasks associated with this user
-                        $i = 1;
-                        $due = "";
-                        foreach ($todo as $task) {
-                            //echo "<script>alert('" . $task['due'] . "')</script>";
-                            if ($task['due'] === "") {
-                                $due = "<span class='dueText'><span class='due'></span></span>";
-                            } else {
-                                $datetime = explode("T", $task['due']);
-                                $due = "<span class='dueText'>Due: <span class='due'>" . $datetime[0] . " at " . $datetime[1] . "</span></span>";
-                            }
+                            <?php
+                            //print all tasks associated with this user
+                            $i = 1;
+                            $due = "";
+                            foreach ($todo as $task) {
+                                //echo "<script>alert('" . $task['due'] . "')</script>";
+                                if ($task['due'] === "") {
+                                    $due = "<span class='dueText'><span class='due'></span></span>";
+                                } else {
+                                    $datetime = explode("T", $task['due']);
+                                    $due = "<span class='dueText'>Due: <span class='due'>" . $datetime[0] . " at " . $datetime[1] . "</span></span>";
+                                }
 
-                            if ($task['checked']) {
-                                print("
+                                if ($task['checked']) {
+                                    print("
                             <li class='task'>
                                  <img src='images/bin.png' class='deleteBTN' data-task='" . $task['task_name'] . "'> <img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input checked id='task$i' type='checkbox' onchange='ischecked(this.id);'>
                                 <label id='label$i' for='task$i'>
@@ -703,8 +739,8 @@ usort($todo, 'compareDueDate');
                                 </form>
                             </li>             
                             ");
-                            } else {
-                                print("
+                                } else {
+                                    print("
                                 <li class='task'>
                                      <img src='images/bin.png' class='deleteBTN' data-task='" . $task['task_name'] . "'><img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input id='task$i' type='checkbox' onchange='ischecked(this.id);'>
                                     <label id='label$i' for='task$i'>
@@ -724,132 +760,240 @@ usort($todo, 'compareDueDate');
                              </form>
                                 </li>             
                                 ");
+                                }
+                                $i++;
                             }
-                            $i++;
-                        }
 
-                        ?>
-                        <script>
-                            $(document).ready(function() {
-                                // Attach click event listener to delete buttons
-                                $('.deleteBTN').on('click', function() {
-                                    // Get the task name from the data attribute
-                                    var deleteBTN = $(this);
-                                    var taskName = $(this).data('task');
-                                    // Send an AJAX request to the PHP script
-                                    $.ajax({
-                                        url: 'deleteTask.php',
-                                        type: 'POST',
-                                        data: {
-                                            taskName: taskName
-                                        },
-                                        success: function(response) {
-                                            // Display the response from the PHP script
-                                            console.log(response);
+                            ?>
+                            <script>
+                                $(document).ready(function() {
+                                    // Attach click event listener to delete buttons
+                                    $('.deleteBTN').on('click', function() {
+                                        // Get the task name from the data attribute
+                                        var deleteBTN = $(this);
+                                        var taskName = $(this).data('task');
+                                        // Send an AJAX request to the PHP script
+                                        $.ajax({
+                                            url: 'deleteTask.php',
+                                            type: 'POST',
+                                            data: {
+                                                taskName: taskName
+                                            },
+                                            success: function(response) {
+                                                // Display the response from the PHP script
+                                                console.log(response);
 
-                                            //remove the task from the DOM if the deletion was successful
-                                            if (response === 'Task deleted successfully.') {
-                                                deleteBTN.closest('li').remove();
-                                                hamster();
+                                                //remove the task from the DOM if the deletion was successful
+                                                if (response === 'Task deleted successfully.') {
+                                                    deleteBTN.closest('li').remove();
+                                                    hamster();
+                                                }
+                                            },
+                                            error: function() {
+                                                // Handle any errors that occur during the AJAX request
+                                                console.log('Error occurred while deleting the task.');
                                             }
-                                        },
-                                        error: function() {
-                                            // Handle any errors that occur during the AJAX request
-                                            console.log('Error occurred while deleting the task.');
-                                        }
+                                        });
                                     });
                                 });
+                            </script>
+                        </ul>
+                        <script>
+                            // Get references to the HTML elements
+                            var todoViewSelect = document.getElementById("todoView");
+                            var taskList = document.querySelector(".todolist ul");
+
+                            // Function to update the task list based on the selected view
+                            function updateTaskList() {
+                                // Get the selected view option
+                                var selectedView = todoViewSelect.value;
+
+                                // Get all task items
+                                var taskItems = document.querySelectorAll(".todolist ul li.task");
+
+                                // Loop through each task item and show/hide based on the selected view
+                                taskItems.forEach(function(taskItem) {
+                                    var taskDueDate = taskItem.querySelector(".due").textContent;
+                                    var components = taskDueDate.split(" at ");
+                                    var dueDate = new Date(components[0] + "T" + components[1]);
+                                    var today = new Date();
+                                    var nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                                    var nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
+                                    if (selectedView === "Today" && !isSameDate(dueDate, today)) {
+                                        taskItem.style.display = "none";
+                                    } else if (selectedView === "Next 7 days" && (dueDate < today || dueDate > nextWeek)) {
+                                        taskItem.style.display = "none";
+                                    } else if (selectedView === "Next Month" && (dueDate < today || dueDate > nextMonth)) {
+                                        taskItem.style.display = "none";
+                                    } else {
+                                        taskItem.style.display = "block";
+                                    }
+                                });
+
+                                // Show/hide the "No Tasks" message based on the number of visible tasks
+                                var visibleTasks = document.querySelectorAll(".todolist ul li.task[style='display: block;']");
+                                var noTasksMessage = document.getElementById("notasks");
+
+                                if (visibleTasks.length === 0) {
+                                    noTasksMessage.style.display = "block";
+                                } else {
+                                    noTasksMessage.style.display = "none";
+                                }
+                            }
+
+                            // Helper function to check if two dates have the same day, month, and year
+                            function isSameDate(date1, date2) {
+                                return (
+                                    date1.getFullYear() === date2.getFullYear() &&
+                                    date1.getMonth() === date2.getMonth() &&
+                                    date1.getDate() === date2.getDate()
+                                );
+                            }
+
+                            // Update the task list when the view selection changes
+                            todoViewSelect.addEventListener("change", function() {
+                                updateTaskList();
+                            });
+
+                            // Initial update of the task list
+                            updateTaskList();
+                        </script>
+                        <button id="addtaskBTN" onclick="addTask()">+ </button><label for="addtaskBTN" id="addtask-span"> Add Task</label>
+
+                        <form id="addtask-form" method="post" action="addTask.php">
+                            <input required type="text" id="taskDesc" name="taskDesc" placeholder="Task Name">
+                            <input id="taskDue" name="taskDue" type="datetime-local" title="Set the deadline of this task"><br>
+                            <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="resetAddTask()">Cancel</button>
+                        </form>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Get the due input element
+                                taskDue = document.getElementById('taskDue');
+
+                                var currentDate = new Date();
+
+                                // Extract the year, month, day, hours, and minutes from the current date
+                                var year = currentDate.getFullYear();
+                                var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                                var day = String(currentDate.getDate()).padStart(2, '0');
+                                var hours = String(currentDate.getHours()).padStart(2, '0');
+                                var minutes = String(currentDate.getMinutes()).padStart(2, '0');
+
+                                const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                                // Set the minimum value to the current datetime
+                                taskDue.min = formattedDate;
                             });
                         </script>
-                    </ul>
-                    <script>
-                        // Get references to the HTML elements
-                        var todoViewSelect = document.getElementById("todoView");
-                        var taskList = document.querySelector(".todolist ul");
+                    </div>
+                </div>
+                <div class="list">
+                    <h3>Assigned Tasks List</h3>
 
-                        // Function to update the task list based on the selected view
-                        function updateTaskList() {
-                            // Get the selected view option
-                            var selectedView = todoViewSelect.value;
+                    <div class="todolist">
+                        <ul>
+                            <div id='nostasks'><img src='images/hotballoon.png'>
+                                <p><i>Poof!</i></p>
+                                <p>Your to-do list is a clean slate, ready for you to conquer new horizons.</p>
+                            </div>
+                            <?php
+                            //print all tasks associated with this user
 
-                            // Get all task items
-                            var taskItems = document.querySelectorAll(".todolist ul li.task");
+                            $due = "";
+                            $sessionEmail = $_SESSION['email'];
 
-                            // Loop through each task item and show/hide based on the selected view
-                            taskItems.forEach(function(taskItem) {
-                                var taskDueDate = taskItem.querySelector(".due").textContent;
-                                var components = taskDueDate.split(" at ");
-                                var dueDate = new Date(components[0] + "T" + components[1]);
-                                var today = new Date();
-                                var nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-                                var nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+                            // Create a query to retrieve spaces where the user is a member or admin
+                            $query = new MongoDB\Driver\Query([
+                                '$or' => [
+                                    ['admin' => $sessionEmail],
+                                    ['members.email' => $sessionEmail]
+                                ]
+                            ]);
 
-                                if (selectedView === "Today" && !isSameDate(dueDate, today)) {
-                                    taskItem.style.display = "none";
-                                } else if (selectedView === "Next 7 days" && (dueDate < today || dueDate > nextWeek)) {
-                                    taskItem.style.display = "none";
-                                } else if (selectedView === "Next Month" && (dueDate < today || dueDate > nextMonth)) {
-                                    taskItem.style.display = "none";
-                                } else {
-                                    taskItem.style.display = "block";
+                            // Execute the query
+                            $cursor = $manager->executeQuery('Learniverse.sharedSpace', $query);
+
+                            // Initialize an empty array to store the tasks
+                            $todo = [];
+                            $spaceName = [];
+                            $spaceID = [];
+                            // Loop through the cursor and retrieve tasks from spaces
+                            foreach ($cursor as $document) {
+                                $spaceName[] = $document->name;
+                                $spaceID[] = $document->spaceID;
+                                foreach ($document->tasks as $task) {
+                                    if ($task->assignee === $sessionEmail) {
+                                        $todo[] = $task;
+                                    }
                                 }
-                            });
-
-                            // Show/hide the "No Tasks" message based on the number of visible tasks
-                            var visibleTasks = document.querySelectorAll(".todolist ul li.task[style='display: block;']");
-                            var noTasksMessage = document.getElementById("notasks");
-
-                            if (visibleTasks.length === 0) {
-                                noTasksMessage.style.display = "block";
-                            } else {
-                                noTasksMessage.style.display = "none";
                             }
-                        }
+                            $n = 0;
+                            // Check if there are tasks in the $todo array
+                            if (!empty($todo)) {
+                                // Display the tasks
+                                foreach ($todo as $task) {
+                                    if ($task->due === "") {
+                                        $due = "<span class='dueText'><span class='due'></span></span><span class='spaceName'><br><a href='viewspace.php?space=" . $spaceID[$n] . "'>" . $spaceName[$n] . "</a></span>";
+                                    } else {
+                                        $datetime = explode("T", $task->due);
+                                        $due = "<span class='dueText'>Due: <span class='due'>" . $datetime[0] . " at " . $datetime[1] . "</span></span><span class='spaceName'><br><a href='viewspace.php?space=" . $spaceID[$n] . "'>" . $spaceName[$n] . "</a></span>";
+                                    }
 
-                        // Helper function to check if two dates have the same day, month, and year
-                        function isSameDate(date1, date2) {
-                            return (
-                                date1.getFullYear() === date2.getFullYear() &&
-                                date1.getMonth() === date2.getMonth() &&
-                                date1.getDate() === date2.getDate()
-                            );
-                        }
-
-                        // Update the task list when the view selection changes
-                        todoViewSelect.addEventListener("change", function() {
-                            updateTaskList();
-                        });
-
-                        // Initial update of the task list
-                        updateTaskList();
-                    </script>
-                    <button id="addtaskBTN" onclick="addTask()">+ </button><label for="addtaskBTN" id="addtask-span"> Add Task</label>
-
-                    <form id="addtask-form" method="post" action="addTask.php">
-                        <input required type="text" id="taskDesc" name="taskDesc" placeholder="Task Name">
-                        <input id="taskDue" name="taskDue" type="datetime-local" title="Set the deadline of this task"><br>
-                        <button id="submitTaskBTN" type="submit">Add task</button> <button type="reset" onclick="resetAddTask()">Cancel</button>
-                    </form>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            // Get the due input element
-                            taskDue = document.getElementById('taskDue');
-
-                            var currentDate = new Date();
-
-                            // Extract the year, month, day, hours, and minutes from the current date
-                            var year = currentDate.getFullYear();
-                            var month = String(currentDate.getMonth() + 1).padStart(2, '0');
-                            var day = String(currentDate.getDate()).padStart(2, '0');
-                            var hours = String(currentDate.getHours()).padStart(2, '0');
-                            var minutes = String(currentDate.getMinutes()).padStart(2, '0');
-
-                            const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-                            // Set the minimum value to the current datetime
-                            taskDue.min = formattedDate;
-                        });
-                    </script>
+                                    if ($task->checked) {
+                                        print("
+                                <li class='stask'>
+                                     <img src='images/bin.png' class='deleteBTN' data-task='" . $task->task_name . "'> <img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input checked id='task$i' type='checkbox' onchange=\"ischeckedSpace('" . $spaceID[$n] . "','$task->taskID', this.id);\">
+                                    <label id='label$i' for='task$i'>
+                                        <p class='editableP taskName'><span id='task$i-name'>" . $task->task_name . "</span><br>$due</p>
+                                    </label>
+    
+                                    <form id='editTask-form$i' class='editTask-form' method='post' action='editTask.php'>
+                                        <input type='text' id='taskRename' name='taskRename' value='" . $task->task_name . "'>
+                                        <input id='newDue' name='newDue' type='datetime-local' value='" . $task->due . "'><br>
+                                        <input id='oldName' name='oldName' type='hidden' value='" . $task->task_name . "'>
+                                        <button type='submit'>Confirm</button> <button type='reset' onclick='cancelEdit($i);'>Cancel</button>
+                                    </form>
+    
+                                    <form id='rescheduleDueDate$i' class='rescheduleDueDate' action='rescheduleDue.php' method='post'>
+                                        <input id='tName' name='tName' type='hidden' value='" . $task->task_name . "'>
+                                        <label for='reschedule-due$i'>Due: </label> <input id='reschedule-due$i' name='reschedule-due' type='datetime-local' value='" . $task->due . "'>
+                                    </form>
+                                </li>             
+                                ");
+                                    } else {
+                                        print("
+                                    <li class='stask'>
+                                         <img src='images/bin.png' class='deleteBTN' data-task='" . $task->task_name . "'><img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input id='task$i' type='checkbox' onchange=\"ischeckedSpace('" . $spaceID[$n] . "','$task->taskID', this.id);\">
+                                        <label id='label$i' for='task$i'>
+                                            <p class='editableP taskName'><span id='task$i-name'>" . $task->task_name . "</span><br>$due</p>
+                                        </label>
+        
+                                        <form id='editTask-form$i' class='editTask-form' method='post' action='editTask.php'>
+                                    <input type='text' id='taskRename' name='taskRename' value='" . $task->task_name . "'>
+                                    <input id='newDue' name='newDue' type='datetime-local' value='" . $task->due . "'><br>
+                                    <input id='oldName' name='oldName' type='hidden' value='" . $task->task_name . "'>
+                                    <button type='submit'>Confirm</button> <button type='reset' onclick='cancelEdit($i);'>Cancel</button>
+                                </form>
+    
+                                <form id='rescheduleDueDate$i' class='rescheduleDueDate' action='rescheduleDue.php' method='post'>
+                                    <input id='tName' name='tName' type='hidden' value='" . $task->task_name . "'>
+                                    <label for='reschedule-due$i'>Due: </label> <input id='reschedule-due$i' name='reschedule-due' type='datetime-local' value='" . $task->due . "'>
+                                 </form>
+                                    </li>             
+                                    ");
+                                    }
+                                    $i++;
+                                    $n++;
+                                }
+                            } else {
+                                echo "<script>
+                                $('#nostasks').parent().parent().parent().hide();
+                            </script>";
+                            }
+                            ?>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
