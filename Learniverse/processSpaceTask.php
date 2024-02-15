@@ -120,6 +120,10 @@ if ($operation === 'addTask') {
     $taskDue = $_POST['due'];
     $taskAssignee = $_POST['assignee'];
 
+    if ($taskCheck === "true")
+        $taskCheck = true;
+    else $taskCheck = false;
+
     // Define the filter to match the document and the specific task within the tasks array
     $filter = [
         "spaceID" => $spaceID,
@@ -331,7 +335,9 @@ if ($operation === 'addTask') {
         'spaceID' => $spaceID,
         "tasks.taskID" => $taskID
     ];
-
+    if ($checked === "true")
+        $checked = true;
+    else $checked = false;
     // Define the pull operation to remove the specific task from the tasks array
     $updateOperation = [
         '$set' => [
@@ -346,7 +352,7 @@ if ($operation === 'addTask') {
     ];
 
     $bulkWrite->update($filter, $updateOperation, ['multi' => false, 'arrayFilters' => $arrayFilters]);
-
+    $checked = ($checked) ? "true" : "false";
     $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
     if ($result->getModifiedCount() > 0) {
         echo "checked task: $checked";
