@@ -9,12 +9,6 @@ const questionModalContainer = document.querySelector(
 );
 const container = document.querySelector(".container");
 
-// startBtn?.addEventListener("click", () => {
-//   introCard.style.display = "flex";
-//   introCardContainer.style.background = "rgba(0, 0, 0, 0.2)";
-//   introCardContainer.style.zIndex = "1000";
-//   container.style.zIndex = "-1000";
-// });
 viewIcons.forEach((viewIcon) => {
   viewIcon.addEventListener("click", () => {
     questionModalContainer.style.display = "flex";
@@ -32,17 +26,6 @@ closeIcons.forEach((closeIcon) => {
     questionModalContainer.style.zIndex = "-1000";
   });
 });
-function deleteRow() {
-  var trashIcon = this;
-  var row = trashIcon.closest("tr");
-  if (row) {
-    row.style.display = "none";
-  }
-}
-
-trashIcons.forEach((icon) => {
-  icon.addEventListener("click", deleteRow);
-});
 
 const uploadBtn = document.getElementById("upload-btn");
 const fileUpload = document.getElementById("file-upload");
@@ -53,9 +36,3 @@ if (uploadBtn) {
   });
 }
 
-// fileUpload.addEventListener("change", function () {
-//   introCard.style.display = "flex";
-//   introCardContainer.style.background = "rgba(0, 0, 0, 0.2)";
-//   introCardContainer.style.zIndex = "1000";
-//   container.style.zIndex = "-1000";
-// });
