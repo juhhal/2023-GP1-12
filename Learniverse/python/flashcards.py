@@ -1,10 +1,8 @@
 import sys
-import json
 import logging
 import tempfile
 from openai import OpenAI
-import os
-import openai
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -16,12 +14,12 @@ def summarize(path: str) -> str:
             text = file.read()
 
         logging.info("Creating OpenAI client and generating response.")
-        client = OpenAI(api_key = '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')
+        client = OpenAI(api_key = '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')
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": "You are a multiple choice quiz generator designed to output JSON and never return an empty response, write in this format question number (for example: question1) until 10,  and includes the following entities: question content (question), 3 multiple choices (choices), number of correct choice (correct), and a score for the quality of the question from 1 to 10 (score)."},
+                {"role": "system", "content": "You are a 10 Flashcards summarizer designed to output JSON and never return empty response, write in this format (flashcards) that includes flashcard number (for example: card1), description of important concepts or definitions (content)[Do not include the answer in the content], name of the concept or term (answer)[Do not include the answer in the content]."},
                 {"role": "user", "content": text}
             ]
         )

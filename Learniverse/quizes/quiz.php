@@ -1,11 +1,8 @@
 <?php
-
  session_start(); 
  if (isset($_GET['data'])) {
-    // Decode the JSON string into a PHP array
-    $arrayData = json_decode(urldecode($_GET['data']), true);
-    var_dump($arrayData);
- } 
+    $quizesData = json_decode(urldecode($_GET['data']), true);
+ }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,12 +13,12 @@
     <link rel="stylesheet" href="quiz.css" />
   </head>
   <body>
-    <div class="overlay">
+  <div class="overlay">
       <div class="container">
         <div>
           <div class="title-container">
-          <h1 class="title">Quiz</h1>
-            <a href="index.php">
+            <h1 class="title">Title</h1>
+            <a href="/quizes/">
               <img class="close-icon" src="icons/close.svg" alt="" />
             </a>
           </div>
@@ -61,97 +58,278 @@
             </div>
           </div>
           <div class="questions-count"></div>
-          <?php
-         
-// Function to generate HTML for a single question
-function generateQuestionHTML($questionData) {
-  $html = '<div class="question-container">';
-  $html .= '<div class="question-progress">';
-  $html .= '<p><span id="answered-questions">1</span> from <span id="questions-number">1</span></p>';
-  $html .= '</div>';
-  $html .= '<div class="answers-container">';
-  $html .= '<div>';
-  $html .= '<h2 class="question-text">' . $questionData['question'] . '</h2>';
-  $html .= '</div>';
-  $html .= '<div class="form" id="form1">';
-
-  foreach ($questionData['choices'] as $choiceIndex => $choice) {
-      $html .= '<div form="form1" class="answer-container" data-correct-answer="answer_' . $questionData['correct'] . '">';
-      $html .= '<input id="answer' . $choiceIndex . '" name="answerGroup" type="radio" />';
-      $html .= '<label for="answer' . $choiceIndex . '" class="answer">' . $choice . '</label>';
-      $html .= '</div>';
-  }
-
-  $html .= '</div>';
-  $html .= '<div class="skip-container">';
-  $html .= '<p class="skip-btn">Skip</p>';
-  $html .= '</div>';
-  $html .= '<div class="btn-container">';
-  $html .= '<button class="next-btn quiz-btn">Next</button>';
-  $html .= '<button class="result-btn quiz-btn">Result</button>';
-  $html .= '</div>';
-  $html .= '</div>';
-  $html .= '</div>';
-
-  return $html;
-}
-
-// Display the first question initially
-echo generateQuestionHTML($arrayData['success']['question1']);
-?>
-
+          <div class="question-container">
+            <div class="question-progress">
+              <p class="">
+                <span id="answered-questions">1</span> from
+                <span id="questions-number">10</span>
+              </p>
+            </div>
+            <div class="answers-container">
+              <div>
+                <h2 class="question-text">Question?</h2>
+              </div>
+              <div class="form" id="form1">
+                <div
+                  form="form1"
+                  class="answer-container"
+                  data-correct-answer="answer_1"
+                >
+                  <input id="answer" name="answerGroup" type="radio" />
+                  <label for="answer" class="answer"> Answer One </label>
+                </div>
+                <div
+                  form="form1"
+                  class="answer-container"
+                  data-correct-answer="answer_2 "
+                >
+                  <input id="answer1" name="answerGroup" type="radio" />
+                  <label for="answer1" class="answer"> Answer Two </label>
+                </div>
+                <div
+                  form="form1"
+                  class="answer-container"
+                  data-correct-answer="answer_3"
+                >
+                  <input id="answer2" name="answerGroup" type="radio" />
+                  <label for="answer2" class="answer"> Answer Three </label>
+                </div>
+              </div>
+              <div class="skip-container">
+                <p class="skip-btn">Skip</p>
+              </div>
+              <div class="btn-container">
+                <button class="next-btn quiz-btn">Next</button>
+                <button class="result-btn quiz-btn">Result</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const questions = document.querySelectorAll('.question-container');
-        let currentQuestionIndex = 0;
-
-        function showQuestion(index) {
-            questions.forEach((question, i) => {
-                question.style.display = i === index ? 'block' : 'none';
-            });
-        }
-
-        // Show the first question initially
-        showQuestion(currentQuestionIndex);
-
-        // Add event listener for the next button
-        document.querySelector('.next-btn').addEventListener('click', function () {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < questions.length) {
-                showQuestion(currentQuestionIndex);
-            }
-        });
-
-        // Add event listener for the skip button
-        document.querySelector('.skip-btn').addEventListener('click', function () {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < questions.length) {
-                showQuestion(currentQuestionIndex);
-            }
-        });
-    });
-</script>
 <script>
-window.onload = function() {
-    var storedData = localStorage.getItem('quizData');
 
-    if (storedData) {
-        var quizData = JSON.parse(storedData);
-        console.log(quizData);
+const questions = <?php echo json_encode($quizesData['questions']); ?>;
+
+const questionCountContainer = document.querySelector(".questions-count");
+const questionNumber = document.getElementById("questions-number");
+const answeredQuestions = document.getElementById("answered-questions");
+const answerQuestions = document.querySelector(".answered-questions p");
+const skip = document.querySelector(".skip-container");
+const nextBtn = document.querySelector(".next-btn");
+const resultBtn = document.querySelector(".result-btn");
+const questionText = document.querySelector(".question-text");
+const answerContainers = document.querySelectorAll(".answer-container");
+const modal = document.querySelector(".modal");
+const resultText = document.querySelector(".result-text");
+const correctResult = document.querySelector(".correct-result");
+const wrongResult = document.querySelector(".wrong-result");
+const remainingResult = document.querySelector(".remaining-result");
+const introCardContainer = document.querySelector(".intro-card-container");
+const container = document.querySelector(".container");
+
+let correctAnswers = 0;
+let wrongAnswers = 0;
+let remainingAnswers = 0;
+let currentQuestion = 0;
+let questionsNumber = questions.length;
+questionNumber.innerText = questions.length;
+
+const questionColors = [];
+
+for (let i = 0; i < questions.length; i++) {
+  questionColors.push("#bf97d8");
+}
+
+for (let i = 0; i < questions.length; i++) {
+  const questionCountElement = document.createElement("div");
+  questionCountElement.classList.add("question-count");
+  questionCountContainer.appendChild(questionCountElement);
+}
+
+const questionCount = document.querySelectorAll(".question-count");
+questionCount[currentQuestion].style.backgroundColor =
+  questionColors[currentQuestion];
+questionText.innerText = questions[currentQuestion].question;
+
+nextBtn.style.display = "none";
+
+let shuffledAnswers = [];
+let answerSelected = false;
+
+function shuffleAnswers(correctAnswer, falseAnswers) {
+  const allAnswers = [correctAnswer, ...falseAnswers];
+
+  for (let i = allAnswers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allAnswers[i], allAnswers[j]] = [allAnswers[j], allAnswers[i]];
+  }
+
+  return allAnswers;
+}
+
+function handleAnswer(selectedAnswer) {
+  const correctAnswer = questions[currentQuestion].correctAnswer;
+
+  answerContainers.forEach((container) => {
+    const answerText = container.innerText;
+
+    if (answerText === selectedAnswer) {
+      container.style.backgroundColor =
+        selectedAnswer === correctAnswer ? "#F1F9EB" : "#FEECEC";
+      container.style.border =
+        selectedAnswer === correctAnswer
+          ? "1px solid #88CE57"
+          : "1px solid #F86363";
     } else {
-        console.error('No quiz data found in local storage.');
-        // Handle the absence of data appropriately
+      container.style.backgroundColor = "#ffffff";
+      container.style.border = "none";
+    }
+  });
+
+  if (selectedAnswer === correctAnswer) {
+    correctAnswers++;
+    correctResult.textContent = correctAnswers;
+  } else {
+    wrongAnswers++;
+    wrongResult.textContent = wrongAnswers;
+
+    answerContainers.forEach((container) => {
+      const answerText = container.innerText;
+      if (answerText === correctAnswer) {
+        container.style.backgroundColor = "#F1F9EB";
+        container.style.border = "1px solid #88CE57";
+      }
+    });
+  }
+
+  questionCount[currentQuestion].style.backgroundColor =
+    selectedAnswer === correctAnswer ? "#88CE57" : "#F86363";
+  questionColors[currentQuestion] =
+    selectedAnswer === correctAnswer ? "#88CE57" : "#F86363";
+
+  if (currentQuestion === questions.length - 1) {
+    resultBtn.style.display = "block";
+    skip.style.display = "none";
+  } else {
+    nextBtn.style.display = "block";
+    skip.style.display = "none";
+  }
+}
+
+function displayQuestions() {
+  if (currentQuestion >= questions.length) {
+    return;
+  }
+
+  const correctAnswer = questions[currentQuestion].correctAnswer;
+  const falseAnswers = questions[currentQuestion].answers.filter(
+    (answer) => answer !== correctAnswer
+  );
+
+  shuffledAnswers = shuffleAnswers(correctAnswer, falseAnswers);
+
+  answerContainers.forEach((label, index) => {
+    label.innerText = shuffledAnswers[index];
+  });
+
+  questionText.innerText = questions[currentQuestion].question;
+  questionCount[currentQuestion].style.backgroundColor =
+    questionColors[currentQuestion];
+}
+
+answerContainers.forEach((answerContainer, index) => {
+  answerContainer.addEventListener("click", () => {
+    if (!answerSelected) {
+      answerSelected = true;
+      const selectedAnswer = answerContainers[index].innerText;
+
+      handleAnswer(selectedAnswer);
+    }
+  });
+});
+
+skip.addEventListener("click", () => {
+  if (!answerSelected) {
+    answerSelected = true;
+
+    questionCount[currentQuestion].style.backgroundColor = "#6766661F";
+    remainingAnswers++;
+    remainingResult.textContent = remainingAnswers;
+
+    answerContainers.forEach((container) => {
+      container.style.backgroundColor = "#ffffff";
+      container.style.border = "none";
+    });
+
+
+    currentQuestion++;
+
+    if (currentQuestion >= questions.length) {
+      resultBtn.style.display = "block";
+      skip.style.display = "none";
     }
 
-    // Optional: Clear the quizData from local storage if it's no longer needed
-    localStorage.removeItem('quizData');
+    answeredQuestions.textContent =
+      currentQuestion === questions.length
+        ? questions.length
+        : currentQuestion + 1;
+    displayQuestions();
+  }
+});
 
+function handleResultBtn() {
+  if (currentQuestion === questions.length - 1) {
+    nextBtn.style.display = "none";
+    skip.style.display = "none";
+    resultBtn.style.display = "block";
+  } else {
+    resultBtn.style.display = "none";
+  }
 }
-</script>
 
-    <script src="quiz.js"></script>
+nextBtn.addEventListener("click", () => {
+  answerContainers.forEach((container) => {
+    container.style.backgroundColor = "#ffffff";
+    container.style.border = "none";
+  });
+
+  answerSelected = false;
+  currentQuestion++;
+
+  if (currentQuestion < questions.length) {
+    skip.style.display = "block";
+    answeredQuestions.textContent = currentQuestion + 1;
+    displayQuestions();
+  } else {
+    currentQuestion = 0;
+    skip.style.display = "none";
+    resultBtn.style.display = "block";
+  }
+
+  nextBtn.style.display = "none";
+});
+
+resultBtn.addEventListener("click", () => {
+  let questionsAnswered = questions.length - remainingAnswers;
+  wrongResult.textContent = wrongAnswers;
+  correctResult.textContent = correctAnswers;
+  remainingResult.textContent = remainingAnswers;
+  modal.style.display = "flex";
+  answerQuestions.textContent = `You answered ${questionsAnswered} from ${questionsNumber} questions`;
+  if (correctAnswers > wrongAnswers && remainingAnswers) {
+    resultText.textContent = "Fantastic work! Your knowledge shines bright";
+  } else {
+    resultText.textContent =
+      "Every challenge is a step towards improvement... You've got this!";
+  }
+  remainingResult.textContent = remainingAnswers;
+  modal.style.background = "rgba(0, 0, 0, 0.2)";
+  modal.style.zIndex = "1000";
+  container.style.zIndex = "-1000";
+});
+
+displayQuestions();
+</script>
   </body>
 </html>

@@ -1,4 +1,8 @@
 <?php
+
+session_start();
+
+
 if(isset($_FILES['file'] )){
     $file_name = $_FILES['file']['name'];
     $file_tmp = $_FILES['file']['tmp_name'];
@@ -15,7 +19,7 @@ if(isset($_FILES['file'] )){
         // Move the uploaded file to the 'images' directory
         if (move_uploaded_file($file_tmp, $upload_directory . $file_name)) {
             // Assuming the path to the Python script is correct
-            $python_script_path = "/Users/ja/Downloads/2023-GP1-12-merges/python/extracter.py";
+            $python_script_path = "../python/extracter.py";
             
             // Construct the command to execute the Python script
             $command = "python3 " . escapeshellarg($python_script_path) . " " . escapeshellarg($upload_directory . $file_name);
@@ -81,7 +85,7 @@ if(isset($_FILES['file'] )){
             // Move the uploaded file to the 'images' directory
             if (move_uploaded_file($file_tmp, $upload_directory . $file_name)) {
                 // Assuming the path to the Python script is correct
-                $python_script_path = "/Users/ja/Downloads/2023-GP1-12-merges/python/docReader.py";
+                $python_script_path = "../python/docReader.py";
                 
                 // Construct the command to execute the Python script
                 $command = "python3 " . escapeshellarg($python_script_path) . " " . escapeshellarg($upload_directory . $file_name);
@@ -106,7 +110,7 @@ if(isset($_FILES['file'] )){
             // Move the uploaded file to the 'images' directory
             if (move_uploaded_file($file_tmp, $upload_directory . $file_name)) {
                 // Assuming the path to the Python script is correct
-                $python_script_path = "/Users/ja/Downloads/2023-GP1-12-merges/python/pptxReader.py";
+                $python_script_path = "../python/pptxReader.py";
                 
                 // Construct the command to execute the Python script
                 $command = "python3 " . escapeshellarg($python_script_path) . " " . escapeshellarg($upload_directory . $file_name);
@@ -133,8 +137,6 @@ if(isset($_FILES['file'] )){
     }
 }
 
-// Start the session (if not already started)
-session_start();
 
 // Include MongoDB PHP library
 require_once __DIR__ . '../../vendor/autoload.php';
@@ -202,20 +204,24 @@ if (isset($_POST['ogValue'])) {
             echo "Failed to write to temporary file.";
         } else {
             // Construct the command to call the Python script with the file path as an argument
-            $summarize_command = "python3 /Users/ja/Downloads/2023-GP1-12-merges/python/summarizer.py '" . $tempFilePath . "'";
+            $summarize_command = "python3 ../python/summarizer.py '" . $tempFilePath . "'";
             // Execute the command and capture output
             exec($summarize_command, $summary, $resultsCode);
             // Check if the command executed successfully
             if ($resultsCode === 0) {
-                // Read the contents of the temporary file
-                $temp_file_path = trim($summary[0]);
-                $summary_data = json_decode(file_get_contents($temp_file_path), true);
-                // Call the insertSummary function to store the summary in the database
-                insertSummary($_SESSION['email'], $ogValue, $summary_data['summary'], $summaryCollection);
-            } else {
-                // Output an error message
-                echo "Error executing Python script.";
-            }
+              if (isset($summary[0]) && trim($summary[0]) !== '') {
+                  // Read the contents of the temporary file
+                  $temp_file_path = trim($summary[0]);
+                  $summary_data = json_decode(file_get_contents($temp_file_path), true);
+                  // Call the insertSummary function to store the summary in the database
+                  insertSummary($_SESSION['email'], $ogValue, $summary_data['summary'], $summaryCollection);
+              } else {
+                  echo "Python script did not return any output.";
+              }
+          } else {
+              // Output an error message
+              echo "Error executing Python script.";
+          }
             // Clean up: Delete the temporary file
             unlink($tempFilePath);
         }
@@ -249,7 +255,7 @@ if (isset($_FILES['fileUpload'])) {
         // Move the uploaded file to the 'images' directory
         if (move_uploaded_file($file_tmp, $upload_directory . $file_name)) {
             // Assuming the path to the Python script is correct
-            $python_script_path = "/Users/ja/Downloads/2023-GP1-12-merges/python/extracter.py";
+            $python_script_path = "../python/extracter.py";
             
             // Construct the command to execute the Python script
             $command = "python3 " . escapeshellarg($python_script_path) . " " . escapeshellarg($upload_directory . $file_name);
@@ -314,7 +320,7 @@ if (isset($_FILES['fileUpload'])) {
             // Move the uploaded file to the 'images' directory
             if (move_uploaded_file($file_tmp, $upload_directory . $file_name)) {
                 // Assuming the path to the Python script is correct
-                $python_script_path = "/Users/ja/Downloads/2023-GP1-12-merges/python/docReader.py";
+                $python_script_path = "../python/docReader.py";
                 
                 // Construct the command to execute the Python script
                 $command = "python3 " . escapeshellarg($python_script_path) . " " . escapeshellarg($upload_directory . $file_name);
@@ -338,7 +344,7 @@ if (isset($_FILES['fileUpload'])) {
             // Move the uploaded file to the 'images' directory
             if (move_uploaded_file($file_tmp, $upload_directory . $file_name)) {
                 // Assuming the path to the Python script is correct
-                $python_script_path = "/Users/ja/Downloads/2023-GP1-12-merges/python/pptxReader.py";
+                $python_script_path = "../python/pptxReader.py";
                 
                 // Construct the command to execute the Python script
                 $command = "python3 " . escapeshellarg($python_script_path) . " " . escapeshellarg($upload_directory . $file_name);
@@ -451,7 +457,7 @@ if ($tempFilePath === false) {
         echo "Failed to write to temporary file.";
     } else {
         // Construct the command to call the Python script with the file path as an argument
-        $flashcard_command = "python3 /Users/ja/Downloads/2023-GP1-12-merges/python/flashcards.py '" . $tempFilePath . "'";
+        $flashcard_command = "python3 ../python/flashcards.py '" . $tempFilePath . "'";
         // Execute the command and capture output
         exec($flashcard_command, $content, $resultsCode);
         // Check if the command executed successfully

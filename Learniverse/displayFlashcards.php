@@ -294,7 +294,7 @@
 
         <div class="workarea">
 
-            <div class="workarea_item">
+            <div class="workarea_item" style="flex:1;">
             <!-- <h1>Empty</h1> -->
 
             <div id="flashcards-container">

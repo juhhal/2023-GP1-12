@@ -5,10 +5,8 @@ session_start();
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 $userEmail = $_SESSION['email'];
 $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
-ini_set('display_errors', '0'); // Turn off error displaying
-error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notices
-
-
+ini_set('display_errors', '0');
+error_reporting(E_ERROR | E_PARSE); 
 ?>
 
 <html lang="en">
@@ -31,7 +29,6 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-        /* Style for the loading overlay */
         .overlay {
             position: fixed;
             width: 100%;
@@ -166,36 +163,35 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
     };
 
     function validateForm(event) {
-      event.preventDefault(); // Prevent the form from submitting by default
+      event.preventDefault();
 
       var input = document.getElementById('PRename');
-      var value = input.value.trim(); // Trim whitespace from the input value
+      var value = input.value.trim(); 
 
       var errorSpan = document.getElementById('rename-error');
 
       if (value === '') {
-        errorSpan.textContent = 'Please enter a valid name.'; // Display the error message
-        return false; // Cancel form submission
+        errorSpan.textContent = 'Please enter a valid name.';
+        return false; 
       }
 
-      var nameParts = value.split(' ').filter(part => part !== ''); // Split on whitespace and remove empty parts
+      var nameParts = value.split(' ').filter(part => part !== '');
 
       if (nameParts.length < 2) {
-        errorSpan.textContent = 'Please enter both first name and last name.'; // Display the error message
-        return false; // Cancel form submission
+        errorSpan.textContent = 'Please enter both first name and last name.'; 
+        return false; 
       }
 
       // Check if both names start with a letter
       var isValid = nameParts.every(part => /^[A-Za-z]/.test(part));
 
       if (!isValid) {
-        errorSpan.textContent = 'Names should start with a letter.'; // Display the error message
-        return false; // Cancel form submission
+        errorSpan.textContent = 'Names should start with a letter.'; 
+        return false; 
       } else {
-        errorSpan.textContent = ''; // Clear the error message if it's not needed
+        errorSpan.textContent = ''; 
       }
 
-      // If the validation passes, you can proceed with form submission
       document.getElementById('rename-form').submit();
     }
 
@@ -238,7 +234,7 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
               <li class="active">
                 <a href="../workspace.php">My Workspace</a>
               </li>
-            </ul> <!-- end menu -->
+            </ul> 
           </nav>
         </div>
         <div class="overlay" id="loadingOverlay">
@@ -247,10 +243,8 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
         <?php
         require '../jwt.php';
 
-        // Create a MongoDB client
         $connection = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
-        // Select the database and collection
         $database = $connection->Learniverse;
         $Usercollection = $database->users;
 
@@ -259,7 +253,6 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
         );
 
         $fetch = $Usercollection->findOne($data);
-        // $googleID = $fetch->google_user_id;
 
         $headers = array(
           'alg' => 'HS256',
@@ -353,12 +346,13 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
       </div>
       <div class="button-container" style="width: 70%;">
         <div class="summary-wrapper">
-
-        <input type="file" id="file-input" />
-        <label id="" for="file-input">
-          <i class="fa-solid fa-arrow-up-from-bracket"></i>
-          &nbsp; Choose Files To Upload
-        </label>
+        <form enctype="multipart/form-data" method="post" action="" id="uploadForm">
+          <input type="file" id="file-input" />
+          <label id="" for="file-input">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+            &nbsp; Choose Files To Upload
+          </label>
+        </form>
         <label  id="summarize">
         <i class="fa-solid fa-wand-magic-sparkles"></i>
           &nbsp; Generate
@@ -596,12 +590,6 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
-/* Hover effect for buttons */
-
-
-
-
-/* Responsive table adjustments */
 @media screen and (max-width: 768px) {
   .table {
     width: 100%;
@@ -609,18 +597,12 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
     box-shadow: none; /* Optional: remove shadow on small screens */
   }
   
-  /* Adjust padding for small screens */
   .table td, .table th {
     padding: 8px;
   }
 }
 
 </style>
-
-
-
-
-
     </div>
     <div class="container1" style="margin-top: 24px;">
     <?php if (!empty($filesList)) { ?>
@@ -635,20 +617,12 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
         <tbody>
             <?php foreach ($filesList as $file) { ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($file['subjectName']); ?></td>
+                    <td><?php echo htmlspecialchars($file['name']); ?></td>
                     <td><?php echo date('Y-m-d ', $file['date_created']); ?></td>
                     <td>
-                        <a href="javascript:void(0)" id="updateFile" >
-                            <button onclick="retrieve(<?php echo $file['date_created'];?>)" class="file-edit btn">
-                                <i class="fa fa-eye" aria-hidden="true"></i>
-                            </button>
-                        </a>
-                        <a href="javascript:void(0)" >
-                            <button onclick="deleteSummary(<?php echo $file['date_created'];?>)" class="file-delete btn">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </a>
+                      <a href="quiz.php?data=<?php echo urlencode(json_encode($file['body'])); ?>">Show</a>    
                     </td>
+               
                 </tr>
             <?php } ?>
         </tbody>
@@ -697,53 +671,68 @@ fileInput.addEventListener("change", () => {
     // Set a timer to periodically check the value of 'og' after a delay
 // Adjust the delay (in milliseconds) according to your requirements
 });
-            // let messageContainer = document.getElementById("og");
+            let messageContainer = document.getElementById("og");
             let loadingOverlay = document.getElementById("loadingOverlay");
 
-            fileInput.addEventListener("change", function() {
-                let formData = new FormData();
-                formData.append('file', fileInput.files[0]);
-                formData.append('readpdf', 'true'); // Include the 'readpdf' parameter
+            // fileInput.addEventListener("change", function() {
+            //     let formData = new FormData();
+            //     formData.append('file', fileInput.files[0]);
+            //     formData.append('readpdf', 'true'); // Include the 'readpdf' parameter
 
-                showLoading(); // Show loading overlay
+            //     showLoading(); // Show loading overlay
 
-                let xhr = new XMLHttpRequest();
-                xhr.open('POST', '../summarization/extract.php'); 
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === XMLHttpRequest.DONE) {
-                        hideLoading(); // Hide loading overlay
-                        if (xhr.status === 200) {
-                            // Request was successful, handle response here
-                            extractedValue=xhr.responseText;
-                            console.log(xhr.responseText);
+            //     let xhr = new XMLHttpRequest();
+            //     xhr.open('POST', '../summarization/extract.php'); 
+            //     xhr.onreadystatechange = function() {
+            //         if (xhr.readyState === XMLHttpRequest.DONE) {
+            //             hideLoading(); // Hide loading overlay
+            //             if (xhr.status === 200) {
+            //                 // Request was successful, handle response here
+            //                 extractedValue=xhr.responseText;
+            //                 console.log(xhr.responseText);
 
 
-                        } else {
-                            // Request failed, handle error here
-                            console.error('Error:', xhr.statusText);
-                        }
-                    }
-                };
-                xhr.send(formData);
-            });
+            //             } else {
+            //                 // Request failed, handle error here
+            //                 console.error('Error:', xhr.statusText);
+            //             }
+            //         }
+            //     };
+            //     xhr.send(formData);
+            // });
 
             $('#summarize').click(function() {
               let fileName = fileInput.files[0].name;
+              let formData = new FormData();
+              formData.append('fileUpload', fileInput.files[0]);
 
-                  // If ogValue is not empty, proceed with the AJAX request
-                  showLoading(); // Show loading overlay
+                  showLoading(); 
                   console.log("Sending request to extract.php...");
-                  var data = [fileName, extractedValue];                  
+                  var data = [fileName, extractedValue];   
+                  console.log({data})               
                       $.ajax({
-                      url: '../summarization/extract.php', // Change this to the file extractor page
+                      url: 'extractQuizes.php',
                       type: 'POST',
-                      data: { quiz: data }, // Send the 'ogValue' to PHP
-                      success: function(response) {
-                        localStorage.setItem('quizData', JSON.stringify(response.success));
-                        console.log('Data stored in local storage:', response.success);
-                        window.location.href = 'quiz.php'
-                          hideLoading(); // Hide loading overlay
+                      data: formData, 
+                      processData: false,
+                       contentType: false,
 
+                      success: function(response) {
+                        $.ajax({
+                          url: 'postQuiz.php',
+                          method: 'POST',
+                          data: {
+                            name: fileName,
+                            body: response.data
+                          },
+                          success: function(res) {
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data));
+                            hideLoading();
+                          },
+                          error: function(jqXHR, textStatus, errorThrown) {
+                            console.error("Error:", textStatus, errorThrown);
+                          }
+                        });
                       },
                       error: function(jqXHR, textStatus, errorThrown) {
                           hideLoading(); // Hide loading overlay
@@ -824,31 +813,15 @@ function retrieve(datad) {
         method: 'POST',
         data: { datas: datad },
         success: function(response) {
-    // Assuming response is already a JavaScript object, not JSON
-    var responseData = response;
-    
-    // Access the fields of the response object
-    var question = responseData.question;
-    var answer = responseData.answer;
+        var responseData = response;
+        
+        var question = responseData.question;
+        var answer = responseData.answer;
 
-    console.log(responseData);
-    
-    // Set the values to the appropriate HTML elements
-// Empty the elements before setting new values
-// Clear the textarea before setting new values
-// $('#og').val('').val(question);
-// $('#summary').val('').val(answer);
-
-    // $('#og').val(question);
-    // $('#summary').val(answer);
-
-    // Log the values for verification
-    // console.log("Question: " + question);
-    // console.log("Answer: " + answer);
+        console.log(responseData);
 },
 
         error: function (xhr, status, error) {
-            // Log the full response body to see what's causing the JSON parse error
             console.error(xhr.responseText);
         }   
     });
@@ -866,41 +839,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-// document.querySelector('#manualForm').addEventListener('submit', (e) => {
-//       e.preventDefault();
-//       //let formdata = new FormData(document.querySelector('#manualForm'));
-//       let subjectName = document.querySelector('#nameSubject');
-//       let question = document.querySelector('#question');
-//       let answer = document.querySelector('#answer');
-//       if (subjectName.value != "" && subjectName.value != null &&
-//         question.value != "" && question.value != null &&
-//         answer.value != "" && answer.value != null) {
-
-//         $.ajax({
-//           url: 'subjectReview.php',
-//           data: {
-//             'action': 'addSubjectReview',
-//             'subjectName': subjectName.value,
-//             'question': question.value,
-//             'answer': answer.value
-//           },
-//           //data: formdata,
-//           method: 'POST',
-      
-//           success: function (res) {
-//             alert(res);
-//             location.reload();
-//           }
-//         });
-
-//       } else {
-//         alert("Insert value for all input!");
-//       }
-
-//     });
     </script>
-      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
-
 </html>
   
