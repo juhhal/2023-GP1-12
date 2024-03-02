@@ -16,7 +16,7 @@ def summarize(path: str) -> str:
             text = file.read()
 
         logging.info("Creating OpenAI client and generating response.")
-        client = OpenAI(api_key = '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')
+        client = OpenAI(api_key = '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')
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             response_format={"type": "json_object"},

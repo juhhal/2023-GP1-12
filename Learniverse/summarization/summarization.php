@@ -368,35 +368,38 @@ let fileInput = document.getElementById("file-input");
     </div>
 </header>
 <main>
-  <div id="tools_div">
-        <ul class="tool_list">
+<div id="tools_div">
+      <ul class="tool_list">
         <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
+          <a href="/workspace.php"> Calendar & To-Do
           </a>
         </li>
         <li class="tool_item">
-          <a href="theFiles.php?q=My Files"> My Files</a>
+          <a href="/theFiles.php"> My Files</a>
         </li>
         <li class="tool_item">
-          <a href="quizes/quizes.php">Quiz</a>
+        <a href="/quizes/"> Quiz
+          </a>
         </li>
         <li class="tool_item">
-          Flashcard
+        <a href="/flashcard"> Flashcard
+          </a>
         </li>
         <li class="tool_item">
-          <a href="summarization/summarization.php">Summarization</a>
+        <a href="/summarization/summarization.php"> Summarization
+          </a>
         </li>
         <li class="tool_item">
           Study Planner
         </li>
-        <li class="tool_item"><a href="Notes/notes.php">
+        <li class="tool_item"><a href="/Notes/notes.php">
             Notes</a>
         </li>
         <li class="tool_item">
-          <a href="pomodoro.php">
+          <a href="/pomodoro.php">
             Pomodoro</a>
         </li>
-        <li class="tool_item"><a href="gpa.php">
+        <li class="tool_item"><a href="/gpa.php">
             GPA Calculator</a>
         </li>
         <li class="tool_item">
@@ -405,11 +408,11 @@ let fileInput = document.getElementById("file-input");
         <li class="tool_item">
           Meeting Room
         </li>
-        <li class="tool_item"><a href="community.php">
+        <li class="tool_item"><a href="/community.php">
             Community</a>
         </li>
       </ul>
-        </div>
+    </div>
 
     <div class="container">
       <div class="summarize-heading">
@@ -541,6 +544,7 @@ let fileInput = document.getElementById("file-input");
   }
 
   .file-edit {
+    cursor: pointer;
     font-size: 8px ;
     color: white;
     background-color: #ec947e;

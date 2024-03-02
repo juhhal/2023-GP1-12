@@ -2,6 +2,8 @@
  session_start(); 
  if (isset($_GET['data'])) {
     $quizesData = json_decode(urldecode($_GET['data']), true);
+    $title = urldecode($_GET['title']) ;
+    $quizId = urldecode($_GET['id']) ;
  }
 ?>
 <!DOCTYPE html>
@@ -11,16 +13,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="quiz.css" />
+     <script src="../jquery.js"></script>
+
   </head>
   <body>
   <div class="overlay">
       <div class="container">
         <div>
           <div class="title-container">
-            <h1 class="title">Title</h1>
+            <h1 class="title">
+              <?php echo $title; ?>
+            </h1>
             <a href="/quizes/">
               <img class="close-icon" src="icons/close.svg" alt="" />
             </a>
+            <button class="back-btn">Back</button>
           </div>
           <div class="modal">
             <div class="result-modal">
@@ -127,6 +134,7 @@ const wrongResult = document.querySelector(".wrong-result");
 const remainingResult = document.querySelector(".remaining-result");
 const introCardContainer = document.querySelector(".intro-card-container");
 const container = document.querySelector(".container");
+const backBtn = document.querySelector('.back-btn');
 
 let correctAnswers = 0;
 let wrongAnswers = 0;
@@ -134,6 +142,16 @@ let remainingAnswers = 0;
 let currentQuestion = 0;
 let questionsNumber = questions.length;
 questionNumber.innerText = questions.length;
+const questionStatus = questions.map(question => ({
+  question: question.question,
+  userAnswer: null,
+  correct: false,
+  status: 'unanswered',
+  score: question.score
+}));
+let questionHistory = [];
+
+
 
 const questionColors = [];
 
@@ -170,6 +188,19 @@ function shuffleAnswers(correctAnswer, falseAnswers) {
 
 function handleAnswer(selectedAnswer) {
   const correctAnswer = questions[currentQuestion].correctAnswer;
+
+// Set the userAnswer and status
+questionStatus[currentQuestion].userAnswer = selectedAnswer;
+if (selectedAnswer === correctAnswer) {
+  correctAnswers++;
+  correctResult.textContent = correctAnswers;
+  questionStatus[currentQuestion].status = 'correct';
+  questionStatus[currentQuestion].correct = true;
+} else {
+  wrongAnswers++;
+  wrongResult.textContent = wrongAnswers;
+  questionStatus[currentQuestion].status = 'incorrect';
+}
 
   answerContainers.forEach((container) => {
     const answerText = container.innerText;
@@ -217,6 +248,39 @@ function handleAnswer(selectedAnswer) {
   }
 }
 
+function restoreAnswerState() {
+  const currentQuestionStatus = questionStatus[currentQuestion];
+  const correctAnswer = questions[currentQuestion].correctAnswer;
+  const userAnswer = currentQuestionStatus.userAnswer;
+
+  answerContainers.forEach((container) => {
+    const answerText = container.innerText;
+
+    if (answerText === userAnswer) {
+      container.style.backgroundColor =
+        userAnswer === correctAnswer ? "#F1F9EB" : "#FEECEC";
+      container.style.border =
+        userAnswer === correctAnswer
+          ? "1px solid #88CE57"
+          : "1px solid #F86363";
+
+    } else {
+      container.style.backgroundColor = "#ffffff";
+      container.style.border = "none";
+    }
+  });
+
+  if (currentQuestionStatus.status === 'correct') {
+    questionCount[currentQuestion].style.backgroundColor = "#88CE57";
+  } else if (currentQuestionStatus.status === 'incorrect') {
+    questionCount[currentQuestion].style.backgroundColor = "#F86363";
+  } else {
+    questionCount[currentQuestion].style.backgroundColor = "#bf97d8";
+  }
+
+}
+
+
 function displayQuestions() {
   if (currentQuestion >= questions.length) {
     return;
@@ -231,6 +295,13 @@ function displayQuestions() {
 
   answerContainers.forEach((label, index) => {
     label.innerText = shuffledAnswers[index];
+
+    // if the answer is empty or undefined hide the answer container
+    if (shuffledAnswers[index] === "" || shuffledAnswers[index] === undefined) {
+      label.style.display = "none";
+    } else {
+      label.style.display = "block";
+    }
   });
 
   questionText.innerText = questions[currentQuestion].question;
@@ -250,10 +321,11 @@ answerContainers.forEach((answerContainer, index) => {
 });
 
 skip.addEventListener("click", () => {
-  if (!answerSelected) {
-    answerSelected = true;
+  if (currentQuestion < questions.length) {
 
+    questionStatus[currentQuestion].status = 'skipped';
     questionCount[currentQuestion].style.backgroundColor = "#6766661F";
+    
     remainingAnswers++;
     remainingResult.textContent = remainingAnswers;
 
@@ -262,19 +334,25 @@ skip.addEventListener("click", () => {
       container.style.border = "none";
     });
 
-
     currentQuestion++;
 
-    if (currentQuestion >= questions.length) {
-      resultBtn.style.display = "block";
-      skip.style.display = "none";
-    }
+    answerSelected = false;
 
     answeredQuestions.textContent =
       currentQuestion === questions.length
         ? questions.length
         : currentQuestion + 1;
+
+    handleResultBtn();
     displayQuestions();
+
+    nextBtn.style.display = "none";
+
+    if (currentQuestion < questions.length) {
+      skip.style.display = "block";
+    } else {
+      skip.style.display = "none";
+    }
   }
 });
 
@@ -308,15 +386,54 @@ nextBtn.addEventListener("click", () => {
   }
 
   nextBtn.style.display = "none";
+
+  questionHistory.push(currentQuestion);
+  handleBackBtnVisibility();
 });
 
-resultBtn.addEventListener("click", () => {
-  let questionsAnswered = questions.length - remainingAnswers;
-  wrongResult.textContent = wrongAnswers;
-  correctResult.textContent = correctAnswers;
-  remainingResult.textContent = remainingAnswers;
+backBtn.addEventListener('click', () => {
+  questionHistory.pop();
+  currentQuestion = questionHistory.length > 0 ? questionHistory[questionHistory.length - 1] : 0;
+  handleBackBtnVisibility();
+  displayQuestions();
+  restoreAnswerState();
+});
+
+
+
+resultBtn.addEventListener("click",async () => {
+  await $.ajax({
+    url: 'postQuizResult.php',
+    method: 'POST',
+    data: {
+      quizId:'<?php echo $quizId; ?>',
+      result: questionStatus
+    },
+    success: function(res) {
+      console.log(res);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.error("Error:", textStatus, errorThrown);
+    }
+  });
+
+  const unansweredQuestionCount = questionStatus.filter(
+    (question) => question.status === 'unanswered'
+  ).length;
+  const correctAnswerCount = questionStatus.filter(
+    (question) => question.status === 'correct'
+  ).length;
+  const wrongAnswerCount = questionStatus.filter(
+    (question) => question.status === 'incorrect'
+  ).length;
+
+  wrongResult.textContent = wrongAnswerCount;
+  correctResult.textContent = correctAnswerCount;
+  remainingResult.textContent = unansweredQuestionCount;
   modal.style.display = "flex";
-  answerQuestions.textContent = `You answered ${questionsAnswered} from ${questionsNumber} questions`;
+  answerQuestions.textContent = `You answered ${
+    correctAnswerCount + wrongAnswerCount
+  } from ${questionsNumber} questions`;
   if (correctAnswers > wrongAnswers && remainingAnswers) {
     resultText.textContent = "Fantastic work! Your knowledge shines bright";
   } else {
@@ -329,6 +446,17 @@ resultBtn.addEventListener("click", () => {
   container.style.zIndex = "-1000";
 });
 
+function handleBackBtnVisibility() {
+  // If there is no history, disable or hide the back button
+  if (questionHistory.length === 0) {
+    backBtn.style.display = 'none';
+  } else {
+    backBtn.style.display = 'block';
+  }
+}
+
+
+handleBackBtnVisibility();
 displayQuestions();
 </script>
   </body>

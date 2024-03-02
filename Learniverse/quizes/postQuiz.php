@@ -4,11 +4,10 @@ session_start();
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
 $user_id = $_SESSION['email'];
-$quizName = $_POST['name'];
-$quizBody = $_POST['body'];
+$quizName = $_POST['name'] ?? ''; 
+$quizBody = $_POST['body'] ?? ''; 
 $quizDate = date("Y-m-d H:i:s");
 
-print_r($_POST);
 
 if ($user_id) {
     $bulk = new MongoDB\Driver\BulkWrite;
@@ -29,11 +28,16 @@ if ($user_id) {
     $result = $manager->executeBulkWrite('Learniverse.Quizzes', $bulk);
 
     if ($result->getModifiedCount() > 0 || $result->getUpsertedCount() > 0) {
-        echo json_encode(['success' => true, 'quizId' => $quizId]);
+        $response = ['success' => true, 'quizId' => $quizId];
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to add quiz']);
+        exit; 
     }
 } else {
     echo json_encode(['error' => 'User ID not found']);
+    exit; 
 }
 ?>

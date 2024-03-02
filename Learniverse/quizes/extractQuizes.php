@@ -1,5 +1,7 @@
 <?php
 
+$quizType = isset($_POST['quizType']) ? $_POST['quizType'] : 'questionAnswers';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fileUpload'])) {
     $error = '';
     $success = '';
@@ -20,8 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fileUpload'])) {
 
         if (move_uploaded_file($fileTmpPath, $tempFilePath)) {
             try {
-                $cmd = escapeshellcmd("python3 $pythonScript " . escapeshellarg($tempFilePath));
-                $output = shell_exec($cmd);
+              $cmd = escapeshellcmd("python3 $pythonScript " . escapeshellarg($tempFilePath) . " " . escapeshellarg($quizType));
+              $output = shell_exec($cmd);
 
                 if (!empty($output)) {
                     $resultFilePath = trim($output);

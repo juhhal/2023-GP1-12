@@ -287,42 +287,48 @@ $FOLDERS = json_decode(json_encode($result_json), true);
   </header>
 
   <main>
-    <div id="tools_div">
+  <div id="tools_div">
       <ul class="tool_list">
-        <li class="tool_item"><a href="../workspace.php"><img src="../images/calendar.png">
-            Calendar & To-Do </li>
-        <li class="tool_item"><a href="../theFiles.php?q=My Files"><img src="../images/file.png">
-            My Files</a>
+        <li class="tool_item">
+          <a href="/workspace.php"> Calendar & To-Do
+          </a>
         </li>
-        <li class="tool_item"><img src="../images/quiz.png">
-          Quiz
+        <li class="tool_item">
+          <a href="/theFiles.php"> My Files</a>
         </li>
-        <li class="tool_item"><img src="../images/flash-cards.png">
-          Flashcard
+        <li class="tool_item">
+        <a href="/quizes/"> Quiz
+          </a>
         </li>
-        <li class="tool_item"><img src="../images/summarization.png">
-          Summarization
+        <li class="tool_item">
+        <a href="/flashcard"> Flashcard
+          </a>
         </li>
-        <li class="tool_item"><img src="../images/study-planner.png">
+        <li class="tool_item">
+        <a href="/summarization/summarization.php"> Summarization
+          </a>
+        </li>
+        <li class="tool_item">
           Study Planner
         </li>
-        <li class="tool_item"><img src="../images/notes.png">
-          Notes
+        <li class="tool_item"><a href="/Notes/notes.php">
+            Notes</a>
         </li>
-        <li class="tool_item"><img src="../images/pomodoro-technique.png">
-          Pomodoro
+        <li class="tool_item">
+          <a href="/pomodoro.php">
+            Pomodoro</a>
         </li>
-        <li class="tool_item"><img src="../images/gpa.png">
-          GPA Calculator
+        <li class="tool_item"><a href="/gpa.php">
+            GPA Calculator</a>
         </li>
-        <li class="tool_item"><img src="../images/collaboration.png">
+        <li class="tool_item">
           Shared spaces
         </li>
-        <li class="tool_item"><img src="../images/meeting-room.png">
+        <li class="tool_item">
           Meeting Room
         </li>
-        <li class="tool_item"><img src="../images/communities.png">
-          Community
+        <li class="tool_item"><a href="/community.php">
+            Community</a>
         </li>
       </ul>
     </div>
@@ -433,22 +439,9 @@ $FOLDERS = json_decode(json_encode($result_json), true);
       </div>
     </div>
   </main>
-  <footer>
-    <div class="footer-div" id="socials">
-      <h4>Follow Us on Social Media</h4>
-
-      <a href="https://twitter.com/learniversewebsite" target="_blank"><img src="../images/twitter.png" alt="@Learniverse"></a>
-
-    </div>
-    <div class="footer-div" id="contacts">
-      <h4>Contact Us</h4>
-
-      <a href="mailto:learniverse.website@gmail.com" target="_blank"><img src="../images/gmail.png" alt="learniverse.website@gmail.com"></a>
-
-    </div>
-    <img id="footerLogo" src="../LOGO.png" alt="Learniverse">
+  <footer id="footer" style="margin-top: 7%;">
     <div id="copyright">Learniverse &copy; 2023</div>
-  </footer>
+</footer>
 
   <div role="button" id="sidebar-tongue" style="margin-left: 0;">
     &gt;

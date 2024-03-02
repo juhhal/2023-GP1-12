@@ -281,7 +281,7 @@ require 'dbConfig.php'; ?>
     <div id="tools_div">
       <ul class="tool_list">
         <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
+          <a href="/workspace.php"> Calendar & To-Do
           </a>
         </li>
         <li class="tool_item">
@@ -299,14 +299,14 @@ require 'dbConfig.php'; ?>
         <li class="tool_item">
           Study Planner
         </li>
-        <li class="tool_item"><a href="Notes/notes.php">
+        <li class="tool_item"><a href="/Notes/notes.php">
             Notes</a>
         </li>
         <li class="tool_item">
-          <a href="pomodoro.php">
+          <a href="/pomodoro.php">
             Pomodoro</a>
         </li>
-        <li class="tool_item"><a href="gpa.php">
+        <li class="tool_item"><a href="/gpa.php">
             GPA Calculator</a>
         </li>
         <li class="tool_item">
@@ -315,7 +315,7 @@ require 'dbConfig.php'; ?>
         <li class="tool_item">
           Meeting Room
         </li>
-        <li class="tool_item"><a href="community.php">
+        <li class="tool_item"><a href="/community.php">
             Community</a>
         </li>
       </ul>

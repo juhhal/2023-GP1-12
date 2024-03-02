@@ -334,7 +334,7 @@ if (isset($_SESSION['filteredSearch'])) {
         <div id="tools_div">
         <ul class="tool_list">
         <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
+          <a href="/workspace.php"> Calendar & To-Do
           </a>
         </li>
         <li class="tool_item">

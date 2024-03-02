@@ -100,11 +100,6 @@ error_reporting(E_ERROR | E_PARSE);
           isSidebarOpen = false;
         }
       });
-// Assuming you have a file input element with id "file-input" and a button with id "upload-button"
-
-
- 
-
 
             function showLoading() {
                 loadingOverlay.style.display = 'block';
@@ -140,11 +135,9 @@ error_reporting(E_ERROR | E_PARSE);
           toolList.style.transform = 'translateY(' + (headerHeight - toolListOffsetTop) + 'px)';
         }
 
-        // Apply smooth transition
         toolsDiv.style.transition = 'transform 0.3s ease-out';
       });
     });
-    // PROFILE DROPDOWN MENU
     function Rename() {
       $('#Pname').hide();
       $('#Puser-icon').hide();
@@ -299,32 +292,35 @@ error_reporting(E_ERROR | E_PARSE);
   <div id="tools_div">
         <ul class="tool_list">
         <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
+          <a href="/workspace.php"> Calendar & To-Do
           </a>
         </li>
         <li class="tool_item">
-          <a href="../theFiles.php?q=My Files"> My Files</a>
+          <a href="/theFiles.php"> My Files</a>
         </li>
         <li class="tool_item">
-          <a href="quizes/quizes.php">Quiz</a>
+        <a href="/quizes/"> Quiz
+          </a>
         </li>
         <li class="tool_item">
-          Flashcard
+        <a href="/flashcard"> Flashcard
+          </a>
         </li>
         <li class="tool_item">
-          <a href="summarization/summarization.php">Summarization</a>
+        <a href="/summarization/summarization.php"> Summarization
+          </a>
         </li>
         <li class="tool_item">
           Study Planner
         </li>
-        <li class="tool_item"><a href="Notes/notes.php">
+        <li class="tool_item"><a href="/Notes/notes.php">
             Notes</a>
         </li>
         <li class="tool_item">
-          <a href="pomodoro.php">
+          <a href="/pomodoro.php">
             Pomodoro</a>
         </li>
-        <li class="tool_item"><a href="gpa.php">
+        <li class="tool_item"><a href="/gpa.php">
             GPA Calculator</a>
         </li>
         <li class="tool_item">
@@ -333,11 +329,18 @@ error_reporting(E_ERROR | E_PARSE);
         <li class="tool_item">
           Meeting Room
         </li>
-        <li class="tool_item"><a href="community.php">
+        <li class="tool_item"><a href="/community.php">
             Community</a>
         </li>
       </ul>
         </div>
+
+        <div class="questions-modal-container">
+        <div class="questions-modal">
+          <h2>Quiz</h2>
+          <img class="close-icon" src="icons/close.svg" alt="" />
+        </div>
+      </div>
 
     <div class="container">
       <div class="summarize-heading">
@@ -353,9 +356,14 @@ error_reporting(E_ERROR | E_PARSE);
             &nbsp; Choose Files To Upload
           </label>
         </form>
-        <label  id="summarize">
+        <label  id="summarize" style="margin: 0 10px;">
         <i class="fa-solid fa-wand-magic-sparkles"></i>
           &nbsp; Generate
+        </label> 
+        
+        <label  id="summarizeTrueFalse">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+          &nbsp; Generate True or False
         </label>
         </div>
         <div id="num-of-files"></div>
@@ -446,6 +454,7 @@ error_reporting(E_ERROR | E_PARSE);
   }
 
   .file-edit {
+    cursor: pointer;
     font-size: 8px ;
     color: white;
     background-color: #ec947e;
@@ -606,10 +615,16 @@ error_reporting(E_ERROR | E_PARSE);
     </div>
     <div class="container1" style="margin-top: 24px;">
     <?php if (!empty($filesList)) { ?>
+
+      <!-- console log -->
+      <script>
+        console.log(<?php echo json_encode($filesList); ?>);
+      </script>
     <table class="table">
         <thead class="table-primary">
             <tr>
-                <td>Subject Name</td>
+                <td>Recent Quizzes</td>
+                <td>Score</td>
                 <td>Time Created</td>
                 <td>Action</td>
             </tr>
@@ -618,10 +633,37 @@ error_reporting(E_ERROR | E_PARSE);
             <?php foreach ($filesList as $file) { ?>
                 <tr>
                     <td><?php echo htmlspecialchars($file['name']); ?></td>
-                    <td><?php echo date('Y-m-d ', $file['date_created']); ?></td>
                     <td>
-                      <a href="quiz.php?data=<?php echo urlencode(json_encode($file['body'])); ?>">Show</a>    
+                      <?php
+                      if (!empty($file['result'])) {
+                          $score =0;
+                          foreach ($file['result'] as $result) {
+                              $score += $result['score'];
+                          }
+                          echo $score;
+                      }
+                      ?>
                     </td>
+                    <td>
+                    <?php 
+                          if (!empty($file['date'])) {
+                              echo date('Y-m-d ', strtotime($file['date'])); 
+                          }
+                      ?>
+                    </td>
+                    <td>
+                    <!-- href="quiz.php?data=<?php echo urlencode(json_encode($file['body'])); ?>&title=<?php echo htmlspecialchars($file['name']); ?>&id=<?php echo $file['id']; ?>" -->
+                    <a class="viewResultModal" id="updateFile" data-result-value="<?php echo htmlspecialchars(json_encode($file['result'])); ?>">
+                        <button class="file-edit btn">
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </a>
+                    <a href="quiz.php?data=<?php echo urlencode(json_encode($file['body'])); ?>" id="updateFile">
+                        <button class="file-edit btn">
+                        <i class="fas fa-trash"></i>
+                        </button>
+                    </a>
+                  </td>
                
                 </tr>
             <?php } ?>
@@ -726,7 +768,54 @@ fileInput.addEventListener("change", () => {
                             body: response.data
                           },
                           success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data));
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
+                            hideLoading();
+                          },
+                          error: function(jqXHR, textStatus, errorThrown) {
+                            console.error("Error:", textStatus, errorThrown);
+                          }
+                        });
+                      },
+                      error: function(jqXHR, textStatus, errorThrown) {
+                          hideLoading(); // Hide loading overlay
+                          console.error("Error:", textStatus, errorThrown);
+                          Swal.fire({
+                              title: 'Request Failed',
+                              text: 'There was an error processing your request.',
+                              icon: 'error',
+                              confirmButtonText: 'OK'
+                          });
+                      }
+                  });
+              
+          });
+          
+          $('#summarizeTrueFalse').click(function() {
+              let fileName = fileInput.files[0].name;
+              let formData = new FormData();
+              formData.append('fileUpload', fileInput.files[0]);
+              formData.append('quizType', 'trueFalse');
+
+                  showLoading(); 
+                  console.log("Sending request to extract.php...");
+                  var data = [fileName, extractedValue];   
+                      $.ajax({
+                      url: 'extractQuizes.php',
+                      type: 'POST',
+                      data: formData, 
+                      processData: false,
+                       contentType: false,
+
+                      success: function(response) {
+                        $.ajax({
+                          url: 'postQuiz.php',
+                          method: 'POST',
+                          data: {
+                            name: fileName,
+                            body: response.data,
+                          },
+                          success: function(res) {
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
                             hideLoading();
                           },
                           error: function(jqXHR, textStatus, errorThrown) {
@@ -838,6 +927,51 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+
+const viewResultButtons = document.querySelectorAll('.viewResultModal');
+const modalContainer = document.querySelector('.questions-modal-container');
+const modal = document.querySelector('.questions-modal');
+const closeIcon = document.querySelector('.close-icon');
+
+
+viewResultButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+        modalContainer.style.display = 'block';
+        modalContainer.style.background = "rgba(0, 0, 0, 0.2)";
+        modalContainer.style.zIndex = "1000";
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+        console.log({target:button.getAttribute('data-result-value')});
+        const resultData =  JSON.parse(button.getAttribute('data-result-value'));
+        console.log({resultData})
+
+      resultData.forEach(result => {
+        const question = document.createElement('div');
+        question.classList.add('question');
+        question.innerHTML = `
+            <h5>Question: ${result.question}</h5>
+            <p>Your Answer: ${result.userAnswer} ${result.correct === 'true' ? '<span class="correct">Correct</span>' : '<span class="wrong">Wrong</span>'}</p>
+        `;
+        modal.appendChild(question);
+    });
+    });    
+});
+
+closeIcon.addEventListener('click', function() {
+
+    modalContainer.style.display = 'none';
+    modalContainer.style.background = "rgba(0, 0, 0, 0)";
+    modalContainer.style.zIndex = "0";
+    document.documentElement.style.overflow = 'auto';
+    document.body.style.overflow = 'auto';
+
+
+    const questions = document.querySelectorAll('.question');
+    questions.forEach(question => {
+        question.remove();
+    });
+});
+
 
     </script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>

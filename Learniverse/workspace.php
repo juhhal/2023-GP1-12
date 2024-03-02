@@ -571,7 +571,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
         <div id="tools_div">
         <ul class="tool_list">
         <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
+          <a href="/workspace.php"> Calendar & To-Do
           </a>
         </li>
         <li class="tool_item">
