@@ -103,6 +103,7 @@ function getFilesByUserId($userId, $FileCollection) {
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 <style>
@@ -433,9 +434,9 @@ function getFilesByUserId($userId, $FileCollection) {
                         <?php } ?>
                         <td>
                             <a href="javascript:void(0)" id="updateFile">
-                                <button onclick="startQuiz(<?php echo $date;?>)" class="file-edit btn">
+                                <!-- <button onclick="startQuiz(<?php echo $date;?>)" class="file-edit btn">
                                    Start Quiz
-                                </button>
+                                </button> -->
                             </a>
                             <a href="javascript:void(0)" id="updateFile">
                             <button onclick="retrieve(<?php echo $date;?>)" class="file-edit btn" style="cursor: pointer;">
@@ -881,24 +882,37 @@ document.querySelector('#manualForm').addEventListener('submit', (e) => {
 });
 
 function deleteFlashcard(date) {
-    // Make AJAX request to the PHP file
-    $.ajax({
-        url: 'cardsData.php', // Replace with the path to your PHP file
-        method: 'POST',
-        data: { date: date }, // Send the date as data
-        success: function(response) {
-            // Handle the response from the PHP file
-            location.reload(); // Reload the page to reflect the changes
-            console.log('Delete request successful');
-        },
-        error: function(xhr, status, error) {
-            // Handle errors           
-             location.reload(); // Reload the page to reflect the changes
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This action cannot be undone!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: 'cardsData.php', 
+                method: 'POST',
+                data: { date: date },
+                success: function(response) {
+                    Swal.fire(
+                        'Deleted!',
+                        'Your flashcard has been deleted.',
+                        'success'
+                    );
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                  location.reload();
 
-            console.error('Error sending delete request:', error);
+                }
+            });
         }
     });
 }
+
 
 
 function retrieve(datad) {

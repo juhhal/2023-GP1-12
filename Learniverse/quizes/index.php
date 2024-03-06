@@ -289,6 +289,31 @@ error_reporting(E_ERROR | E_PARSE);
     </div>
 </header>
 <main>
+<div class="intro-card-container">
+          <div class="intro-card">
+            <h2>Hello 👋</h2>
+            <p>How would you like to learn?</p>
+            <a id="summarize">
+              <div>
+                <h4>✍️ Multiple Choice</h4>
+                <p>
+                  Strengthen your understanding on every concept by solving
+                  multiple choice questions
+                </p>
+              </div>
+            </a>
+            <a id="summarizeTrueFalse">
+              <div>
+                <h4>✍️ True or False</h4>
+                <p>
+                  Strengthen your understanding on every concept by solving
+                  true or false questions
+                </p>
+              </div>
+            </a>
+            <img class="close-icon" src="icons/close.svg" alt="" />
+          </div>
+         </div>
   <div id="tools_div">
         <ul class="tool_list">
         <li class="tool_item">
@@ -338,7 +363,7 @@ error_reporting(E_ERROR | E_PARSE);
         <div class="questions-modal-container">
         <div class="questions-modal">
           <h2>Quiz</h2>
-          <img class="close-icon" src="icons/close.svg" alt="" />
+          <img class="quizResultCloseIcon" src="icons/close.svg" alt="" />
         </div>
       </div>
 
@@ -356,7 +381,7 @@ error_reporting(E_ERROR | E_PARSE);
             &nbsp; Choose Files To Upload
           </label>
         </form>
-        <label  id="summarize" style="margin: 0 10px;">
+        <!-- <label  id="summarize" style="margin: 0 10px;">
         <i class="fa-solid fa-wand-magic-sparkles"></i>
           &nbsp; Generate
         </label> 
@@ -364,7 +389,11 @@ error_reporting(E_ERROR | E_PARSE);
         <label  id="summarizeTrueFalse">
         <i class="fa-solid fa-wand-magic-sparkles"></i>
           &nbsp; Generate True or False
-        </label>
+        </label> -->
+        <label  id="generateBtn" style="margin: 0 10px;" class="disabled">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+          &nbsp; Generate
+        </label> 
         </div>
         <div id="num-of-files"></div>
         <ul id="files-list"></ul>
@@ -616,10 +645,6 @@ error_reporting(E_ERROR | E_PARSE);
     <div class="container1" style="margin-top: 24px;">
     <?php if (!empty($filesList)) { ?>
 
-      <!-- console log -->
-      <script>
-        console.log(<?php echo json_encode($filesList); ?>);
-      </script>
     <table class="table">
         <thead class="table-primary">
             <tr>
@@ -652,17 +677,14 @@ error_reporting(E_ERROR | E_PARSE);
                       ?>
                     </td>
                     <td>
-                    <!-- href="quiz.php?data=<?php echo urlencode(json_encode($file['body'])); ?>&title=<?php echo htmlspecialchars($file['name']); ?>&id=<?php echo $file['id']; ?>" -->
                     <a class="viewResultModal" id="updateFile" data-result-value="<?php echo htmlspecialchars(json_encode($file['result'])); ?>">
                         <button class="file-edit btn">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                         </button>
                     </a>
-                    <a href="quiz.php?data=<?php echo urlencode(json_encode($file['body'])); ?>" id="updateFile">
-                        <button class="file-edit btn">
+                        <button class="file-edit btn" onclick="deleteQuiz('<?php echo $file['id']; ?>')">
                         <i class="fas fa-trash"></i>
                         </button>
-                    </a>
                   </td>
                
                 </tr>
@@ -688,6 +710,12 @@ error_reporting(E_ERROR | E_PARSE);
 <script>
 // Include pdfjs-dist library
 
+const generateBtn = document.querySelector("#generateBtn");
+const introCard = document.querySelector(".intro-card");
+const introCardContainer = document.querySelector(".intro-card-container");
+const startModalCloseIcon = document.querySelector(".close-icon");
+
+
 
 let fileInput = document.getElementById("file-input");
 let fileList = document.getElementById("files-list");
@@ -695,23 +723,27 @@ let numOfFiles = document.getElementById("num-of-files");
 let extractedValue; 
 let fileName;
 fileInput.addEventListener("change", () => {
-    // Clear the file list and the number of files text
     fileList.innerHTML = "";
     numOfFiles.textContent = "";
 
-    let reader = new FileReader();
-    let listItem = document.createElement("li");
-    let fileName = fileInput.files[0].name;
-    let fileSize = (fileInput.files[0].size / 1024).toFixed(1);
-    listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}KB</p>`;
-    if (fileSize >= 1024) {
-        fileSize = (fileSize / 1024).toFixed(1);
-        listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}MB</p>`;
-    }
-    fileList.appendChild(listItem);
+    let file = fileInput.files[0];
+    let fileType = file.type;
 
-    // Set a timer to periodically check the value of 'og' after a delay
-// Adjust the delay (in milliseconds) according to your requirements
+    if (fileType === "application/pdf" || fileType === "application/msword" || fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+        let reader = new FileReader();
+        let listItem = document.createElement("li");
+        let fileName = file.name;
+        let fileSize = (file.size / 1024).toFixed(1);
+        listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}KB</p>`;
+        if (fileSize >= 1024) {
+            fileSize = (fileSize / 1024).toFixed(1);
+            listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}MB</p>`;
+        }
+        fileList.appendChild(listItem);
+        generateBtn.classList.remove("disabled");
+    } else {
+        alert("Invalid file type. Only PDF and DOC files are allowed.");
+    }
 });
             let messageContainer = document.getElementById("og");
             let loadingOverlay = document.getElementById("loadingOverlay");
@@ -931,7 +963,7 @@ document.addEventListener("DOMContentLoaded", function() {
 const viewResultButtons = document.querySelectorAll('.viewResultModal');
 const modalContainer = document.querySelector('.questions-modal-container');
 const modal = document.querySelector('.questions-modal');
-const closeIcon = document.querySelector('.close-icon');
+const quizResultCloseIcon = document.querySelector('.quizResultCloseIcon');
 
 
 viewResultButtons.forEach(button => {
@@ -957,7 +989,7 @@ viewResultButtons.forEach(button => {
     });    
 });
 
-closeIcon.addEventListener('click', function() {
+quizResultCloseIcon.addEventListener('click', function() {
 
     modalContainer.style.display = 'none';
     modalContainer.style.background = "rgba(0, 0, 0, 0)";
@@ -971,6 +1003,46 @@ closeIcon.addEventListener('click', function() {
         question.remove();
     });
 });
+
+
+generateBtn.addEventListener("click", () => {
+  introCard.style.display = "flex";
+  introCardContainer.style.background = "rgba(0, 0, 0, 0.2)";
+  introCardContainer.style.zIndex = "1000";
+});
+
+startModalCloseIcon.addEventListener("click", () => {
+    introCard.style.display = "none";
+    introCardContainer.style.background = "";
+    introCardContainer.style.zIndex = "-1000";
+});
+
+function deleteQuiz(id) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: 'deleteQuiz.php',
+                method: 'POST',
+                data: { quizId: id },
+                success: function(response) {
+                    location.reload();
+                    console.log('Delete request successful');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error sending delete request:', error);
+                }
+            });
+        }
+    });
+}
 
 
     </script>

@@ -322,6 +322,14 @@
         ?>
     </div>
 
+   <div class="button">
+   <a  style="margin: 0 10px;" class="disabled" href="/flashcard/quiz.php?data=<?php echo urlencode(json_encode($flashcardsData)); ?>">
+       
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+          &nbsp; Start Learning
+        </a> 
+   </div>
+
     <script>
         document.querySelectorAll('.flashcard').forEach(function(flashcard) {
             flashcard.addEventListener('click', function() {
@@ -340,6 +348,37 @@
     <div role="button" id="sidebar-tongue" style="margin-left: 0;">
         &gt;
     </div>
+
+    <script>
+
+function startQuiz(datad) {
+    // Make AJAX request to the PHP file
+//     console.log(datad);
+//     $.ajax({
+//         url: 'cardsData.php',
+//         method: 'POST',
+//         data: { datas: datad },
+//         success: function(response) {
+//     // Assuming response is already a JavaScript object, not JSON
+//     var responseData = response;
+//     console.log(response);
+//     // Access the fields of the response object
+//     var dataParam = encodeURIComponent(JSON.stringify(responseData));
+//     window.location.href = 'flashcard/quiz.php?data=' + dataParam;
+
+ 
+// },
+
+//         error: function (xhr, status, error) {
+//             // Log the full response body to see what's causing the JSON parse error
+//             console.error(xhr.responseText);
+//         }   
+//     });
+window.location.href = '/flashcard/quiz.php?data=' + datad;
+
+}
+
+    </script>
 </body>
 
 </html>

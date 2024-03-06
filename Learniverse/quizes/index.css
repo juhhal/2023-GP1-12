@@ -35,7 +35,7 @@
   transition: all 0.5s ease-in-out;
 }
 
-.container .intro-card {
+.intro-card {
   position: absolute;
   max-width: 600px;
   width: 100%;
@@ -52,19 +52,24 @@
 }
 
 @media (min-width: 992px) {
-  .container .intro-card {
+  .intro-card {
     padding: 50px;
   }
 }
 
 .intro-card a {
-  margin-top: 50px;
+  margin-top: 30px;
 }
 
 .intro-card h2 {
   font-size: 35px;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.intro-card h4 {
+  margin: 0;
+  margin-bottom: 20px;
 }
 
 .intro-card p {
@@ -162,8 +167,10 @@ td {
   align-items: center;
   width: 100%;
   height: 100vh;
-  position: absolute;
+  position: fixed;
   z-index: -1000;
+  top: 0;
+  left: 0;
 }
 
 .questions-modal-container {
@@ -517,4 +524,9 @@ ul {
 .iconpdf:hover,
 .iconp:hover {
   color: darkgrey; /* Change color to dark grey on hover */
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.6;
 }
