@@ -7,6 +7,7 @@
  if (isset($_GET['data'])) {
     // Decode the JSON string into a PHP array
     $flashcardsData = json_decode(urldecode($_GET['data']), true);
+    $subject = $_GET['subjectName'];
  } 
 ?>
 <head>
@@ -323,7 +324,7 @@
     </div>
 
    <div class="button">
-   <a  style="margin: 0 10px;" class="disabled" href="/flashcard/quiz.php?data=<?php echo urlencode(json_encode($flashcardsData)); ?>">
+   <a  style="margin: 0 10px;" class="disabled" href="/flashcard/quiz.php?data=<?php echo urlencode(json_encode($flashcardsData)); ?>&subject=<?php echo $subject; ?>">
        
         <i class="fa-solid fa-wand-magic-sparkles"></i>
           &nbsp; Start Learning
@@ -335,6 +336,12 @@
             flashcard.addEventListener('click', function() {
                 flashcard.querySelector('.card').classList.toggle('is-flipped');
             });
+        });
+
+
+        document.querySelector('.edit-flashcard').addEventListener('click', function(event) {
+            event.stopPropagation();
+            console.log('Edit button clicked');
         });
     </script>
             </div>

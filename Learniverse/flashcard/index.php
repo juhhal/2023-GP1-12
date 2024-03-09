@@ -439,7 +439,7 @@ function getFilesByUserId($userId, $FileCollection) {
                                 </button> -->
                             </a>
                             <a href="javascript:void(0)" id="updateFile">
-                            <button onclick="retrieve(<?php echo $date;?>)" class="file-edit btn" style="cursor: pointer;">
+                            <button onclick="retrieve('<?php echo $date; ?>','<?php echo $file['subjectName']; ?>')" class="file-edit btn" style="cursor: pointer;">
                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                 </button>
                             </a> 
@@ -915,7 +915,7 @@ function deleteFlashcard(date) {
 
 
 
-function retrieve(datad) {
+function retrieve(datad, subjectName) {
     // Make AJAX request to the PHP file
     console.log(datad);
     $.ajax({
@@ -928,7 +928,7 @@ function retrieve(datad) {
     console.log(response);
     // Access the fields of the response object
     var dataParam = encodeURIComponent(JSON.stringify(responseData));
-    window.location.href = 'flashcard/displayFlashcards.php?data=' + dataParam;
+    window.location.href = 'flashcard/displayFlashcards.php?data=' + dataParam + '&subjectName=' + subjectName;
 
  
 },

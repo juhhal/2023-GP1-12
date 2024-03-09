@@ -37,6 +37,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
   <link rel="stylesheet" href="index.css">
   <script src="../jquery.js"></script>
   <script src="https://cdn.tiny.cloud/1/jqchvmrvo8t50p8bodpapx40rcckse9f6slian9li7d12hvs/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
       tinymce.init({
         selector: '#mytextarea',
@@ -428,7 +429,8 @@ $FOLDERS = json_decode(json_encode($result_json), true);
         <div id="note_<?php echo $noteId; ?>" class="noteView">
         <div>
         <span class="note-date"><?php echo $note['date']; ?></span>
-        <img src="edit.svg" onclick="window.location.href='notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $noteId; ?>&mode=edit'" style="padding: 0; float: right; cursor: pointer;" width="15px" height="15px">
+        <img src="edit.svg" onclick="window.location.href='notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $noteId; ?>&mode=edit'" style="padding: 0; float: right; cursor: pointer;" width="20px" height="20px">
+        <img src="document.svg" class="pdf-icon" style="padding: 0; float: right; cursor: pointer; padding-right: 10px;" width="20px" height="20px" />
         </div>
         <span class="note-folder-name">Folder Name: <?php echo $folderName ?></span>
           <h2 class="note-title">Title: <?php echo $note['title']; ?></h2>
@@ -628,6 +630,39 @@ $FOLDERS = json_decode(json_encode($result_json), true);
       });
     });
   });
+
+  window.jsPDF = window.jspdf.jsPDF;
+
+  document.querySelector('.pdf-icon').addEventListener('click', function() {
+    const doc = new jsPDF({
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
+    });
+
+    const content = document.querySelector('.note-content p').textContent;
+    const noteDate = document.querySelector('.note-date').textContent;
+    const noteTitle = document.querySelector('.note-title').textContent;
+
+    let yPos = 10;
+
+    doc.setFontSize(16); 
+    doc.text(noteTitle, 10, yPos);
+    yPos += 10; 
+
+    doc.setFontSize(12); 
+    doc.text(noteDate, 10, yPos);
+    yPos += 10; 
+
+    doc.setFontSize(12); 
+    let contentLines = doc.splitTextToSize(content, 180); 
+    doc.text(contentLines, 10, yPos);
+
+    doc.save('notes.pdf');
+});
+
 </script>
+
+
 
 </html>

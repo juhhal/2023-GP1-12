@@ -5,12 +5,12 @@ session_start();
 if (isset($_GET['data'])) {
   $flashcardsData = json_decode(urldecode($_GET['data']), true);
   $flashcards = json_encode($flashcardsData['success']);
-} 
+}
+$subject = $_GET['subject'];
 ?>
+
 <html lang="en">
 <head>
-<script> console.log(<?php echo $flashcards; ?>);</script>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flashcards Quiz</title>
@@ -20,7 +20,9 @@ if (isset($_GET['data'])) {
 <div class="container">
         <div>
             <div class="title-container">
-                <h1 class="title">Title</h1>
+                <h1 class="title">
+                    <?php echo $subject; ?>
+                </h1>
                 <a href="/flashcard">
                     <img class="close-icon" src="../quizes/icons/close.svg" alt="" />
                 </a>

@@ -111,9 +111,9 @@ input {
   padding: 12px;
   cursor: pointer;
   color: #748094;
-  display: flex;
-  justify-content: space-between;
+  display: flex !important;
   align-items: center;
+  gap: 20px;
 }
 
 .btn-container {
@@ -259,6 +259,13 @@ input {
   color: black;
   border-color: black;
   transition: all 0.2s;
+}
+
+.quiz-back-btn {
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
 }
 
 .answered-questions {

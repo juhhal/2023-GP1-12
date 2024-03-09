@@ -581,7 +581,7 @@ $todo = $result_json[0]['todo_list'][0]['tasks'];
           <a href="/quizes/">Quiz</a>
         </li>
         <li class="tool_item">
-          Flashcard
+          <a href="/flashcard">Flashcard</a>
         </li>
         <li class="tool_item">
           <a href="summarization/summarization.php">Summarization</a>

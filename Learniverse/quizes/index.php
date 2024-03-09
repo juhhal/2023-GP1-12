@@ -23,10 +23,10 @@ error_reporting(E_ERROR | E_PARSE);
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <script src="https://fontawesome.com/icons/file-export?f=classic&s=solid"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"> </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
         .overlay {
@@ -659,14 +659,19 @@ error_reporting(E_ERROR | E_PARSE);
                 <tr>
                     <td><?php echo htmlspecialchars($file['name']); ?></td>
                     <td>
-                      <?php
-                      if (!empty($file['result'])) {
-                          $score =0;
-                          foreach ($file['result'] as $result) {
-                              $score += $result['score'];
+                      
+                    <?php 
+                      $score = 0;
+                      $total = 0;
+                      foreach ($file['result'] as $result) {
+                          if ($result['correct'] === 'true') {
+                              // $score = $score + $result['score'];
+                              $score = $score + 1;
                           }
-                          echo $score;
+                          // $total = $total + $result['score'];
+                          $total = $total + 1;
                       }
+                      echo $score . '/' . $total;
                       ?>
                     </td>
                     <td>
@@ -742,7 +747,12 @@ fileInput.addEventListener("change", () => {
         fileList.appendChild(listItem);
         generateBtn.classList.remove("disabled");
     } else {
-        alert("Invalid file type. Only PDF and DOC files are allowed.");
+        Swal.fire({
+            title: 'Invalid file type',
+            text: 'Only PDF and DOC files are allowed.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 });
             let messageContainer = document.getElementById("og");

@@ -27,7 +27,6 @@
             <a href="/quizes/">
               <img class="close-icon" src="icons/close.svg" alt="" />
             </a>
-            <button class="back-btn">Back</button>
           </div>
           <div class="modal">
             <div class="result-modal">
@@ -103,6 +102,9 @@
                 </div>
               </div>
               <div class="skip-container">
+                <button class="quiz-back-btn">
+                  <img src="../images/arrow-back.svg" alt="" width="20px" />
+                </button>
                 <p class="skip-btn">Skip</p>
               </div>
               <div class="btn-container">
@@ -134,7 +136,7 @@ const wrongResult = document.querySelector(".wrong-result");
 const remainingResult = document.querySelector(".remaining-result");
 const introCardContainer = document.querySelector(".intro-card-container");
 const container = document.querySelector(".container");
-const backBtn = document.querySelector('.back-btn');
+const backBtn = document.querySelector('.quiz-back-btn');
 
 let correctAnswers = 0;
 let wrongAnswers = 0;
