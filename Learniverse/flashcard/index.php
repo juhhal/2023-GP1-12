@@ -798,7 +798,7 @@ function getFilesByUserId($userId, $FileCollection) {
         processData: false, // Important: don't process the files
         contentType: false, // Important: set this to false, don't set a content type
         success: function (response) {
-          window.location.href = 'flashcard/displayFlashcards.php?data=' + encodeURIComponent(response);
+          window.location.href = 'flashcard/displayFlashcards.php?data=' + encodeURIComponent(response) + '&subjectName=' + encodeURIComponent(fileInput.files[0].name);
             // Hide loading overlay on success
             $('#loadingOverlay').hide();
         },

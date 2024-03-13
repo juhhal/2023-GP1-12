@@ -91,7 +91,10 @@ $subject = $_GET['subject'];
         </div>
     </div>
     <script>
-      const questions =  <?php echo $flashcards; ?>;
+      const questionsData =  <?php echo $flashcards; ?>;
+
+      const questions = Array.isArray(questionsData) ? questionsData : Object.keys(questionsData).map(key => questionsData[key]);
+
 
 const questionCountContainer = document.querySelector(".questions-count");
 const questionNumber = document.getElementById("questions-number");

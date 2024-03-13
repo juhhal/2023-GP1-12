@@ -35,7 +35,7 @@ def generateQuiz(path: str, quizType: str) -> str:
             system_prompt = "Generate a JSON-formatted true or false quiz with the following specifications in one string: The output should be an object containing a key 'questions' with its value being an array of 10 objects. Each object must include: 'question' (string), 'correctAnswer' (a string of either 'true' or 'false' only), 'answers' (an array with two elements: ['true', 'false'] only), and 'score' (an integer from 1 to 10 indicating the question's quality). Ensure questions vary in difficulty and are non-repetitive, with no empty responses."
 
         logging.info("Creating OpenAI client and generating response.",)
-        client = OpenAI(api_key = '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')
+        client = OpenAI(api_key = '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')
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             response_format={"type": "json_object"},
