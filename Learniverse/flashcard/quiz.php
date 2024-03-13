@@ -67,8 +67,8 @@ $subject = $_GET['subject'];
                 <div class="answers-container">
                     <div class="flashcard">
                         <div class="card">
-                            <div class="card-face front question-text">Data Mining</div>
-                            <div class="card-face back answer">
+                            <div class="card-face front answer">Data Mining</div>
+                            <div class="card-face back question-text">
                                 Data Mining refers to the nontrivial extraction of implicit,
                                 previously unknown, and potentially useful information from data in
                                 databases.
