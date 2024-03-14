@@ -37,6 +37,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
   <link rel="stylesheet" href="index.css">
   <script src="../jquery.js"></script>
   <script src="https://cdn.tiny.cloud/1/jqchvmrvo8t50p8bodpapx40rcckse9f6slian9li7d12hvs/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
       tinymce.init({
         selector: '#mytextarea',
@@ -326,42 +327,48 @@ $FOLDERS = json_decode(json_encode($result_json), true);
   </header>
 
   <main>
-    <div id="tools_div">
+  <div id="tools_div">
       <ul class="tool_list">
-        <li class="tool_item"><a href="../workspace.php"><img src="../images/calendar.png">
-            Calendar & To-Do </li>
-        <li class="tool_item"><a href="../theFiles.php?q=My Files"><img src="../images/file.png">
-            My Files</a>
+        <li class="tool_item">
+          <a href="/workspace.php"> Calendar & To-Do
+          </a>
         </li>
-        <li class="tool_item"><img src="../images/quiz.png">
-          Quiz
+        <li class="tool_item">
+          <a href="/theFiles.php"> My Files</a>
         </li>
-        <li class="tool_item"><img src="../images/flash-cards.png">
-          Flashcard
+        <li class="tool_item">
+        <a href="/quizes/"> Quiz
+          </a>
         </li>
-        <li class="tool_item"><img src="../images/summarization.png">
-          Summarization
+        <li class="tool_item">
+        <a href="/flashcard"> Flashcard
+          </a>
         </li>
-        <li class="tool_item"><img src="../images/study-planner.png">
+        <li class="tool_item">
+        <a href="/summarization/summarization.php"> Summarization
+          </a>
+        </li>
+        <li class="tool_item">
           Study Planner
         </li>
-        <li class="tool_item"><img src="../images/notes.png">
-          Notes
+        <li class="tool_item"><a href="/Notes/notes.php">
+            Notes</a>
         </li>
-        <li class="tool_item"><img src="../images/pomodoro-technique.png">
-          Pomodoro
+        <li class="tool_item">
+          <a href="/pomodoro.php">
+            Pomodoro</a>
         </li>
-        <li class="tool_item"><img src="../images/gpa.png">
-          GPA Calculator
+        <li class="tool_item"><a href="/gpa.php">
+            GPA Calculator</a>
         </li>
-        <li class="tool_item"><img src="../images/collaboration.png">
+        <li class="tool_item">
           Shared spaces
         </li>
-        <li class="tool_item"><img src="../images/meeting-room.png">
+        <li class="tool_item">
           Meeting Room
         </li>
-        <li class="tool_item"><img src="../images/communities.png">
-          Community
+        <li class="tool_item"><a href="/community.php">
+            Community</a>
         </li>
       </ul>
     </div>
@@ -461,7 +468,8 @@ $FOLDERS = json_decode(json_encode($result_json), true);
         <div id="note_<?php echo $noteId; ?>" class="noteView">
         <div>
         <span class="note-date"><?php echo $note['date']; ?></span>
-        <img src="edit.svg" onclick="window.location.href='notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $noteId; ?>&mode=edit'" style="padding: 0; float: right; cursor: pointer;" width="15px" height="15px">
+        <img src="edit.svg" onclick="window.location.href='notes.php?folder=<?php echo $folderName; ?>&noteId=<?php echo $noteId; ?>&mode=edit'" style="padding: 0; float: right; cursor: pointer;" width="20px" height="20px">
+        <img src="document.svg" class="pdf-icon" style="padding: 0; float: right; cursor: pointer; padding-right: 10px;" width="20px" height="20px" />
         </div>
         <span class="note-folder-name">Folder Name: <?php echo $folderName ?></span>
           <h2 class="note-title">Title: <?php echo $note['title']; ?></h2>
@@ -472,22 +480,9 @@ $FOLDERS = json_decode(json_encode($result_json), true);
       </div>
     </div>
   </main>
-  <footer>
-    <div class="footer-div" id="socials">
-      <h4>Follow Us on Social Media</h4>
-
-      <a href="https://twitter.com/learniversewebsite" target="_blank"><img src="../images/twitter.png" alt="@Learniverse"></a>
-
-    </div>
-    <div class="footer-div" id="contacts">
-      <h4>Contact Us</h4>
-
-      <a href="mailto:learniverse.website@gmail.com" target="_blank"><img src="../images/gmail.png" alt="learniverse.website@gmail.com"></a>
-
-    </div>
-    <img id="footerLogo" src="../LOGO.png" alt="Learniverse">
+  <footer id="footer" style="margin-top: 7%;">
     <div id="copyright">Learniverse &copy; 2023</div>
-  </footer>
+</footer>
 
   <div role="button" id="sidebar-tongue" style="margin-left: 0;">
     &gt;
@@ -637,6 +632,39 @@ $FOLDERS = json_decode(json_encode($result_json), true);
       });
     });
   });
+
+  window.jsPDF = window.jspdf.jsPDF;
+
+  document.querySelector('.pdf-icon').addEventListener('click', function() {
+    const doc = new jsPDF({
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
+    });
+
+    const content = document.querySelector('.note-content p').textContent;
+    const noteDate = document.querySelector('.note-date').textContent;
+    const noteTitle = document.querySelector('.note-title').textContent;
+
+    let yPos = 10;
+
+    doc.setFontSize(16); 
+    doc.text(noteTitle, 10, yPos);
+    yPos += 10; 
+
+    doc.setFontSize(12); 
+    doc.text(noteDate, 10, yPos);
+    yPos += 10; 
+
+    doc.setFontSize(12); 
+    let contentLines = doc.splitTextToSize(content, 180); 
+    doc.text(contentLines, 10, yPos);
+
+    doc.save('notes.pdf');
+});
+
 </script>
+
+
 
 </html>

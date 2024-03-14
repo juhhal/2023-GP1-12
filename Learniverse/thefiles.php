@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <?php 
-require 'session.php';
-
+session_start();
 
 
 
@@ -11,7 +10,6 @@ require 'session.php';
 <head>
     <meta charset="UTF-8">
     <title>My Files</title>
-    <link rel="stylesheet" href="theFiles.css">
     <link rel="stylesheet" href="header-footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="js/sweetalert2.all.min.js"></script>
@@ -20,7 +18,8 @@ require 'session.php';
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="manifest" href="favicon_io/site.webmanifest">
     <script src="jquery.js"></script>
-
+    <link rel="stylesheet" href="theFiles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
 
@@ -150,7 +149,7 @@ require 'session.php';
 
     // If the validation passes, you can proceed with form submission
     document.getElementById('rename-form').submit();
-}
+    }
 
         function w3_open() {
             document.getElementsByClassName("workarea")[0].style.marginLeft = "auto";
@@ -257,48 +256,50 @@ require 'session.php';
     <main>
         <div id="tools_div">
         <ul class="tool_list">
-        <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
-          </a>
-        </li>
-        <li class="tool_item">
-          <a href="theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
-          Quiz
-        </li>
-        <li class="tool_item">
-          Flashcard
-        </li>
-        <li class="tool_item">
-          Summarization
-        </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
-        <li class="tool_item"><a href="Notes/notes.php">
-            Notes</a>
-        </li>
-        <li class="tool_item">
-          <a href="pomodoro.php">
-            Pomodoro</a>
-        </li>
-        <li class="tool_item"><a href="gpa.php">
-            GPA Calculator</a>
-        </li>
-        <li class="tool_item">
-          Shared spaces
-        </li>
-        <li class="tool_item">
-          Meeting Room
-        </li>
-        <li class="tool_item"><a href="community.php">
-            Community</a>
-        </li>
+            <li class="tool_item">
+            <a href="workspace.php"> Calendar & To-Do
+            </a>
+            </li>
+            <li class="tool_item">
+            <a href="theFiles.php"> My Files</a>
+            </li>
+            <li class="tool_item">
+            Quiz
+            </li>
+            <li class="tool_item">
+            Flashcard
+            </li>
+            <li class="tool_item">
+            Summarization
+            </li>
+            <li class="tool_item">
+            Study Planner
+            </li>
+            <li class="tool_item"><a href="Notes/notes.php">
+                Notes</a>
+            </li>
+            <li class="tool_item">
+            <a href="pomodoro.php">
+                Pomodoro</a>
+            </li>
+            <li class="tool_item"><a href="gpa.php">
+                GPA Calculator</a>
+            </li>
+            <li class="tool_item">
+            Shared spaces
+            </li>
+            <li class="tool_item">
+            Meeting Room
+            </li>
+            <li class="tool_item"><a href="community.php">
+                Community</a>
+            </li>
       </ul>
         </div>
 
         <div class="workarea">
+
+
             <?php $_GET['q'] = "My Files" ?>
             <div class="workarea_item">
                 <div id="container">
@@ -306,7 +307,7 @@ require 'session.php';
                         <h1><?php if (isset($_GET['q'])) echo $_GET['q']; ?></h1>
                         <?php if (isset($_GET['q'])) { ?>
                             <form enctype="multipart/form-data" id="uploadFORM">
-                                <input type="file" name="file" id="file">
+                            <input type="file" name="file" id="file" accept="application/pdf">
                                 <label for="file">
                                     <h3>Upload File (PDF only)</h3>
                                     <img src="images/upload.png" />
@@ -323,13 +324,198 @@ require 'session.php';
 
                         <div id="allfiles">
 
-                            <?php
 
-                            if ($_GET['q'] == 'My Files') {
 
-                                include('allfiles.php');
-                            }
-                            ?>
+<?php
+//GETTING PATH
+// Connect to MongoDB
+$client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+$database = $client->selectDatabase('Learniverse');
+$usersCollection = $database->selectCollection('users');
+
+// Get the email from the session
+$email = $_SESSION['email'];
+
+// Query the database for the user
+$userDocument = $usersCollection->findOne(['email' => $email]);
+
+// If user found, retrieve the _id
+$user_id = null;
+if ($userDocument) {
+    $user_id = $userDocument->_id;
+}
+
+// directory path with user ID
+$userDirectory = "user_files".DIRECTORY_SEPARATOR."{$user_id}";
+
+
+
+
+// IF DIR DOESN'T EXIST INITIALIZE
+if (!is_dir($userDirectory)) {
+    // Create the main user directory with permissions 0755 (or any desired permissions)
+    if (!mkdir($userDirectory, 0755, true)) {
+        die("Failed to create user directory.");
+    }
+
+    // Initialize subdirectories
+    $subDirectories = ['Uploaded Files', 'Shared Spaces', 'Summaries', 'Flashcards', 'Quizzes'];
+    foreach ($subDirectories as $subDir) {
+        $subDirPath = "{$userDirectory}".DIRECTORY_SEPARATOR."{$subDir}";
+        // Check if the subdirectory already exists
+        if (!is_dir($subDirPath)) {
+            // Create the subdirectory with permissions 0755 (or any desired permissions)
+            if (!mkdir($subDirPath, 0755, true)) {
+                die("Failed to create {$subDir} directory.");
+            }
+        }
+    }
+}
+
+//READ DIRECTORY
+$folders = scandir($userDirectory);
+?>
+
+<!-- DISPLAY FILES -->
+<ul id="folder-list">
+    <?php 
+    // Assume $folders is an array of folder names
+
+    // Name of the uploaded folder
+    $uploadedFolder = 'Shared Spaces';
+
+    // Make sure the uploaded folder is in the array and remove it
+    if(($key = array_search($uploadedFolder, $folders)) !== false) {
+        unset($folders[$key]);
+    }
+
+    // Prepend the uploaded folder to the beginning of the array
+    array_unshift($folders, $uploadedFolder);
+
+    // Name of the uploaded folder
+    $uploadedFolder = 'Uploaded Files';
+
+    // Make sure the uploaded folder is in the array and remove it
+    if(($key = array_search($uploadedFolder, $folders)) !== false) {
+        unset($folders[$key]);
+    }
+
+    // Prepend the uploaded folder to the beginning of the array
+    array_unshift($folders, $uploadedFolder);
+
+    foreach ($folders as $folder):
+        // Use a condition to exclude '.', '..', and '.DS_Store'
+        if ($folder !== '.' && $folder !== '..' && $folder !== '.DS_Store'):
+    ?>
+        <li class="folder <?php echo ($folder === 'Uploaded Files') ? 'selected' : ''; ?>" data-folder="<?php echo htmlspecialchars($folder); ?>">
+            <?php echo htmlspecialchars($folder); ?>
+        </li>
+    <?php 
+        endif;
+    endforeach; 
+    ?>
+</ul>
+
+
+
+
+<div id="file-list"></div>
+
+<script>
+var userDirectory = "<?php echo $userDirectory; ?>";
+
+// JavaScript
+$(document).ready(function(){
+    var userDirectory = "<?php echo $userDirectory; ?>";
+    var folderName ='<?php echo $_SESSION['folder'];?>';    //make by session
+        // AJAX request to fetch files in the clicked folder
+        $.ajax({
+    url: 'getFiles.php', // PHP script to fetch files
+    type: 'POST',
+    data: { folder: folderName, userDirectory: userDirectory },
+    success: function (response) {
+        if (response.length === 0) {
+            console.log('in');
+    // Response is empty
+    $('#file-list').html('<p>No files found.</p>').show();
+} else {
+    console.log(response.length);
+
+    // Response is not empty
+    $('#file-list').html(response).show();
+}
+
+    }
+});
+
+
+    // Attach click event to folders
+    $('.folder').click(function(){
+        // Remove 'selected' class from all folders
+        $('.folder').removeClass('selected');
+        
+        // Add 'selected' class to the clicked folder
+        $(this).addClass('selected');
+        
+        var folderName = $(this).data('folder');
+        // AJAX request to fetch files in the clicked folder
+        $.ajax({
+            url: 'getFiles.php', // PHP script to fetch files
+            type: 'POST',
+            data: {folder: folderName, userDirectory: userDirectory},
+            success: function(response){
+                // Hide folder list
+                // $('#folder-list').hide();
+                // Show file list and populate with response
+                if (response.length === 95) {
+            console.log('in');
+    // Response is empty
+    $('#file-list').html('<p>No files found.</p>').show();
+} else {
+    console.log(response.length);
+
+    // Response is not empty
+    $('#file-list').html(response).show();
+}            }
+        });
+    });
+});
+
+
+
+
+
+$(document).ready(function(){
+    $('#file').change(function(){
+        var user_id = '<?php echo $user_id; ?>'; // Get the user ID
+        var formData = new FormData();
+        formData.append('file', $(this)[0].files[0]);
+        formData.append('folder', 'uploaded'); // Specify destination folder
+        formData.append('user_id', user_id); // Include user ID
+        
+        $.ajax({
+            url: 'uploadFile.php', // PHP script to handle file upload
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response){
+                // Handle success response
+                console.log(response);
+                location.reload();
+            },
+            error: function(xhr, status, error){
+                // Handle error
+                console.error(xhr.responseText);
+            }
+        });
+    });
+});
+
+
+</script>
+
+
                         </div>
                     </span> <?php } ?>
                 </div>
@@ -345,135 +531,8 @@ require 'session.php';
         &gt;
     </div>
 </body>
+
 <script src="jquery.js"></script>
-<script>
-    document.querySelector('#file').addEventListener('change', (e) => {
-        if(document.querySelectorAll('input')[1].files[0].type != 'application/pdf') {
-            
-                    Swal.fire({
 
-                    html: '<br><h1>NOT PDF</h1>' +
-                            '' +
-                            '' +
-                                '<p>This is not a PDF file! Please upload a PDF file.</p>' +
-                            '' +
-                        '',
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                        cancelButtonText: 'Close',
-                        buttonsStyling: false,
-                        showCloseButton: true
-                    });  
-   
-                return        
-            }
-        document.querySelector('.uploadedfile').style.display = 'flex';
-        //console.log(document.querySelector('input').value.split("\\"))
-        document.querySelector('.uploadedfile p').innerText = document.querySelector('#file').value.split("\\")[document.querySelector('#file').value.split("\\").length - 1];
-        e.preventDefault();
-        let formdata = new FormData(document.querySelector('#uploadFORM'));
-        document.querySelector('#loadingbar').style.width = '50%';
-        
-        
-
-        $.ajax({
-            url: 'upload.php',
-            data: formdata,
-            method: 'POST',
-            processData: false,
-            contentType: false,
-            success: function(res) {
-                
-                console.log(res)
-                if(JSON.parse(`${res}`).message) {
-                    Swal.fire({
-
-                        html: '<br><h1>NOT PDF</h1>' +
-                            '' +
-                            '' +
-                                '<p>his is not a PDF file! Please upload a PDF file.</p>' +
-                            '' +
-                        '',
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                        cancelButtonText: 'Close',
-                        buttonsStyling: false,
-                        showCloseButton: true
-                    });                
-                    location.reload();
- }
-                else {
-                    document.querySelector('#loadingbar').style.width = '100%';
-                    document.querySelector('.uploadedfile').style.display = "none";
-                    location.reload();
-
-                    $.ajax({
-                        url: 'allfiles.php',
-                        data: "",
-                        method: 'POST',
-                        success: function(res) {
-
-                            document.querySelector('#allfiles').innerHTML = res
-                            console.log(res)
-    
-                        }
-                    })
-                }
-
-                
-            }
-        })
-    })
-
-    if (document.querySelectorAll('iframe') !== null) {
-        document.querySelectorAll('iframe').forEach(e => {
-            e.contentWindow.document.querySelector('html').style.overflow = 'hidden'
-        });
-
-        document.querySelectorAll('.three').forEach(e => {
-            e.addEventListener('click', (event) => {
-                console.log(document.querySelector('#' + event.target.attributes['data-value'].value + ' .queries').style.display)
-                if (document.querySelector('#' + event.target.attributes['data-value'].value + ' .queries').style.display == 'flex')
-                    document.querySelector('#' + event.target.attributes['data-value'].value + ' .queries').style.display = 'none'
-                else
-                    document.querySelector('#' + event.target.attributes['data-value'].value + ' .queries').style.display = 'flex'
-            });
-        });
-
-        
-        document.querySelectorAll('.deleteic').forEach(e => {
-            e.addEventListener('click', (event) => {
-                $(".icon").hide();
-                $(".file").hide();
-                Swal.fire({
-                    title: 'Heads Up!',
-                    text: 'Are you sure you want to delete this file?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'Cancel',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: 'delete.php',
-                            data: {
-                                value: event.target.attributes['data-p'].value
-                            },
-                            method: 'POST',
-                            success: function(res) {
-                                console.log(res)
-                                document.querySelector('#' + event.target.attributes['data-value'].value).style.display = 'none'
-
-                            }
-                        });
-                    }
-
-                });
-                $(".icon").show();
-                $(".file").show();
-            });
-        });
-    }
-</script>
 
 </html>

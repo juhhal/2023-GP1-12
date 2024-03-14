@@ -1,0 +1,274 @@
+body {
+  font-family: sans-serif;
+}
+
+.overlay {
+  position: relative;
+  min-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.title-container {
+  position: relative;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.title {
+  text-align: center;
+  font-size: 25px;
+}
+
+.close-icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+}
+
+.questions-count {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.question-count {
+  max-width: 130px;
+  width: 100%;
+  height: 10px;
+  border-radius: 32px;
+  background-color: rgba(103, 102, 102, 0.12);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.question-container {
+  max-width: 900px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.question-progress {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.question-progress p {
+  color: #748094;
+}
+
+.answers-container {
+  margin-top: 80px;
+}
+
+.question-text {
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.form {
+  margin-top: 40px;
+}
+
+.answer-container {
+  display: flex;
+  gap: 12px;
+  border-radius: 13px;
+  background-color: white;
+  width: 100%;
+  padding: 20px;
+  cursor: pointer;
+  margin-top: 10px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.answer-container label {
+  width: 100%;
+  height: 100%;
+}
+
+label,
+input {
+  cursor: pointer;
+}
+
+.skip-container {
+  margin-top: 40px;
+  padding: 12px;
+  cursor: pointer;
+  color: #748094;
+  display: flex !important;
+  align-items: center;
+  gap: 20px;
+}
+
+.btn-container {
+  margin-top: 40px;
+}
+
+.result-href {
+  text-decoration: none;
+}
+
+.next-btn,
+.result-btn {
+  background-color: #bf97d8;
+  border: 1px solid #bf97d8;
+  width: 118px;
+  height: 44px;
+  color: white;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: none;
+}
+
+.next-btn:hover,
+.result-btn:hover {
+  background: white;
+  color: black;
+  border-color: black;
+  transition: all 0.2s ease-in-out;
+}
+
+.modal {
+  position: absolute;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: -1000;
+  display: none;
+  left: 0;
+  top: 0;
+}
+
+.result-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  background: white;
+  max-width: 500px;
+  width: 100%;
+  height: 400px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  padding: 50px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.title {
+  font-size: 30px;
+  color: #bf97d8;
+}
+
+.result-text {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.result-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 290px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 50px;
+}
+
+.result-container .result-card {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 290px;
+  width: 100%;
+}
+
+.result-container .result-card .info {
+  font-size: 20px;
+  color: #748094;
+  margin-top: 10px;
+}
+
+.result-container .result-card .result {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  font-size: 20px;
+}
+
+.result-container .result-card .result div {
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+}
+
+.result-container .result-card .result .correct {
+  background: #88ce57;
+}
+
+.result-container .result-card .result .wrong {
+  background: #f86363;
+}
+
+.result-container .result-card .result .remaining {
+  background: #6766661f;
+}
+
+.answered-questions {
+  margin-bottom: 30px;
+}
+
+.back-btn {
+  background-color: #bf97d8;
+  border: 1px solid #bf97d8;
+  width: 218px;
+  height: 44px;
+  color: white;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.5s ease;
+}
+
+.back-btn:hover {
+  background: white;
+  color: black;
+  border-color: black;
+  transition: all 0.2s;
+}
+
+.quiz-back-btn {
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
+}
+
+.answered-questions {
+  margin-top: 30px;
+  font-weight: 600;
+}

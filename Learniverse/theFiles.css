@@ -3,9 +3,9 @@ html {
   width: 99%;
   height: 99%;
   font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
-    "sans-serif";
+    "sans-serif" !important;
   color: #000e23;
-  background-color: #faf7ff;
+  background-color: #faf7ff !important;
 }
 
 @media only screen and (max-width: 991px) {
@@ -56,33 +56,19 @@ html {
 }
 
 .tool_item {
-  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
-    "sans-serif";
-    font-size: 0.9rem !important;
   list-style-type: none;
-  padding: 9%;
-  margin-bottom: 3%;
-  white-space: nowrap;
+  margin-bottom: 20%;
   text-indent: 1rem;
   font-size: 0.9rem;
   text-align: left;
   color: #000e23;
-  width: 123%;
-  transition: color 0.3s, background-color 0.3s;
-  border-radius: 5%;
 }
 
-.tool_item:hover{
+.tool_item:hover,
+.tool_item a:hover {
   cursor: pointer;
   transition-duration: 0.3s;
-  color: #faf7ff !important;
-  background-color: rgba(212, 179, 233, 0.933);
-}
-.tool_item:hover a{
-  cursor: pointer;
-  transition-duration: 0.3s;
-  color: #faf7ff !important;
-  background-color: rgba(212, 179, 233, 0.933);
+  color: #faf7ff;
 }
 
 .tool_item a {
@@ -93,38 +79,23 @@ html {
 .tool_item img {
   width: 15%;
   float: left;
-  margin-left: 2%;
+  margin-left: 4%;
 }
 
 .workarea {
-  padding: 1%;
+  padding: 2%;
   display: flex;
 }
 
 .workarea_item {
-  margin: 1%;
-  margin-left: 3%;
+  margin: 2%;
+  margin-left: 4%;
   width: 100%;
 }
 
 .workarea_item h3 {
   text-align: center;
 }
-
-/* body main .workarea_item span {
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    padding: 5px;
-    color: white;
-    font-size: 1.5vw;
-} */
-
-/* body main span img {
-    height: 5vh;
-    margin: 0 20px;
-} */
 
 #loadingbar {
   width: 0%;
@@ -229,31 +200,30 @@ body #container form label {
 #allfiles {
   display: flex;
   flex-wrap: wrap;
-  align-content: left;
-  align-items: flex-start;
   justify-content: space-around;
-  /* border: solid yellow; */
+  align-items: center; /* Center items vertically */
   margin-right: auto;
   margin-top: 10%;
-  /* background: #f6e8ff7c; */
+}
+
+/* Adjust the file box size if necessary */
+#allfiles .box {
+  width: 17vw; /* Adjust the width as needed */
 }
 
 #allfiles .box {
-  height: fit-content;
-  width: 15vw;
-  display: block;
-  background: rgb(255, 255, 255);
-  border-radius: 10px;
-  border: 2px solid rgba(233, 233, 233, 0.795);
+  height: fit-content; /* or a specific height like 300px */
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
+  justify-content: space-between; /* This will push the buttons to the bottom */
   padding: 20px;
   color: black;
   text-decoration: none;
   position: relative;
-  margin: 10px;
   overflow: hidden;
-  /* border: solid purple; */
+  border: 2px solid rgba(233, 233, 233, 0.795);
+  border-radius: 10px;
+  background: rgb(255, 255, 255);
 }
 
 #allfiles .box iframe {
@@ -272,7 +242,7 @@ body #container form label {
   width: 100%;
   background: rgb(255, 255, 255);
   top: 0;
-  z-index: 10;
+  z-index: 100;
   left: 0;
   position: absolute;
 }
@@ -284,7 +254,7 @@ body #container form label {
   position: absolute;
   background: rgb(255, 255, 255);
   top: 0;
-  z-index: 10;
+  z-index: 100;
   right: 0;
 }
 
@@ -299,7 +269,7 @@ iframe::-webkit-scrollbar {
   height: 100%;
   width: 100%;
   left: 0;
-  z-index: 10;
+  z-index: 10000;
 }
 
 #allfiles .box:hover {
@@ -317,7 +287,7 @@ iframe::-webkit-scrollbar {
   display: none;
   flex-direction: column;
   justify-content: space-around;
-  z-index: 1000;
+  z-index: 100;
   padding: 10px !important;
   background: floralwhite;
 }
@@ -339,35 +309,29 @@ iframe::-webkit-scrollbar {
 #allfiles span .icon {
   height: 4vh;
   border-radius: 5px;
-  mix-blend-mode: color-burn;
-}
-
-#allfiles span .icon:nth-of-type(1) {
+  mix-blend-mode: color-burn !important;
   position: absolute;
   bottom: 10px;
   left: 10px;
-  z-index: 100000;
-}
-
-#allfiles span .icon:nth-of-type(2) {
-  transform: rotateZ(90deg);
-  position: absolute;
-  left: 87%;
-  bottom: auto;
-  z-index: 100000;
+  z-index: 1000;
+  cursor: pointer;
 }
 
 #allfiles span .icon:hover {
-  cursor: pointer;
   filter: brightness(0.7);
 }
 
-.file {
-  color: black;
-  padding: 10px;
-  display: block;
-  padding-bottom: 100%;
-  position: absolute;
+/* Apply transform only to the specific icon if needed */
+#allfiles span .summaryic {
+  transform: rotateZ(90deg);
+}
+
+#allfiles span .questionic {
+  transform: rotateZ(90deg);
+}
+
+#allfiles span .flashcardic {
+  transform: rotateZ(90deg);
 }
 
 .uploadedfile {
@@ -381,27 +345,197 @@ iframe::-webkit-scrollbar {
   /* border: solid blue; */
 }
 
-.swal2-popup {
-  z-index: 999999999999;
+#folder-list {
+  display: flex; /* Use flex display to align items in a row */
+  /* flex-wrap: wrap; Allow items to wrap onto the next line */
+  list-style-type: none; /* Remove default list styling */
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
+  gap: 10px; /* Add gap between items */
+  margin-right: 3%;
+  margin-left: 3%;
+  width: 100%;
+}
+.folder {
+  flex: 1; /* Allow items to grow and fill the space */
+  min-width: 150px; /* Minimum width of each item */
+  max-width: calc(
+    25% - 10px
+  ); /* Maximum width of each item, accounting for gap */
+  background-color: #bf97d8; /* Background color */
+  color: #fff; /* Text color */
+  border-radius: 5px; /* Rounded corners */
+  padding: 10px; /* Padding inside each box */
+  box-sizing: border-box; /* Include padding in the box's total width and height */
+  text-align: center; /* Center text horizontally */
+  display: flex; /* Use flex display for content alignment */
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
 }
 
-#new-gpa-btn {
-  right: 1%;
-  margin: 5% 15% 0;
+.folder:hover {
+  background-color: #a67bc1; /* Background color */
+}
+/* CSS */
+.folder.selected {
+  background-color: #a67bc1; /* Change to the desired color for the selected state */
+  color: white; /* Change to the desired text color for the selected state */
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+.file-item {
+  width: 150px; /* Square dimensions */
+  height: 150px;
+  margin: 10px;
+  display: inline-block; /* Display as inline-block for a grid of squares */
+  position: relative; /* For absolute positioning of the delete button */
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+  text-align: center;
+  vertical-align: top;
+  overflow: hidden;
+}
+.file-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: 150px; /* Vertical centering for single-line text */
+  text-decoration: none;
+  color: black;
+}
+.delete-btn {
   position: absolute;
-  background-color: #fdae9b;
-  padding: 0.5rem 1rem;
-  height: fit-content;
-  border-radius: 10px;
+  top: 0;
+  right: 0;
+  background: #ff4d4d;
+  color: white;
   border: none;
-  color: #000e23;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  font-size: 0.9em;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-  transition: background-color 0.3s, box-shadow 0.3s;
+  cursor: pointer;
 }
 
-.main-content #new-gpa-btn:hover {
+/* Adjust the size of the button images */
+.box .collection button img {
+  width: 20px; /* Adjust as needed */
+  height: 20px; /* Adjust as needed */
+}
+
+/* Adjust the size of the button text */
+.box .collection button p {
+  font-size: 12px; /* Adjust as needed */
+}
+.swal2-container {
+  z-index: 100000; /* Adjust the value as needed so it's higher than other elements */
+}
+#file-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: flex-start;
+  gap: 10px; /* Adjust the gap size as needed */
+  margin-top: 5%;
+}
+.box {
+  width: calc(
+    50% - 10px
+  ); /* Adjust the width for two files per row, accounting for the gap */
+  margin-bottom: 10px; /* Add some margin to the bottom if needed */
+  /* Other styles */
+}
+#allfiles .box {
+  /* Other styles */
+  position: relative; /* Make sure position is relative for the absolute positioning of children */
+  /* Remove 'display: block;' if it's there, as it will override flex display */
+}
+.custom-btn {
+  padding: 1px 5px; /* Reduced padding for a smaller button height and less width */
+  font-size: 0.8rem; /* Further reduced font size for compactness */
+  background-color: #cca8e2; /* Light gray background */
+  cursor: pointer; /* Cursor indicates a clickable button */
+  transition: background-color 0.3s; /* Smooth background color transition on hover */
+  margin: 0 2px; /* Reduced margin for left and right, adjust top margin separately if needed */
+  display: inline-block; /* Ensures buttons are lined up inline and respects margin */
+  height: 13%;
+  margin-top: 78%;
+  margin-left: 2%;
+  z-index: 10000;
+  border: none; /* Remove borders */
+  border-radius: 5px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+}
+
+.custom-btn:hover {
+  background-color: #a67bc1; /* Slightly darker gray background on hover */
+}
+
+/* Ensure collectionElement has display flex and align-items flex-end */
+.collection {
+  width: 100%;
+  position: absolute;
+  bottom: 10px; /* Adjust this value to increase/decrease distance from the bottom */
+  display: flex;
+  gap: 10px; /* Adjust the gap between buttons */
+}
+.file {
+  color: black;
+  padding: 10px;
+  display: block;
+  padding-bottom: 100%;
+  position: absolute; /* Remove absolute positioning */
+}
+.hidden {
+  display: none;
+}
+
+.menu-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   cursor: pointer;
-  background-color: #ec947e;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);}
+  width: 20px; /* or your desired size */
+  height: 20px; /* or your desired size */
+}
+
+/* Make sure this comes after .menu-icon so it overrides the position when not hidden */
+
+/* //////////////////////////////////////////////////////////////////// */
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border: 2px solid rgba(233, 233, 233, 0.795);
+  border-radius: 10px;
+  background: #fff;
+  position: relative;
+}
+
+/* Ensure .file is always on the left */
+.file {
+  flex-grow: 1;
+  margin-right: 10px; /* Ensures some space between the file name and the buttons/icons */
+}
+
+/* Initially hidden elements */
+.hidden,
+.custom-btn {
+  display: none;
+}
+
+.menu-icon {
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+}
+
+/* Flex container for the actions (delete icon and custom buttons) */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

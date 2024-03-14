@@ -672,7 +672,7 @@ usort($todo, 'compareDueDate');
                 <li class="tool_item"><a href="community.php">
                         Community</a>
                 </li>
-            </ul>
+          </ul>
         </div>
 
         <div class="workarea">

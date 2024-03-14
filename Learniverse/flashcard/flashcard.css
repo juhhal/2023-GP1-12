@@ -1,0 +1,201 @@
+#flashcards-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 1400px) {
+  #flashcards-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  #flashcards-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  #flashcards-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.flashcard-container {
+  background-color: #fff;
+  padding: 5px 0 0;
+  border-radius: 10px;
+}
+
+.flashcard-container .edit-btn {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  color: #4d4d4d;
+}
+
+.flashcard {
+  perspective: 1000px;
+  height: 200px;
+  min-width: 300px;
+  position: relative;
+  margin-top: 5px;
+}
+
+.edit-flashcard {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  color: #4d4d4d;
+  z-index: 1000;
+}
+
+.editModal {
+  position: fixed;
+  z-index: 1000000000000;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+}
+
+.editModal.active {
+  display: block;
+}
+
+.editModal .modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  border-radius: 10px;
+  color: #bf97d8;
+}
+
+.editModal .close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.editModal #edit-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.editModal #edit-form input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px 20px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.editModal #edit-form textarea {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px 20px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: none;
+  height: 150px;
+  overflow: auto;
+}
+
+.editModal #edit-form button {
+  width: 100%;
+  background-color: #bf97d8;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  cursor: pointer;
+}
+
+.card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-size: 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  border-top: 1px solid #4d4d4d;
+}
+
+.front {
+  margin-left: auto;
+  margin-right: auto;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  border-radius: 10px;
+}
+
+.back {
+  border-radius: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  transform: rotateY(180deg);
+}
+
+.button {
+  margin-top: 30px;
+  margin-left: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.button a {
+  display: block;
+  position: relative;
+  background-color: #bf97d8;
+  color: #ffffff;
+  font-size: 1.12em;
+  font-weight: 500;
+  text-align: center;
+  width: 18.75em;
+  padding: 1.12em 0;
+  margin: auto;
+  border-radius: 0.31em;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  text-decoration: none;
+}
