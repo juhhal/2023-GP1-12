@@ -699,6 +699,7 @@ usort($todo, 'compareDueDate');
                             <option>Today</option>
                             <option>Next 7 days</option>
                             <option>Next Month</option>
+                            <option>Non-Timed Tasks</option>
                         </select>
                         <ul>
 
@@ -809,11 +810,17 @@ usort($todo, 'compareDueDate');
                             function updateTaskList() {
                                 // Get the selected view option
                                 var selectedView = todoViewSelect.value;
+                                var showNonTimedTasks = false; // Flag to determine if non-timed tasks should be shown
+
+                                // Check if the selected view is "Non-timed tasks"
+                                if (selectedView === "Non-Timed Tasks") {
+                                    showNonTimedTasks = true;
+                                }
 
                                 // Get all task items
                                 var taskItems = document.querySelectorAll(".todolist ul li.task");
 
-                                // Loop through each task item and show/hide based on the selected view
+                                // Loop through each task item and show/hide based on the selected view and non-timed tasks option
                                 taskItems.forEach(function(taskItem) {
                                     var taskDueDate = taskItem.querySelector(".due").textContent;
                                     var components = taskDueDate.split(" at ");
@@ -824,15 +831,16 @@ usort($todo, 'compareDueDate');
 
                                     if (selectedView === "Today" && !isSameDate(dueDate, today)) {
                                         taskItem.style.display = "none";
-                                    } else if (selectedView === "Next 7 days" && (dueDate < today || dueDate > nextWeek)) {
+                                    } else if (selectedView === "Next 7 days" && (dueDate < today || dueDate > nextWeek || taskDueDate === "")) {
                                         taskItem.style.display = "none";
-                                    } else if (selectedView === "Next Month" && (dueDate < today || dueDate > nextMonth)) {
+                                    } else if (selectedView === "Next Month" && (dueDate < today || dueDate > nextMonth || taskDueDate === "")) {
+                                        taskItem.style.display = "none";
+                                    } else if (selectedView === "Non-Timed Tasks" && taskDueDate !== "") {
                                         taskItem.style.display = "none";
                                     } else {
                                         taskItem.style.display = "block";
                                     }
                                 });
-
                                 // Show/hide the "No Tasks" message based on the number of visible tasks
                                 var visibleTasks = document.querySelectorAll(".todolist ul li.task[style='display: block;']");
                                 var noTasksMessage = document.getElementById("notasks");
