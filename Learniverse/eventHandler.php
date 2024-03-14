@@ -2,11 +2,12 @@
 // Include database configuration file 
 require_once 'dbConfig.php';
 require_once 'session.php';
+
 // Retrieve JSON from POST body
 $jsonStr = file_get_contents('php://input');
 $jsonObj = json_decode($jsonStr);
 $uid = 0;
-$color = '#3788d8';
+$color = '#bf97d8';
 if (property_exists($jsonObj, 'spaceID')) {
     $uid = $jsonObj->spaceID;
     $color = $jsonObj->color;
@@ -78,7 +79,7 @@ if ($jsonObj->request_type == 'addEvent') {
     $eventTitle = !empty($event_data[0]) ? $event_data[0] : '';
     $eventDesc = !empty($event_data[1]) ? $event_data[1] : '';
     $eventRem = isset($event_data[2]) ? ($event_data[2] ? true : false) : false;
-
+    $color = $jsonObj->color;
     $bulk = new MongoDB\Driver\BulkWrite;
 
     if (!empty($eventTitle)) {

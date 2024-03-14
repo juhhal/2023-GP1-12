@@ -23,10 +23,10 @@ if ($operation === 'addTask') {
     $taskDesc = $_POST['description'];
     $taskDue = $_POST['due'];
     $taskAssignee = $_POST['assignee'];
-
+    $taskID = uniqid();
     // Retrieve task data and create task object
     $task = [
-        "taskID" => uniqid(),
+        "taskID" => $taskID,
         "task_name" => htmlspecialchars($taskName, ENT_QUOTES, 'UTF-8'),
         "creator" => $_SESSION["email"],
         "description" => $taskDesc,
@@ -108,6 +108,58 @@ if ($operation === 'addTask') {
             }
         }
         $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
+        if ($taskDue != "") { //add the timed task to the calendar
+            $task = $taskName;
+            $due = $taskDue;
+            $uid = $spaceID;
+            $start = $due . ":00+03:00";
+            $end = $due . ":01+03:00";
+
+            $query = new MongoDB\Driver\Query(array('user_id' => $uid));
+            $cursor = $manager->executeQuery('Learniverse.calendar', $query);
+            $result_array = $cursor->toArray();
+            $result_json = json_decode(json_encode($result_array), true);
+            $id = $result_json[0]['counter'];
+            $incrementedID = intval($id) + 1;
+
+            $color = "#3788d8"; //default admin color
+            if ($space->admin != $taskAssignee)
+                foreach ($space->members as $member)
+                    if ($member->email === $taskAssignee) $color = $member->color; //get member color
+
+            $event = ['id' => $id, 'title' => "TASK: " . $task, 'description' => $taskDesc, 'reminder' => true, 'start' => $start, 'end' => $end, 'color' => $color, 'taskID' => $taskID];
+            $id++;
+            $bulk = new MongoDB\Driver\BulkWrite;
+            $bulk->update(
+                [
+                    'user_id' => $uid,
+                ],
+                ['$push' => ['List' => $event]]
+            );
+            $bulk->update(
+                [
+                    'user_id' => $uid,
+                ],
+                ['$set' => ['counter' => $incrementedID]]
+            );
+            //execute the update command
+            $result = $manager->executeBulkWrite('Learniverse.calendar', $bulk);
+            unset($_SESSION['timedTask']);
+            unset($_SESSION['due']);
+
+
+            if ($result->isAcknowledged()) {
+                $output = [
+                    'status' => 1
+                ];
+                header("Location:workspace.php");
+                echo json_encode($output);
+            } else {
+                header("Location:workspace.php");
+                echo json_encode(['error' => 'Event Add request failed!']);
+            }
+            exit();
+        }
     } else {
         echo "Failed to add task";
     }
@@ -199,7 +251,7 @@ if ($operation === 'addTask') {
             $mail->setFrom('Learniverse.website@gmail.com');
             $mail->addAddress($taskAssignee);
             $mail->Subject = 'You have been assigned a Task!';
-            $mail->Body = "Dear " . $firstname . " " . $lastname . ",\n\nYou have been assigned a task in $spaceName space, come and check it out! \n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
+            $mail->Body = "Dear " . $firstname . " " . $lastname . ",\n\nYou have been assigned a task in '$spaceName' space, come and check it out! \n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
 
             // Send the email
             if ($mail->send()) {
@@ -220,6 +272,39 @@ if ($operation === 'addTask') {
             }
         }
         $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
+        if ($taskDue != "") {
+
+            $filter = [
+                'user_id' => $spaceID,
+                'List' => [
+                    '$elemMatch' => [
+                        'taskID' => $taskID
+                    ]
+                ]
+            ];
+            $bulk = new MongoDB\Driver\BulkWrite;
+            $bulk->update(
+                $filter,
+                ['$set' =>
+                [
+                    'List.$.title' => "TASK: " . $taskName,
+                    'List.$.start' => $taskDue . ":00+03:00",
+                    'List.$.end' => $taskDue . ":01+03:00"
+                ]],
+                ['multi' => false]
+            );
+            //execute the update command
+            $result = $manager->executeBulkWrite('Learniverse.calendar', $bulk);
+
+            if ($result->isAcknowledged()) {
+                $output = [
+                    'status' => 1
+                ];
+                echo json_encode($output);
+            } else {
+                echo json_encode(['error' => 'Event Edit request failed!']);
+            }
+        }
     } else {
         echo "Failed to edit task";
     }
@@ -258,6 +343,32 @@ if ($operation === 'addTask') {
             ]]]
         );
         $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
+        //then delete the reminder of that task
+        $filter = [
+            'user_id' => $spaceID,
+            'List' => [
+                '$elemMatch' => [
+                    'taskID' => $taskID
+                ]
+            ]
+        ];
+        $bulk = new MongoDB\Driver\BulkWrite;
+        $bulk->update(
+            $filter,
+            ['$pull' => ['List' => ['taskID' => $taskID]]],
+            ['multi' => false]
+        );
+        //execute the update command
+        $result = $manager->executeBulkWrite('Learniverse.calendar', $bulk);
+
+        if ($result->isAcknowledged()) {
+            $output = [
+                'status' => 1
+            ];
+            echo json_encode($output);
+        } else {
+            echo json_encode(['error' => 'Event Edit request failed!']);
+        }
     } else {
         echo "Failed to delete task";
     }

@@ -30,7 +30,7 @@ usort($todo, 'compareDueDate');
 
 <head>
     <meta charset="UTF-8">
-    <title>Calnedar and To-Do</title>
+    <title>Calendar and To-Do</title>
     <link rel="stylesheet" href="workspaceCSS.css">
     <link rel="stylesheet" href="header-footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -54,10 +54,11 @@ usort($todo, 'compareDueDate');
     <link href="js/fullcalendar/lib/main.css" rel="stylesheet" />
     <script src="js/fullcalendar/lib/main.js"></script>
     <script>
+        var calendar = null;
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+            calendar = new FullCalendar.Calendar(calendarEl, {
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
@@ -201,7 +202,8 @@ usort($todo, 'compareDueDate');
                                                 start: info.event.startStr,
                                                 end: info.event.endStr,
                                                 event_id: info.event.id,
-                                                event_data: result.value
+                                                event_data: result.value,
+                                                color: info.event.backgroundColor
                                             })
                                         })
                                         .then(response => response.json())
@@ -721,7 +723,7 @@ usort($todo, 'compareDueDate');
                                 if ($task['checked']) {
                                     print("
                             <li class='task'>
-                                 <img src='images/bin.png' class='deleteBTN' data-task='" . $task['task_name'] . "'> <img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input checked id='task$i' type='checkbox' onchange='ischecked(this.id);'>
+                                 <img src='images/bin.png' class='deleteBTN' data-task='" . $task['taskID'] . "'> <img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input checked id='task$i' type='checkbox' onchange='ischecked(this.id);'>
                                 <label id='label$i' for='task$i'>
                                     <p class='editableP taskName'><span id='task$i-name'>" . $task['task_name'] . "</span><br>$due</p>
                                 </label>
@@ -729,7 +731,7 @@ usort($todo, 'compareDueDate');
                                 <form id='editTask-form$i' class='editTask-form' method='post' action='editTask.php'>
                                     <input type='text' id='taskRename' name='taskRename' value='" . $task['task_name'] . "'>
                                     <input id='newDue' name='newDue' type='datetime-local' value='" . $task['due'] . "'><br>
-                                    <input id='oldName' name='oldName' type='hidden' value='" . $task['task_name'] . "'>
+                                    <input id='taskID' name='taskID' type='hidden' value='" . $task['taskID'] . "'>
                                     <button type='submit'>Confirm</button> <button type='reset' onclick='cancelEdit($i);'>Cancel</button>
                                 </form>
 
@@ -742,7 +744,7 @@ usort($todo, 'compareDueDate');
                                 } else {
                                     print("
                                 <li class='task'>
-                                     <img src='images/bin.png' class='deleteBTN' data-task='" . $task['task_name'] . "'><img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input id='task$i' type='checkbox' onchange='ischecked(this.id);'>
+                                     <img src='images/bin.png' class='deleteBTN' data-task='" . $task['taskID'] . "'><img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input id='task$i' type='checkbox' onchange='ischecked(this.id);'>
                                     <label id='label$i' for='task$i'>
                                         <p class='editableP taskName'><span id='task$i-name'>" . $task['task_name'] . "</span><br>$due</p>
                                     </label>
@@ -750,7 +752,7 @@ usort($todo, 'compareDueDate');
                                     <form id='editTask-form$i' class='editTask-form' method='post' action='editTask.php'>
                                 <input type='text' id='taskRename' name='taskRename' value='" . $task['task_name'] . "'>
                                 <input id='newDue' name='newDue' type='datetime-local' value='" . $task['due'] . "'><br>
-                                <input id='oldName' name='oldName' type='hidden' value='" . $task['task_name'] . "'>
+                                <input id='taskID' name='taskID' type='hidden' value='" . $task['taskID'] . "'>
                                 <button type='submit'>Confirm</button> <button type='reset' onclick='cancelEdit($i);'>Cancel</button>
                             </form>
 
@@ -771,20 +773,20 @@ usort($todo, 'compareDueDate');
                                     $('.deleteBTN').on('click', function() {
                                         // Get the task name from the data attribute
                                         var deleteBTN = $(this);
-                                        var taskName = $(this).data('task');
+                                        var taskID = $(this).data('task');
                                         // Send an AJAX request to the PHP script
                                         $.ajax({
                                             url: 'deleteTask.php',
                                             type: 'POST',
                                             data: {
-                                                taskName: taskName
+                                                taskID: taskID
                                             },
                                             success: function(response) {
                                                 // Display the response from the PHP script
                                                 console.log(response);
-
+                                                calendar.refetchEvents();
                                                 //remove the task from the DOM if the deletion was successful
-                                                if (response === 'Task deleted successfully.') {
+                                                if (response === 'Task deleted successfully.{"status":1}') {
                                                     deleteBTN.closest('li').remove();
                                                     hamster();
                                                 }
@@ -895,7 +897,7 @@ usort($todo, 'compareDueDate');
                         <ul>
                             <div id='nostasks'><img src='images/hotballoon.png'>
                                 <p><i>Poof!</i></p>
-                                <p>Your to-do list is a clean slate, ready for you to conquer new horizons.</p>
+                                <p>Your tasks list is a clean slate, ready for you to conquer new horizons.</p>
                             </div>
                             <?php
                             //print all tasks associated with this user
@@ -916,77 +918,47 @@ usort($todo, 'compareDueDate');
 
                             // Initialize an empty array to store the tasks
                             $todo = [];
-                            $spaceName = [];
-                            $spaceID = [];
                             // Loop through the cursor and retrieve tasks from spaces
                             foreach ($cursor as $document) {
-                                $spaceName[] = $document->name;
-                                $spaceID[] = $document->spaceID;
+                                $spaceName = $document->name;
+                                $spaceID = $document->spaceID;
+                                $color = $document->color;
                                 foreach ($document->tasks as $task) {
                                     if ($task->assignee === $sessionEmail) {
                                         $todo[] = $task;
-                                    }
-                                }
-                            }
-                            $n = 0;
-                            // Check if there are tasks in the $todo array
-                            if (!empty($todo)) {
-                                // Display the tasks
-                                foreach ($todo as $task) {
-                                    if ($task->due === "") {
-                                        $due = "<span class='dueText'><span class='due'></span></span><span class='spaceName'><br><a href='viewspace.php?space=" . $spaceID[$n] . "'>" . $spaceName[$n] . "</a></span>";
-                                    } else {
-                                        $datetime = explode("T", $task->due);
-                                        $due = "<span class='dueText'>Due: <span class='due'>" . $datetime[0] . " at " . $datetime[1] . "</span></span><span class='spaceName'><br><a href='viewspace.php?space=" . $spaceID[$n] . "'>" . $spaceName[$n] . "</a></span>";
-                                    }
-
-                                    if ($task->checked) {
+                                        if ($task->due === "") {
+                                            $due = "<span class='dueText'><span class='due'></span></span><span class='spaceName'><br><a href='viewspace.php?space=" . $spaceID . "'>Space: " . $spaceName . "</a></span>";
+                                        } else {
+                                            $datetime = explode("T", $task->due);
+                                            $due = "<span class='dueText'>Due: <span class='due'>" . $datetime[0] . " at " . $datetime[1] . "</span></span><span class='spaceName'><br><a href='viewspace.php?space=" . $spaceID . "'>Space: " . $spaceName . "</a></span>";
+                                        }
                                         print("
-                                <li class='stask'>
-                                     <img src='images/bin.png' class='deleteBTN' data-task='" . $task->task_name . "'> <img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input checked id='task$i' type='checkbox' onchange=\"ischeckedSpace('" . $spaceID[$n] . "','$task->taskID', this.id);\">
-                                    <label id='label$i' for='task$i'>
-                                        <p class='editableP taskName'><span id='task$i-name'>" . $task->task_name . "</span><br>$due</p>
-                                    </label>
-    
-                                    <form id='editTask-form$i' class='editTask-form' method='post' action='editTask.php'>
+                                        <li class='stask'>
+                                             <img src='images/bin.png' class='deleteBTN' data-task='" . $task->taskID . "'><img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input id='task$i' type='checkbox' onchange=\"ischeckedSpace('" . $spaceID . "','$task->taskID', this.id);\">
+                                            <label id='label$i' for='task$i'>
+                                                <p class='editableP taskName'><span id='task$i-name'>" . $task->task_name . "</span><br>$due</p>
+                                            </label>
+            
+                                            <form id='editTask-form$i' class='editTask-form' method='post' action='editTask.php'>
                                         <input type='text' id='taskRename' name='taskRename' value='" . $task->task_name . "'>
                                         <input id='newDue' name='newDue' type='datetime-local' value='" . $task->due . "'><br>
-                                        <input id='oldName' name='oldName' type='hidden' value='" . $task->task_name . "'>
+                                        <input id='taskID' name='taskID' type='hidden' value='" . $task->taskID . "'>
                                         <button type='submit'>Confirm</button> <button type='reset' onclick='cancelEdit($i);'>Cancel</button>
                                     </form>
-    
+        
                                     <form id='rescheduleDueDate$i' class='rescheduleDueDate' action='rescheduleDue.php' method='post'>
                                         <input id='tName' name='tName' type='hidden' value='" . $task->task_name . "'>
                                         <label for='reschedule-due$i'>Due: </label> <input id='reschedule-due$i' name='reschedule-due' type='datetime-local' value='" . $task->due . "'>
-                                    </form>
-                                </li>             
-                                ");
-                                    } else {
-                                        print("
-                                    <li class='stask'>
-                                         <img src='images/bin.png' class='deleteBTN' data-task='" . $task->task_name . "'><img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input id='task$i' type='checkbox' onchange=\"ischeckedSpace('" . $spaceID[$n] . "','$task->taskID', this.id);\">
-                                        <label id='label$i' for='task$i'>
-                                            <p class='editableP taskName'><span id='task$i-name'>" . $task->task_name . "</span><br>$due</p>
-                                        </label>
-        
-                                        <form id='editTask-form$i' class='editTask-form' method='post' action='editTask.php'>
-                                    <input type='text' id='taskRename' name='taskRename' value='" . $task->task_name . "'>
-                                    <input id='newDue' name='newDue' type='datetime-local' value='" . $task->due . "'><br>
-                                    <input id='oldName' name='oldName' type='hidden' value='" . $task->task_name . "'>
-                                    <button type='submit'>Confirm</button> <button type='reset' onclick='cancelEdit($i);'>Cancel</button>
-                                </form>
-    
-                                <form id='rescheduleDueDate$i' class='rescheduleDueDate' action='rescheduleDue.php' method='post'>
-                                    <input id='tName' name='tName' type='hidden' value='" . $task->task_name . "'>
-                                    <label for='reschedule-due$i'>Due: </label> <input id='reschedule-due$i' name='reschedule-due' type='datetime-local' value='" . $task->due . "'>
-                                 </form>
-                                    </li>             
-                                    ");
+                                     </form>
+                                        </li>             
+                                        ");
                                     }
                                     $i++;
-                                    $n++;
                                 }
-                            } else {
+                            }
+
+                            // Check if there are tasks in the $todo array
+                            if (empty($todo)) {
                                 echo "<script>
                                 $('#nostasks').parent().parent().parent().hide();
                             </script>";

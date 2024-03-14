@@ -172,7 +172,7 @@ input {
     margin-top: 2%;
 }
 
-#adminSpaces div {
+#adminSpaces .spaceDiv {
     background-color: #e8cdf9;
 }
 
@@ -181,12 +181,13 @@ input {
     margin-top: 5%;
 }
 
-#otherSpaces div {
+#otherSpaces .spaceDiv {
     background-color: #f8dfd9;
 }
 
-#pendingSpaces div {
+#pendingSpaces .spaceDiv {
     background-color: #b6b5b4;
+    border-radius: 5px;
 }
 
 .spaceDiv {
@@ -196,7 +197,7 @@ input {
     padding: 2% 1%;
     margin-top: 1%;
     border: 1px solid rgb(197, 197, 197);
-    border-radius: 5px;
+    border-radius: 0px 5px 5px 0px;
 
     font-size: 1.2em;
     /* Smaller title size */
@@ -236,4 +237,17 @@ input {
 
 .spaceInfo span {
     margin-right: 7%;
+}
+
+.cont {
+    display: flex;
+    padding: 0;
+}
+
+.spaceColor {
+    float: left;
+    width: 1%;
+    border-radius: 5px 0px 0px 5px;
+    margin-top: 1%;
+    margin-bottom: 0.3em;
 }

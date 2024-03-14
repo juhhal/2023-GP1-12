@@ -330,7 +330,7 @@ require 'session.php'; ?>
                         }
                         $spaces = json_decode(json_encode($space), true);
                         foreach ($spaces as $space) {
-                            echo "<div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $fetch['firstname'] . " " .  $fetch['lastname'] . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div>";
+                            echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $fetch['firstname'] . " " .  $fetch['lastname'] . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div></div>";
                         }
                         ?>
                         <script>
@@ -344,8 +344,10 @@ require 'session.php'; ?>
                                     },
                                     success: function(response) {
                                         console.log(response);
+                                        r = JSON.parse(response);
                                         $("#newSpaceForm").css("display", "block");
-                                        $(".errorMessage").text("*" + response);
+                                        $(".errorMessage").text("*" + r.msg);
+                                        window.location.href = "viewspace.php?space=" + r.createdSpace;
                                     },
                                 });
                             });
@@ -382,7 +384,7 @@ require 'session.php'; ?>
                             $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
                             $adminCursor = $manager->executeQuery('Learniverse.users', $query);
                             $admin = $adminCursor->toArray()[0];
-                            echo "<div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div>";
+                            echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div></div>";
                         }
                         ?>
                     </div>

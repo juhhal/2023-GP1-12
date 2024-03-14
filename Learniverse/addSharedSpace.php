@@ -27,7 +27,6 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
 
     // Insert the document into the collection
     $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
-    echo "Creating..";
     $spaceCalendar =   [
         "user_id" => $spaceID,
         "counter" => 0,
@@ -37,7 +36,8 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
     ];
     $bulk = new MongoDB\Driver\BulkWrite;
     $bulk->insert($spaceCalendar);
-    $result = $manager->executeBulkWrite("Learniverse.calendar", $bulk);
+    $result2 = $manager->executeBulkWrite("Learniverse.calendar", $bulk);
+    echo json_encode(['msg' => 'Creating..', 'createdSpace' => "$spaceID"]);    
     exit();
 } elseif (isset($_POST['spaceID']) && $_POST['spaceID'] != "") {
 

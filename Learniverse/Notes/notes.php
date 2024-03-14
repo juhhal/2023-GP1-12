@@ -201,6 +201,45 @@ $FOLDERS = json_decode(json_encode($result_json), true);
       document.getElementById("tools_div").style.marginLeft = "-13.9%";
       document.getElementById("sidebar-tongue").style.marginLeft = '0';
     }
+
+    function newFolder() {
+    Swal.fire({
+      title: 'Enter your Notebook Name',
+      input: 'text',
+      showCancelButton: true,
+      inputValidator: async (value) => {
+        if (!value) {
+          return 'You need to enter something!';
+        } else {
+          await $.ajax({
+            url: "addFolder.php",
+            method: "POST",
+            data: {
+              name: value
+            },
+            success: async function(res) {
+              const addfolderRes = JSON.parse(res);
+              if (addfolderRes?.error) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: addfolderRes.error,
+                });
+              } else {
+                await Swal.fire({
+                  icon: 'success',
+                  title: 'Folder added successfully',
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+                window.location.reload();
+              }
+            },
+          });
+        }
+      }
+    });
+  }
   </script>
 </head>
 
@@ -512,44 +551,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
       });
     }
 
-  function newFolder() {
-    Swal.fire({
-      title: 'Enter your Notebook Name',
-      input: 'text',
-      showCancelButton: true,
-      inputValidator: async (value) => {
-        if (!value) {
-          return 'You need to enter something!';
-        } else {
-          await $.ajax({
-            url: "addFolder.php",
-            method: "POST",
-            data: {
-              name: value
-            },
-            success: async function(res) {
-              const addfolderRes = JSON.parse(res);
-              if (addfolderRes?.error) {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Oops...',
-                  text: addfolderRes.error,
-                });
-              } else {
-                await Swal.fire({
-                  icon: 'success',
-                  title: 'Folder added successfully',
-                  showConfirmButton: false,
-                  timer: 1500
-                });
-                window.location.reload();
-              }
-            },
-          });
-        }
-      }
-    });
-  }
+ 
 
 
 

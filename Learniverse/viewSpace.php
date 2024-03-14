@@ -80,11 +80,11 @@ $admin = $result->toArray()[0];
     <script>
         var memberCount = <?php echo $memberCount ?>;
         var pmemberCount = <?php echo $pmemberCount ?>;
-
+        var calendar = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+            calendar = new FullCalendar.Calendar(calendarEl, {
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
@@ -568,6 +568,20 @@ $admin = $result->toArray()[0];
             });
         }
         // setInterval(reloadMessages, 2000);
+
+        function checkTask(taskID) {
+            checkbox = document.getElementById(taskID);
+            $.ajax({
+                url: "processSpaceTask.php",
+                method: "post",
+                data: {
+                    operation: "checkTask",
+                    taskID: taskID,
+                    spaceID: '<?php echo $space->spaceID ?>',
+                    checked: checkbox.checked
+                }
+            });
+        }
     </script>
 
 </head>
@@ -763,26 +777,6 @@ $admin = $result->toArray()[0];
                 <div id="Tasks" class="tabcontent">
                     <button id="addTaskBTN"><i class="fa-solid fa-plus"></i> Add Task</button>
                     <h3>Tasks</h3>
-                    <select id="groupBY">
-                        <option selected>
-                            Sort By (none)
-                        </option>
-                        <option value="duedate">
-                            Due Date
-                        </option>
-                        <option value="assignee">
-                            Assignee
-                        </option>
-                        <option value="creator">
-                            Creator
-                        </option>
-                        <option value="incompleted">
-                            Incompleted Tasks
-                        </option>
-                        <option value="completed">
-                            Completed Tasks
-                        </option>
-                    </select>
                     <div class="tasksContainer">
                         <?php foreach ($space->tasks as $task) {
                             $due = "";
@@ -793,7 +787,7 @@ $admin = $result->toArray()[0];
                             <div class="taskDiv <?php echo ($task->checked) ? "checkedTask" : "uncheckedTask"; ?>">
                                 <span class="taskHead">
                                     <input class="taskID" type="hidden" readonly value="<?php echo $task->taskID ?>" name="taskID">
-                                    <input type="checkbox" name="taskCheck" class="taskCheck" <?php echo ($task->checked) ? "checked" : ""; ?>>
+                                    <input type="checkbox" id="<?php echo $task->taskID ?>" name="taskCheck" class="taskCheck" <?php echo ($task->checked) ? "checked" : ""; ?> onchange="checkTask('<?php echo $task->taskID ?>')">
                                     <span class="taskName"><?php echo $task->task_name ?></span>
                                     <span class="more"><i class="fa-solid fa-ellipsis-vertical"></i></span>
                                 </span>
@@ -859,7 +853,7 @@ $admin = $result->toArray()[0];
 
                                     // Send the AJAX request
                                     $.ajax({
-                                        url: 'processSpaceTask.php', // Replace with your PHP file handling the AJAX request
+                                        url: 'processSpaceTask.php',
                                         type: 'POST',
                                         data: requestData,
                                         success: function(response) {
@@ -1020,6 +1014,7 @@ $admin = $result->toArray()[0];
                                                     taskDiv.remove();
                                                     console.log(response);
                                                     overlayTask.style.display = 'none';
+                                                    calendar.refetchEvents();
                                                 },
                                                 error: function(xhr, status, error) {
                                                     console.error(error);
@@ -1050,6 +1045,7 @@ $admin = $result->toArray()[0];
                                             // Handle success response from the server
                                             console.log(response);
                                             overlayTask.style.display = 'none';
+                                            calendar.refetchEvents();
                                         },
                                         error: function(xhr, status, error) {
                                             // Handle error response from the server
@@ -1095,6 +1091,7 @@ $admin = $result->toArray()[0];
                                     // Handle success response from the server
                                     console.log(response);
                                     overlayTask.style.display = 'none';
+                                    calendar.refetchEvents();
                                 },
                                 error: function(xhr, status, error) {
                                     // Handle error response from the server
@@ -1136,20 +1133,6 @@ $admin = $result->toArray()[0];
                 </div>
 
                 <div id="Files" class="tabcontent">
-                    <div class="showFiles">
-                        <?php
-                        $files = $space->files;
-                        foreach ($files as $file) {
-                        ?>
-                            <span class="box" id="box_<?php echo $file->fileID; ?>">
-                                <iframe style="overflow: hidden;" src="<?php echo "FILES/" . $file->file_name; ?>"></iframe>
-                                <span class="collection">
-                                    <a target='_blank' class="file" href="<?php echo "FILES/" . $file->file_name; ?>"><?php echo $file->file_name; ?></a>
-                                    <img class="icon deleteic" src="images/delete.jpeg" id="deleteFile" onclick="DeleteFile('<?php echo $file->fileID; ?>', '<?php echo $file->file_path; ?>');">
-                                </span>
-                            </span>
-                        <?php } ?>
-                    </div>
                     <form id="uploadNewFile" method="post" action="uploadFilesSharedSpace.php" enctype="multipart/form-data">
                         <br>
                         <label>Upload a new file</label>
@@ -1187,6 +1170,20 @@ $admin = $result->toArray()[0];
                         <input id="fileName" name="fileName" value="<?php echo $fileName; ?>" hidden>
                         <button type="submit" class="formSubmitBTN">Upload</button>
                     </form>
+                    <div class="showFiles">
+                        <?php
+                        $files = $space->files;
+                        foreach ($files as $file) {
+                        ?>
+                            <span class="box" id="box_<?php echo $file->fileID; ?>">
+                                <iframe style="overflow: hidden;" src="<?php echo "FILES/" . $file->file_name; ?>"></iframe>
+                                <span class="collection">
+                                    <a target='_blank' class="file" href="<?php echo "FILES/" . $file->file_name; ?>"><?php echo $file->file_name; ?></a>
+                                    <i class="fa-solid fa-trash" id="deleteFile" onclick="DeleteFile('<?php echo $file->fileID; ?>', '<?php echo $file->file_path; ?>');"></i>
+                                </span>
+                            </span>
+                        <?php } ?>
+                    </div>
                 </div>
                 <script>
                     $(document).ready(function() {
