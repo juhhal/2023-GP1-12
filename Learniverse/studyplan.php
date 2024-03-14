@@ -1,15 +1,19 @@
 <?php
+require "session.php";
 
-use MongoDB\Driver\Manager;
+//connect to db
+$manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
-require 'session.php'; ?>
+?>
 <!DOCTYPE html>
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <title>Shared Space</title>
+    <title>Study Planner</title>
+    <link rel="stylesheet" href="viewPostCSS.css">
     <link rel="stylesheet" href="header-footer.css">
-    <link rel="stylesheet" href="sharedspacecss.css">
+    <link rel="stylesheet" href="studyplan.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
@@ -19,10 +23,10 @@ require 'session.php'; ?>
 
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <!-- SHOUQ SECTION: -->
-    <script type='text/javascript'>
+    <script>
         $(document).ready(function() {
             var dropdownButton = document.querySelector('.dropdown-button');
             var dropdownMenu = document.querySelector('.Pdropdown-menu');
@@ -100,7 +104,6 @@ require 'session.php'; ?>
             });
         });
 
-
         // PROFILE DROPDOWN MENU
         function Rename() {
             $('#Pname').hide();
@@ -153,6 +156,7 @@ require 'session.php'; ?>
             document.getElementById('rename-form').submit();
         }
 
+
         function w3_open() {
             document.getElementsByClassName("workarea")[0].style.marginLeft = "auto";
             document.getElementById("tools_div").style.transition = '1s';
@@ -174,9 +178,44 @@ require 'session.php'; ?>
             document.getElementById("sidebar-tongue").style.marginLeft = '0';
         }
 
-        function showForm() {
-            var form = $('.workarea_item form');
-            form.toggle();
+        function loadDirectories() {
+            fetch('listDirectories.php')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('directoryButtons').innerHTML = html;
+                })
+                .catch(err => {
+                    console.error('Failed to load directories', err);
+                });
+        }
+
+        function loadFiles(directoryName) {
+            fetch(`listFiles.php?directory=${directoryName}`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('fileList').innerHTML = html;
+                })
+                .catch(err => {
+                    console.error('Failed to load files', err);
+                });
+        }
+
+
+        // Modify the showModal function to call loadDirectories initially
+        function showModal() {
+            document.getElementById('fileModal').style.display = 'flex';
+            loadDirectories(); // Load directories first
+            loadFiles('Uploaded Files');
+        }
+
+        function selectFile(fileName) {
+            // Handle file selection
+            console.log(fileName);
+            hideModal();
+        }
+
+        function hideModal() {
+            document.getElementById('fileModal').style.display = 'none';
         }
     </script>
 </head>
@@ -239,8 +278,8 @@ require 'session.php'; ?>
                         <li class='center'>Username: <?php echo $fetch['username']; ?></li>
                         <li class='center'><?php echo $fetch['email']; ?></li>
                         <hr>
-                        <li><a href='reset.php?q=sharedspace.php'><i class='far fa-edit'></i> Change password</a></li>
-                        <li><a href='#'><i class='far fa-question-circle'></i> Help </a></li>
+                        <li><a href='reset.php?q=addCommunityPost.php'><i class='far fa-edit'></i> Change password</a></li>
+                        <li><a href='#'><i class='far fa-question-circle'></i> Help</a></li>
                         <hr>
                         <li><a href='logout.php'><i class='fas fa-sign-out-alt'></i> Sign out</a></li>
                     </ul>
@@ -248,7 +287,6 @@ require 'session.php'; ?>
             </div>
         </div>
     </header>
-
     <main>
         <div id="tools_div">
         <ul class="tool_list">
@@ -296,124 +334,145 @@ require 'session.php'; ?>
 
             <div class="workarea_item">
                 <div class="top-shelf">
-                    <h1>Shared Spaces</h1>
-                    <button id="newSpaceBTN" onclick="showForm()">New Space</button>
+                    <h1>Study Planner</h1>
+                    <button id="newStudyPlan">New Plan</button>
                 </div>
-                <form id="newSpaceForm" style="display: none;">
-                    <label>Space Name</label> <input id="spaceName" name="spaceName" type="text">
-                    <input id="color" type="color" name="color">
-                    <button type="submit" class="formSubmitBTN">Create</button>
-                    <h3>OR</h3>
+                <table id="allPlans">
+                    <tr>
+                        <td>Plan Name</td>
+                        <td>Time Created</td>
+                        <td>Action</td>
+                    </tr>
+                    <?php
+                    $filter = ["user_id" => $_SESSION['email']];
+                    $sort = ['creation_date' => -1]; // Sort in descending order by creation_date
+                    $query = new MongoDB\Driver\Query($filter, ['sort' => $sort]);
+
+                    // Execute the query
+                    $cursor = $manager->executeQuery("Learniverse.studyPlan", $query);
+                    $planCount = 0;
+                    foreach ($cursor as $plan) {
+                        $planCount++; ?>
+                        <tr id="<?php echo $plan->planID ?>">
+                            <td class="plan-name"><span onclick="display(<?php echo $plan->planID ?>);"><?php echo $plan->name ?></span></td>
+                            <td><?php echo $plan->creation_date ?></td>
+                            <td>
+                                <i class="fa fa-eye viewPlan" aria-hidden="true" title="View Plan"></i>
+                                <i class="fas fa-trash deletePlan" title="Delete Plan"></i>
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                    if ($planCount == 0)
+                        echo "<tr><td colspan='3'>No Plans Have Been Created Yet.</td></tr>"
+                    ?>
+                </table>
+            </div>
+        </div>
+        <div class="overlay" id="newPlanOverlay">
+            <div class="modal">
+                <h2 id="overlayTitle">Create a New Study Plan</h2>
+                <form id="new-plan-form" name="new-plan-form" method="post" action="processStudyPlan.php" enctype="multipart/form-data">
+                    Plan Name: <input required autocomplete="off" type="text" name="new-plan-name" id="new-plan-name">
+                    Plan start: <input required name="start" type="date"> Plan end: <input name="end" type="date">
+                    Study Material: <button id="uploadMats" onclick="document.getElementById('newPlanOverlay').style.display='none'; showModal()">Upload from My Files</button> or <input id="localMats" name="localMats" value="Upload from my device" type="file" multiple>
+                    <input type="submit" value="Create">
                 </form>
+            </div>
+        </div>
+        <div class="overlay" id="display">
+            <div class="modal">
+                <div class="studyplan-container">
 
-                <form id="joinSpaceForm" method="post" style="display: none;">
-                    <label>Join a Space</label> <input required id="spaceID" name="spaceID" type="text">
-                    <button type="submit" class="formSubmitBTN">Join</button>
-                </form>
-                <p class="errorMessage" style="color:red"></p>
-                <div id="spaces">
-                    <div id="adminSpaces">
-                        <span class="spacesTitle">Owned Spaces:</span>
-                        <?php
-                        $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
-
-                        $filter = ['admin' => $_SESSION['email']];
-                        // MongoDB query
-                        $query = new MongoDB\Driver\Query($filter);
-                        // MongoDB collection name
-                        $collectionName = "Learniverse.sharedSpace";
-                        // Execute the query
-                        $spaces = $manager->executeQuery($collectionName, $query);
-                        $space = [];
-                        foreach ($spaces as $s) {
-                            $space[] = $s;
-                        }
-                        $spaces = json_decode(json_encode($space), true);
-                        foreach ($spaces as $space) {
-                            echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $fetch['firstname'] . " " .  $fetch['lastname'] . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div></div>";
-                        }
-                        ?>
-                        <script>
-                            $("#newSpaceForm").on("submit", function() {
-                                $.ajax({
-                                    url: "addSharedSpace.php",
-                                    method: "post",
-                                    data: {
-                                        spaceName: $("#spaceName").val(),
-                                        color: $("#color").val()
-                                    },
-                                    success: function(response) {
-                                        console.log(response);
-                                        r = JSON.parse(response);
-                                        $("#newSpaceForm").css("display", "block");
-                                        $(".errorMessage").text("*" + r.msg);
-                                        window.location.href = "viewspace.php?space=" + r.createdSpace;
-                                    },
-                                });
-                            });
-
-                            $("#joinSpaceForm").on("submit", function() {
-                                $.ajax({
-                                    url: "addSharedSpace.php",
-                                    method: "post",
-                                    data: {
-                                        spaceID: $("#spaceID").val()
-                                    },
-                                    success: function(response) {
-                                        $("#joinSpaceForm").css("display", "block");
-                                        $(".errorMessage").text("*" + response);
-                                    },
-                                });
-                            });
-                        </script>
-                    </div>
-                    <div id="otherSpaces">
-                        <span class="spacesTitle">Joined Spaces:</span>
-                        <?php
-                        //get spaces where active user is a member of
-                        $filterMember = ['members.email' => $_SESSION['email']];
-                        $queryMember = new MongoDB\Driver\Query($filterMember);
-                        $spaces = $manager->executeQuery($collectionName, $queryMember);
-                        $space = [];
-                        foreach ($spaces as $s) {
-                            $space[] = $s;
-                        }
-                        $spaces = json_decode(json_encode($space), true);
-
-                        foreach ($spaces as $space) {
-                            $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
-                            $adminCursor = $manager->executeQuery('Learniverse.users', $query);
-                            $admin = $adminCursor->toArray()[0];
-                            echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div></div>";
-                        }
-                        ?>
-                    </div>
-                    <div id="pendingSpaces">
-                        <span class="spacesTitle">Pending Spaces:</span>
-                        <?php
-                        //get spaces where active user is a member of
-                        $filterMember = ['pendingMembers' => $_SESSION['email']];
-                        $queryMember = new MongoDB\Driver\Query($filterMember);
-                        $spaces = $manager->executeQuery($collectionName, $queryMember);
-                        $space = [];
-                        foreach ($spaces as $s) {
-                            $space[] = $s;
-                        }
-                        $spaces = json_decode(json_encode($space), true);
-
-                        foreach ($spaces as $space) {
-                            $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
-                            $adminCursor = $manager->executeQuery('Learniverse.users', $query);
-                            $admin = $adminCursor->toArray()[0];
-                            echo "<div class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span></span></div>";
-                        }
-                        ?>
-                    </div>
                 </div>
             </div>
         </div>
+        <div id="fileModal" style="display:none;">
+            <div class="modal-container">
+
+                <div id="modalContent">
+                    <!-- Directory buttons will be loaded here -->
+                    <div id="directoryButtons"></div>
+
+                    <!-- File list will be loaded here -->
+                    <div id="fileList"></div>
+                </div>
+                <button onclick="hideModal()">Close</button>
+            </div>
+        </div>
+        <script>
+            var overlayNewPlan = document.getElementById('newPlanOverlay');
+            var newPlanBTN = document.getElementById('newStudyPlan');
+            var overlayDisplay = document.getElementById('display');
+
+            $(document).ready(function() {
+                newPlanBTN.addEventListener('click', function() {
+                    overlayNewPlan.style.display = 'flex';
+                });
+
+                overlayNewPlan.addEventListener('click', function(event) {
+                    if (event.target === overlayNewPlan) {
+                        overlayNewPlan.style.display = 'none';
+                    }
+                });
+
+                overlayDisplay.addEventListener('click', function(event) {
+                    if (event.target === overlayDisplay) {
+                        overlayDisplay.style.display = 'none';
+                    }
+                });
+            });
+
+            function display() {
+                overlayDisplay.style.display = 'flex';
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var deleteButtons = document.getElementsByClassName('deletePlan');
+                var viewButtons = document.getElementsByClassName('viewPlan');
+
+                // Add event listener to delete buttons
+                Array.from(deleteButtons).forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        var trId = button.closest('tr').id;
+                        // Perform delete action using trId
+                        console.log('Deleting plan with ID: ' + trId);
+                        // Data to send
+                        var data = {
+                            planID: trId,
+                            deletePlan: true
+                        };
+
+                        $.ajax({
+                            url: 'processStudyPlan.php',
+                            type: 'POST',
+                            data: data,
+                            success: function(response) {
+                                if (response == 1) {
+                                    console.log('Plan deleted successfully');
+                                    button.closest('tr').remove();
+                                } else console.error('Error deleting plan');
+
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error deleting plan');
+                            }
+                        });
+                    });
+                });
+
+                // Add event listener to view buttons
+                Array.from(viewButtons).forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        var trId = button.closest('tr').id;
+                        // Perform view action using trId
+                        console.log('Viewing plan with ID: ' + trId);
+                    });
+                });
+            });
+        </script>
     </main>
-    <footer id="footer" style="margin-top: 7%;">
+    <footer style="margin-top:30%" id="footer" style="margin-top: 7%;">
 
         <div id="copyright">Learniverse &copy; 2023</div>
     </footer>

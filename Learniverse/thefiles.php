@@ -256,45 +256,44 @@ session_start();
     <main>
         <div id="tools_div">
         <ul class="tool_list">
-            <li class="tool_item">
-            <a href="workspace.php"> Calendar & To-Do
-            </a>
-            </li>
-            <li class="tool_item">
-            <a href="theFiles.php"> My Files</a>
-            </li>
-            <li class="tool_item">
-            Quiz
-            </li>
-            <li class="tool_item">
-            Flashcard
-            </li>
-            <li class="tool_item">
-            Summarization
-            </li>
-            <li class="tool_item">
-            Study Planner
-            </li>
-            <li class="tool_item"><a href="Notes/notes.php">
-                Notes</a>
-            </li>
-            <li class="tool_item">
-            <a href="pomodoro.php">
-                Pomodoro</a>
-            </li>
-            <li class="tool_item"><a href="gpa.php">
-                GPA Calculator</a>
-            </li>
-            <li class="tool_item">
-            Shared spaces
-            </li>
-            <li class="tool_item">
-            Meeting Room
-            </li>
-            <li class="tool_item"><a href="community.php">
-                Community</a>
-            </li>
-      </ul>
+                <li class="tool_item">
+                    <a href="workspace.php"> Calendar & To-Do
+                    </a>
+                </li>
+                <li class="tool_item">
+                    <a href="theFiles.php"> My Files</a>
+                </li>
+                <li class="tool_item">
+                <a href="quizes/index.php"> Quizzes</a>
+                </li>
+                <li class="tool_item">
+                <a href="flashcard.php"> Flashcards</a>
+                </li>
+                <li class="tool_item">
+                <a href="summarization/summarization.php"> Summarization</a>
+                </li>
+                <li class="tool_item">
+                <a href="studyplan.php"> Study Plan</a>
+                </li>
+                <li class="tool_item"><a href="Notes/notes.php">
+                        Notes</a>
+                </li>
+                <li class="tool_item">
+                    <a href="pomodoro.php">
+                        Pomodoro</a>
+                </li>
+                <li class="tool_item"><a href="gpa.php">
+                        GPA Calculator</a>
+                </li>
+                <li class="tool_item"><a href="sharedspace.php">
+                        Shared spaces</a></li>
+                <li class="tool_item">
+                    Meeting Room
+                </li>
+                <li class="tool_item"><a href="community.php">
+                        Community</a>
+                </li>
+            </ul>
         </div>
 
         <div class="workarea">
@@ -346,7 +345,7 @@ if ($userDocument) {
 }
 
 // directory path with user ID
-$userDirectory = "user_files".DIRECTORY_SEPARATOR."{$user_id}";
+$userDirectory = "user_files".$DIRECTORY_SEPARATOR."{$user_id}";
 
 
 
@@ -361,7 +360,7 @@ if (!is_dir($userDirectory)) {
     // Initialize subdirectories
     $subDirectories = ['Uploaded Files', 'Shared Spaces', 'Summaries', 'Flashcards', 'Quizzes'];
     foreach ($subDirectories as $subDir) {
-        $subDirPath = "{$userDirectory}".DIRECTORY_SEPARATOR."{$subDir}";
+        $subDirPath = "{$userDirectory}".$DIRECTORY_SEPARATOR."{$subDir}";
         // Check if the subdirectory already exists
         if (!is_dir($subDirPath)) {
             // Create the subdirectory with permissions 0755 (or any desired permissions)
@@ -427,7 +426,7 @@ var userDirectory = "<?php echo $userDirectory; ?>";
 // JavaScript
 $(document).ready(function(){
     var userDirectory = "<?php echo $userDirectory; ?>";
-    var folderName ='<?php echo $_SESSION['folder'];?>';    //make by session
+    var folderName ='Uploaded Files';    //make by session
         // AJAX request to fetch files in the clicked folder
         $.ajax({
     url: 'getFiles.php', // PHP script to fetch files

@@ -369,7 +369,7 @@ let fileInput = document.getElementById("file-input");
 </header>
 <main>
 <div id="tools_div">
-      <ul class="tool_list">
+<ul class="tool_list">
         <li class="tool_item">
           <a href="/workspace.php"> Calendar & To-Do
           </a>
@@ -389,9 +389,9 @@ let fileInput = document.getElementById("file-input");
         <a href="/summarization/summarization.php"> Summarization
           </a>
         </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
+        <li class="tool_item"><a href="/studyplan.php">
+        Study Planner</a>
+                  </li>
         <li class="tool_item"><a href="/Notes/notes.php">
             Notes</a>
         </li>
@@ -402,9 +402,9 @@ let fileInput = document.getElementById("file-input");
         <li class="tool_item"><a href="/gpa.php">
             GPA Calculator</a>
         </li>
-        <li class="tool_item">
-          Shared spaces
-        </li>
+        <li class="tool_item"><a href="/sharedspace.php">
+        Shared spaces</a>
+                 </li>
         <li class="tool_item">
           Meeting Room
         </li>
