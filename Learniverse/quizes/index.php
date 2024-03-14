@@ -703,7 +703,7 @@ error_reporting(E_ERROR | E_PARSE);
 </main>
     <footer id="footer" style="margin-top: 7%; margin-top:0%;">
 
-<div id="copyright">Learniverse &copy; 2023</div>
+<div id="copyright">Learniverse &copy; 2024</div>
 </footer>
 
 

@@ -651,25 +651,25 @@ $admin = $result->toArray()[0];
 
     <main>
         <div id="tools_div">
-            <ul class="tool_list">
+        <ul class="tool_list">
                 <li class="tool_item">
                     <a href="workspace.php"> Calendar & To-Do
                     </a>
                 </li>
                 <li class="tool_item">
-                    <a href="theFiles.php?q=My Files"> My Files</a>
+                    <a href="theFiles.php"> My Files</a>
                 </li>
                 <li class="tool_item">
-                    Quiz
+                <a href="quizes/index.php"> Quizzes</a>
                 </li>
                 <li class="tool_item">
-                    Flashcard
+                <a href="flashcard.php"> Flashcards</a>
                 </li>
                 <li class="tool_item">
-                    Summarization
+                <a href="summarization/summarization.php"> Summarization</a>
                 </li>
                 <li class="tool_item">
-                    Study Planner
+                <a href="studyplan.php"> Study Plan</a>
                 </li>
                 <li class="tool_item"><a href="Notes/notes.php">
                         Notes</a>
@@ -682,8 +682,7 @@ $admin = $result->toArray()[0];
                         GPA Calculator</a>
                 </li>
                 <li class="tool_item"><a href="sharedspace.php">
-                        Shared spaces</a>
-                </li>
+                        Shared spaces</a></li>
                 <li class="tool_item">
                     Meeting Room
                 </li>
@@ -1851,7 +1850,7 @@ $admin = $result->toArray()[0];
     </main>
     <footer id="footer" style="margin-top: 7%;">
 
-        <div id="copyright">Learniverse &copy; 2023</div>
+        <div id="copyright">Learniverse &copy; 2024</div>
     </footer>
 
     <div role="button" id="sidebar-tongue" style="margin-left: 0;">

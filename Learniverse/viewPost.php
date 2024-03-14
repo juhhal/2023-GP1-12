@@ -821,7 +821,7 @@ if ($matchedDocument) {
     </main>
     <footer id="footer" style="margin-top: 7%;">
 
-        <div id="copyright">Learniverse &copy; 2023</div>
+        <div id="copyright">Learniverse &copy; 2024</div>
     </footer>
 
     <div role="button" id="sidebar-tongue" style="margin-left: 0;">
