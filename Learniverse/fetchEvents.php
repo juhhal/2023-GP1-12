@@ -5,6 +5,8 @@ require_once 'session.php';
 $uid = 0;
 if (isset($_GET['spaceID']))
     $uid = $_GET['spaceID'];
+else if (isset($_GET['planID']))
+    $uid = $_GET['planID'];
 else $uid = $_SESSION['email'];
 $query = new MongoDB\Driver\Query(array('user_id' => $uid));
 $cursor = $manager->executeQuery('Learniverse.calendar', $query);

@@ -46,7 +46,7 @@ foreach ($files as $file) {
 
     // Use htmlspecialchars to prevent XSS attacks
     $safeFile = htmlspecialchars($selectedDir.$DIRECTORY_SEPARATOR.$file, ENT_QUOTES, 'UTF-8');
-    echo "<div class='fileItem' onclick='selectFile(\"$safeFile\")'>$file</div>";
+    echo "<div class='fileItem' data-dir='$safeFile' onclick='selectFile(\"$safeFile\", this)'>$file</div>";
     $fileExists = true;
 }
 
@@ -54,7 +54,5 @@ foreach ($files as $file) {
 if (!$fileExists) {
     echo "<p>No files found in the '$selectedDir' directory.</p>";
 }
-
-
 
 ?>

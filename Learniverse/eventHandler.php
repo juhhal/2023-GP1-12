@@ -11,8 +11,12 @@ $color = '#bf97d8';
 if (property_exists($jsonObj, 'spaceID')) {
     $uid = $jsonObj->spaceID;
     $color = $jsonObj->color;
+
     if (property_exists($jsonObj, 'member'))
         $uid = $jsonObj->member;
+    
+} else if (property_exists($jsonObj, 'planID')) {
+    $uid = $jsonObj->planID;
 } else $uid = $_SESSION['email'];
 
 

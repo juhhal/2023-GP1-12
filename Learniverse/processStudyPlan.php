@@ -7,19 +7,40 @@ $bulkWrite = new MongoDB\Driver\BulkWrite;
 
 //add new plan
 if (isset($_POST['new-plan-name'])) {
+    $planID = uniqid();
     $name = $_POST['new-plan-name'];
     $start = $_POST['start'];
     $end = $_POST['end'];
-    // $uploadedMats = ;
-    // $localMats = $_FILES['localMats'];
-    // $totalFiles = count($_FILES['localMats']['name']);
-    // echo "count: $totalFiles";
-    // // Loop through each uploaded file
-    // for ($i = 0; $i < $totalFiles; $i++) {
-    //     // Get the file name and temporary file path
-    //     $fileName = $_FILES['localMats']['name'][$i];
-    //     echo "FILE: " . $fileName;
-    // }
+    if (isset($_POST['myFilesMats'])) {
+        $uploadedMats = json_decode($_POST['myFilesMats']);
+        foreach ($uploadedMats as $f)
+            echo "$f,  ";
+    }
+
+    // Check if local files were uploaded
+    if (isset($_FILES['localMats'])) {
+        $fileCount = count($_FILES['localMats']['name']);
+        echo "<br>";
+        // Process each uploaded file
+        for ($i = 0; $i < $fileCount; $i++) {
+            $file = $_FILES['localMats']['tmp_name'][$i];
+            $fileName = $_FILES['localMats']['name'][$i];
+            $fileSize = $_FILES['localMats']['size'][$i];
+            $fileError = $_FILES['localMats']['error'][$i];
+
+            // Handle the file as needed
+            if ($fileError === UPLOAD_ERR_OK) {
+                // File was uploaded successfully
+                // Output success message or perform any other actions
+                echo "File $fileName was uploaded successfully.";
+            } else {
+                // Handle file upload error
+                echo "Error uploading file $fileName. Error code: $fileError";
+            }
+            echo "<br>";
+        }
+    }
+
 
     $filter = [
         'user_id' => $_SESSION['email'],
@@ -52,26 +73,135 @@ if (isset($_POST['new-plan-name'])) {
         }
     }
     // print_r($previousEvents);
+
+
+    $bulk = new MongoDB\Driver\BulkWrite;
+    //Define new calendar for the study plan
+    $newCalendar = [
+        'user_id' => $planID,
+        'counter' => 0,
+        'List' => [[]]
+    ];
+
+    // Add the insert operation to the BulkWrite instance
+    $bulk->insert($newCalendar);
+
+    //Execute BulkWriter
+    $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
+    $result = $manager->executeBulkWrite("Learniverse.calendar", $bulk, $writeConcern);
+    // end calendar creation
+
+    // retrieve calendar id to generate distinctive ids for events in the loop
+    $query = new MongoDB\Driver\Query(array('user_id' => $planID));
+    $cursor = $manager->executeQuery('Learniverse.calendar', $query);
+    $result_array = $cursor->toArray();
+    $result_json = json_decode(json_encode($result_array), true);
+    $id = $result_json[0]['counter'];
+    // Python request
+    // Python response
+
+    // demo: instead of this json replace with the python response json
+    $jsonData = '{
+        "studyPlan": [
+          {
+            "date": "2024-03-04",
+            "title": "Computer Crime Investigation Overview",
+        
+                "description": "Law enforcement officers and digital devices in investigations"
+             
+             
+          },
+          {
+            "date": "2024-03-05",
+            "title": "Systematic Approach to Investigation",
+       
+         
+                "description": "Planning investigation activities and evidence processing"
+             
+          },
+          {
+            "date": "2024-03-06",
+            "title": "High-Tech Investigations and Interviews",
+        
+                "description": "Interviewing techniques and data recovery workstations"
+             
+          }
+        ]
+      }';
+
+    $data = json_decode($jsonData, true);
+    $studyObjects = [];
+    $studyPlanEvent = new MongoDB\Driver\BulkWrite;
+
+    foreach ($data['studyPlan'] as $study) {
+        $studyObject = new stdClass();
+        $studyObject->startDate = $study['date'];
+        $studyObject->endDate = date('Y-m-d', strtotime($study['date'] . ' + 1 day'));
+        $studyObject->title = $study['title'];
+        $studyObject->description = $study['description'];
+
+        $studyObjects[] = $studyObject;
+    }
+
+    // Printing the study objects
+    foreach ($studyObjects as $studyObject) {
+        echo 'Start Date: ' . $studyObject->startDate . '<br>';
+        echo 'End Date: ' . $studyObject->endDate . '<br>';
+        echo 'Title: ' . $studyObject->title . '<br>';
+        echo 'Task Descriptions: ' . $studyObject->description . '<br>';
+
+        echo '<br>';
+        $title = $studyObject->title;
+        $description =  $studyObject->description;
+        $uid = $planID;
+        $start = $studyObject->startDate;
+        $end =  $studyObject->endDate;
+
+
+        $incrementedID = intval($id) + 1;
+
+        $color = "mediumseagreen"; //default study plan color
+        $event = ['id' => $id, 'title' => "STUDY: " . $title, 'description' => $description, 'reminder' => true, 'start' => $start, 'end' => $end, 'color' => $color, 'planID' => $planID];
+        $id++;
+        //
+        $studyPlanEvent->update(
+            [
+                'user_id' => $planID,
+            ],
+            ['$push' => ['List' => $event]]
+        );
+        $studyPlanEvent->update(
+            [
+                'user_id' => $planID,
+            ],
+            ['$set' => ['counter' => $incrementedID]]
+        );
+
+        echo '<br>';
+    }
+
+    // define the plan
     $plan = [
-        "planID" => uniqid(),
+        "planID" => $planID,
         "user_id" => $_SESSION['email'],
         "name" => $name,
         "creation_date" => date("Y-m-d"),
         "start" => $start,
         "end" => $end,
-        // "study_plan" => $studyPlan,
+        "study_plan" => $studyObjects,
 
         "color" => 'skyblue'
 
     ];
-
     $bulkWrite->insert($plan);
     $result = $manager->executeBulkWrite("Learniverse.studyPlan", $bulkWrite);
-    if ($result->getInsertedCount() > 0)
+    if ($result->getInsertedCount() > 0) { //plan created successfully
+        //execute the study plan events insertion command
+        $result = $manager->executeBulkWrite('Learniverse.calendar', $studyPlanEvent);
         echo "success";
-    else
+    } else
         echo "fail";
-} elseif (isset($_POST['deletePlan'])) {
+} elseif (isset($_POST['deletePlan'])) { //delete a plan
     $bulkWrite = new MongoDB\Driver\BulkWrite;
     $planID = $_POST['planID'];
     // Define the filter to identify the document
@@ -83,6 +213,11 @@ if (isset($_POST['new-plan-name'])) {
     // Execute the BulkWrite operation
     $result = $manager->executeBulkWrite("Learniverse.studyPlan", $bulkWrite);
     if ($result->getDeletedCount() > 0) {
+        $bulk = new MongoDB\Driver\BulkWrite;
+        $filter = ['user_id' => $planID];
+        $bulk->delete($filter);
+
+        $result = $manager->executeBulkWrite("Learniverse.calendar", $bulk);
         echo 1;
     } else echo 0;
     exit;

@@ -21,10 +21,19 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
     <link rel="manifest" href="favicon_io/site.webmanifest">
     <script src="jquery.js"></script>
 
+    <!-- Sweetalert2 -->
+    <script src="js/sweetalert2.all.min.js"></script>
+
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+    <!-- Include FullCalendar JS & CSS library -->
+    <link href="js/fullcalendar/lib/main.css" rel="stylesheet" />
+    <script src="js/fullcalendar/lib/main.js"></script>
+    <script>
+        var calendar = null;
+    </script>
     <!-- SHOUQ SECTION: -->
     <script>
         $(document).ready(function() {
@@ -178,6 +187,8 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
             document.getElementById("sidebar-tongue").style.marginLeft = '0';
         }
 
+        var selectedMats = [];
+
         function loadDirectories() {
             fetch('listDirectories.php')
                 .then(response => response.text())
@@ -194,24 +205,49 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('fileList').innerHTML = html;
+
+                    //color already selected files
+                    var fileListDiv = document.getElementById("fileList");
+                    var divs = fileListDiv.getElementsByClassName("fileItem");
+                    for (var i = 0; i < divs.length; i++) {
+                        var div = divs[i];
+                        var fileName = div.getAttribute("data-dir");
+                        if (selectedMats.includes(fileName)) {
+                            console.log("preview: " + fileName);
+                            // File is selected
+                            div.classList.add("selectedFileDiv");
+                        } else {
+                            // File is not selected
+                            div.classList.remove("selectedFileDiv");
+                        }
+                    }
                 })
                 .catch(err => {
                     console.error('Failed to load files', err);
                 });
         }
 
-
         // Modify the showModal function to call loadDirectories initially
         function showModal() {
             document.getElementById('fileModal').style.display = 'flex';
+            document.getElementById('fileModal').style.zIndex = 5;
             loadDirectories(); // Load directories first
             loadFiles('Uploaded Files');
         }
 
-        function selectFile(fileName) {
+        function selectFile(fileName, div) {
             // Handle file selection
-            console.log(fileName);
-            hideModal();
+            var fileIndex = selectedMats.indexOf(fileName);
+            if (fileIndex === -1) {
+                // File not selected, add it to the array
+                selectedMats.push(fileName);
+                div.classList.add("selectedFileDiv");
+            } else {
+                // File already selected, remove it from the array
+                selectedMats.splice(fileIndex, 1);
+                div.classList.remove("selectedFileDiv");
+            }
+            console.log(selectedMats);
         }
 
         function hideModal() {
@@ -289,7 +325,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
     </header>
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
+            <ul class="tool_list">
                 <li class="tool_item">
                     <a href="workspace.php"> Calendar & To-Do
                     </a>
@@ -298,16 +334,16 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                     <a href="theFiles.php"> My Files</a>
                 </li>
                 <li class="tool_item">
-                <a href="quizes/index.php"> Quizzes</a>
+                    <a href="quizes/index.php"> Quizzes</a>
                 </li>
                 <li class="tool_item">
-                <a href="flashcard.php"> Flashcards</a>
+                    <a href="flashcard.php"> Flashcards</a>
                 </li>
                 <li class="tool_item">
-                <a href="summarization/summarization.php"> Summarization</a>
+                    <a href="summarization/summarization.php"> Summarization</a>
                 </li>
                 <li class="tool_item">
-                <a href="studyplan.php"> Study Plan</a>
+                    <a href="studyplan.php"> Study Plan</a>
                 </li>
                 <li class="tool_item"><a href="Notes/notes.php">
                         Notes</a>
@@ -353,7 +389,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                     $planCount = 0;
                     foreach ($cursor as $plan) {
                         $planCount++; ?>
-                        <tr id="<?php echo $plan->planID ?>">
+                        <tr id="<?php echo $plan->planID ?>" class="planRow">
                             <td class="plan-name"><span onclick="display(<?php echo $plan->planID ?>);"><?php echo $plan->name ?></span></td>
                             <td><?php echo $plan->creation_date ?></td>
                             <td>
@@ -375,15 +411,22 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 <form id="new-plan-form" name="new-plan-form" method="post" action="processStudyPlan.php" enctype="multipart/form-data">
                     Plan Name: <input required autocomplete="off" type="text" name="new-plan-name" id="new-plan-name">
                     Plan start: <input required name="start" type="date"> Plan end: <input name="end" type="date">
-                    Study Material: <button id="uploadMats" onclick="document.getElementById('newPlanOverlay').style.display='none'; showModal()">Upload from My Files</button> or <input id="localMats" name="localMats" value="Upload from my device" type="file" multiple>
-                    <input type="submit" value="Create">
+                    Study Material: <button id="uploadMats" onclick="showModal()">Upload from My Files</button> or <input id="localMats" name="localMats[]" value="Upload from my device" type="file" multiple>
+                    <input id="generatePlan" type="submit" value="Generate">
                 </form>
             </div>
         </div>
         <div class="overlay" id="display">
             <div class="modal">
-                <div class="studyplan-container">
+                <div class="container calendar">
+                    <div class="wrapper">
+                        <span>
+                            <h2>Viewing <span id="studyPlanNameView"></span> Plan</h2>
+                        </span>
+                        <!-- Calendar container -->
+                        <div id="calendar"></div>
 
+                    </div>
                 </div>
             </div>
         </div>
@@ -397,17 +440,44 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                     <!-- File list will be loaded here -->
                     <div id="fileList"></div>
                 </div>
-                <button onclick="hideModal()">Close</button>
+                <button onclick="hideModal();">Close</button>
             </div>
         </div>
         <script>
+            // Retrieve the form element
+            var form = document.getElementById("new-plan-form");
+
+            // Add an event listener to the form's submit event
+            form.addEventListener("submit", function(event) {
+                // Create an input element to hold the selectedMats data
+                event.preventDefault();
+                var matsInput = document.createElement("input");
+                matsInput.type = "hidden";
+                matsInput.name = "myFilesMats";
+                matsInput.value = JSON.stringify(selectedMats);
+
+                // Append the input element to the form
+                form.appendChild(matsInput);
+                if (selectedMats.length > 0 || document.getElementById("localMats").files.length > 0) {
+                    // Check if the submit button is clicked
+                    var submitButton = document.getElementById("generatePlan");
+                    if (submitButton === document.activeElement) {
+                        // Safely submit the form
+                        form.submit();
+                    }
+                }
+            });
+
+
             var overlayNewPlan = document.getElementById('newPlanOverlay');
             var newPlanBTN = document.getElementById('newStudyPlan');
             var overlayDisplay = document.getElementById('display');
-
+            var allPlans = document.getElementById('allPlans');
+            var planRows = document.getElementsByClassName('planRow');
             $(document).ready(function() {
                 newPlanBTN.addEventListener('click', function() {
                     overlayNewPlan.style.display = 'flex';
+                    selectedMats = [];
                 });
 
                 overlayNewPlan.addEventListener('click', function(event) {
@@ -423,8 +493,184 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 });
             });
 
-            function display() {
+            function display(plan) {
+                planID = plan;
                 overlayDisplay.style.display = 'flex';
+                var calendarEl = document.getElementById('calendar');
+
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    views: {
+                        dayGridMonth: { // name of view
+                            titleFormat: {
+                                year: 'numeric',
+                                month: 'long',
+                            }
+                            // other view-specific options here
+                        }
+                    },
+                    initialView: 'dayGridMonth',
+                    editable: true,
+                    height: 650,
+                    events: 'fetchEvents.php?planID=' + planID,
+
+                    selectable: true,
+                    select: async function(start, end, allDay) {
+                        const {
+                            value: formValues
+                        } = await Swal.fire({
+                            title: 'Add Event',
+                            confirmButtonText: 'Submit',
+                            showCloseButton: true,
+                            showCancelButton: true,
+                            html: '<input id="swalEvtTitle" class="swal2-input" placeholder="Enter title">' +
+                                '<textarea id="swalEvtDesc" class="swal2-input" placeholder="Enter description"></textarea>' +
+                                '<div class="rem">Email Reminder &nbsp;<label class="switch"><input id="swalEvtReminder" type="checkbox" value="reminder"><span class="slider round"></span></label></div>',
+                            focusConfirm: false,
+                            preConfirm: () => {
+                                return [
+                                    document.getElementById('swalEvtTitle').value,
+                                    document.getElementById('swalEvtDesc').value,
+                                    document.getElementById('swalEvtReminder').checked
+
+                                ]
+                            }
+                        });
+
+                        if (formValues) {
+                            // Add event
+                            fetch("eventHandler.php", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify({
+                                        request_type: 'addEvent',
+                                        start: start.startStr,
+                                        end: start.endStr,
+                                        event_data: formValues,
+                                        planID: planID
+                                    }),
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status == 1) {
+                                        Swal.fire('Event added successfully!', '', 'success');
+                                    } else {
+                                        Swal.fire(data.error, '', 'error');
+                                    }
+
+                                    // Refetch events from all sources and rerender
+                                    calendar.refetchEvents();
+                                })
+                                .catch(console.error);
+                        }
+                    },
+
+                    eventClick: function(info) {
+                        info.jsEvent.preventDefault();
+
+                        // change the border color
+                        info.el.style.borderColor = 'white';
+
+                        Swal.fire({
+                            title: info.event.title,
+                            //text: info.event.extendedProps.description,
+                            icon: 'info',
+                            html: '<p>' + info.event.extendedProps.description + '</p>',
+                            showCloseButton: true,
+                            showCancelButton: false,
+                            showDenyButton: true,
+                            cancelButtonText: 'Close',
+                            confirmButtonText: 'Delete',
+                            denyButtonText: 'Edit',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Delete event
+                                fetch("eventHandler.php", {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json"
+                                        },
+                                        body: JSON.stringify({
+                                            request_type: 'deleteEvent',
+                                            event_id: info.event.id,
+                                            planID: planID
+                                        }),
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.status == 1) {
+                                            Swal.fire('Event deleted successfully!', '', 'success');
+                                        } else {
+                                            Swal.fire(data.error, '', 'error');
+                                        }
+
+                                        // Refetch events from all sources and rerender
+                                        calendar.refetchEvents();
+                                    })
+                                    .catch(console.error);
+                            } else if (result.isDenied) {
+                                // Edit and update event
+                                Swal.fire({
+                                    title: 'Edit Event',
+                                    html: '<input id="swalEvtTitle_edit" class="swal2-input" placeholder="Enter title" value="' + info.event.title + '">' +
+                                        '<textarea id="swalEvtDesc_edit" class="swal2-input" placeholder="Enter description">' + info.event.extendedProps.description + '</textarea>' +
+                                        '<div class="rem">Email Reminder &nbsp;<label class="switch"><input id="swalEvtRem_edit" type="checkbox" ' + (info.event.extendedProps.reminder === true ? 'checked' : '') + '><span class="slider round"></span></label></div>',
+                                    focusConfirm: false,
+                                    confirmButtonText: 'Submit',
+                                    preConfirm: () => {
+                                        return [
+                                            document.getElementById('swalEvtTitle_edit').value,
+                                            document.getElementById('swalEvtDesc_edit').value,
+                                            document.getElementById('swalEvtRem_edit').checked
+
+                                        ]
+                                    }
+                                }).then((result) => {
+                                    if (result.value) {
+                                        // Edit event
+                                        fetch("eventHandler.php", {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/json"
+                                                },
+                                                body: JSON.stringify({
+                                                    request_type: 'editEvent',
+                                                    start: info.event.startStr,
+                                                    end: info.event.endStr,
+                                                    event_id: info.event.id,
+                                                    event_data: result.value,
+                                                    color: info.event.backgroundColor,
+                                                    planID: planID
+                                                })
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.status == 1) {
+                                                    Swal.fire('Event updated successfully!', '', 'success');
+                                                } else {
+                                                    Swal.fire(data.error, '', 'error');
+                                                }
+
+                                                // Refetch events from all sources and rerender
+                                                calendar.refetchEvents();
+                                            })
+                                            .catch(console.error);
+                                    }
+                                });
+                            } else {
+                                Swal.close();
+                            }
+                        });
+                    }
+                });
+
+                calendar.render();
             }
 
             document.addEventListener('DOMContentLoaded', function() {
@@ -434,38 +680,59 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 // Add event listener to delete buttons
                 Array.from(deleteButtons).forEach(function(button) {
                     button.addEventListener('click', function() {
-                        var trId = button.closest('tr').id;
-                        // Perform delete action using trId
-                        console.log('Deleting plan with ID: ' + trId);
-                        // Data to send
-                        var data = {
-                            planID: trId,
-                            deletePlan: true
-                        };
+                        Swal.fire({
+                            title: 'Heads Up!',
+                            text: 'Are you sure you want to delete this plan?',
+                            icon: 'warning',
+                            confirmButtonText: 'Yes',
+                            showCancelButton: true,
+                            cancelButtonText: 'No',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                var trId = button.closest('tr').id;
+                                // Perform delete action using trId
+                                console.log('Deleting plan with ID: ' + trId);
+                                // Data to send
+                                var data = {
+                                    planID: trId,
+                                    deletePlan: true
+                                };
 
-                        $.ajax({
-                            url: 'processStudyPlan.php',
-                            type: 'POST',
-                            data: data,
-                            success: function(response) {
-                                if (response == 1) {
-                                    console.log('Plan deleted successfully');
-                                    button.closest('tr').remove();
-                                } else console.error('Error deleting plan');
+                                $.ajax({
+                                    url: 'processStudyPlan.php',
+                                    type: 'POST',
+                                    data: data,
+                                    success: function(response) {
+                                        if (response == 1) {
+                                            console.log('Plan deleted successfully');
+                                            button.closest('tr').remove();
+                                            if (planRows.length == 0) {
+                                                var tbody = document.querySelector("#allPlans tbody");
+                                                tbody.innerHTML += "<tr><td colspan='3'>No Plans Have Been Created Yet.</td></tr>";
+                                            }
+                                        } else console.error('Error deleting plan');
 
-                            },
-                            error: function(xhr, status, error) {
-                                console.error('Error deleting plan');
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('Error deleting plan');
+                                    }
+                                });
                             }
                         });
+
                     });
                 });
 
                 // Add event listener to view buttons
                 Array.from(viewButtons).forEach(function(button) {
                     button.addEventListener('click', function() {
-                        var trId = button.closest('tr').id;
+                        var tr = button.closest('tr');
+                        var trId = tr.id;
                         // Perform view action using trId
+                        planID = trId;
+                        planName = tr.getElementsByClassName("plan-name")[0].textContent;
+                        document.getElementById("studyPlanNameView").textContent = planName;
+                        display(planID);
                         console.log('Viewing plan with ID: ' + trId);
                     });
                 });
