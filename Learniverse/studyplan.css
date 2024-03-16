@@ -27,9 +27,46 @@
     background-color: #f2f1ff;
 }
 
+.wrapper .top-shelf{
+    width: auto;
+}
 
 .top-shelf {
     display: flex;
+    justify-content: space-between;
+    justify-items: baseline;
+}
+
+.top-button {
+    display: flex;
+    justify-content: space-around;
+    width: 30%;
+}
+
+.top-button button{
+    width: fit-content;
+    height: 40%;
+    margin-top: auto;
+    margin-bottom: auto;
+    background-color: #fdae9b;
+    padding: 0.5rem 1rem;
+    height: fit-content;
+    border-radius: 10px;
+    border: none;
+    /* Remove borders */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+.top-button button:last-of-type{
+    background-color: #bf97d8;
+}
+
+.top-button button:last-of-type:hover{
+    background-color: #946aae;
 }
 
 #newStudyPlan {
@@ -51,7 +88,7 @@
 }
 
 
-#newStudyPlan:hover {
+#newStudyPlan:hover, .top-button button:hover {
     cursor: pointer;
     background-color: #ec947e;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
@@ -175,7 +212,7 @@
     font-size: 0.6rem;
     font-weight: 400;
     /* Set the desired height */
-    width:700px ;
+    width: 700px;
     height: 400px !important;
     overflow-y: auto;
     /* Enable vertical scrolling */

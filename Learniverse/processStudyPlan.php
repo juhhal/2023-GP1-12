@@ -97,6 +97,7 @@ if (isset($_POST['new-plan-name'])) {
     $result_array = $cursor->toArray();
     $result_json = json_decode(json_encode($result_array), true);
     $id = $result_json[0]['counter'];
+
     // Python request
     // Python response
 
@@ -161,7 +162,7 @@ if (isset($_POST['new-plan-name'])) {
         $incrementedID = intval($id) + 1;
 
         $color = "mediumseagreen"; //default study plan color
-        $event = ['id' => $id, 'title' => "STUDY: " . $title, 'description' => $description, 'reminder' => true, 'start' => $start, 'end' => $end, 'color' => $color, 'planID' => $planID];
+        $event = ['id' => $id, 'title' => "STUDY: " . $title, 'description' => "Plan: $name. $description", 'reminder' => false, 'start' => $start, 'end' => $end, 'color' => $color, 'planID' => $planID];
         $id++;
         //
         $studyPlanEvent->update(
@@ -189,7 +190,7 @@ if (isset($_POST['new-plan-name'])) {
         "start" => $start,
         "end" => $end,
         "study_plan" => $studyObjects,
-
+        "saved" => false,
         "color" => 'skyblue'
 
     ];
@@ -213,14 +214,117 @@ if (isset($_POST['new-plan-name'])) {
     // Execute the BulkWrite operation
     $result = $manager->executeBulkWrite("Learniverse.studyPlan", $bulkWrite);
     if ($result->getDeletedCount() > 0) {
+        //delete the plan's own calendar
         $bulk = new MongoDB\Driver\BulkWrite;
         $filter = ['user_id' => $planID];
         $bulk->delete($filter);
 
         $result = $manager->executeBulkWrite("Learniverse.calendar", $bulk);
+
+        //delete the plan's events from the user's calendar
+
+        // Define the filter to find the document with the matching planID
+        $filter = ['user_id' => $_SESSION['email'], 'List.planID' => $planID];
+
+        // Define the update operation to remove the events with the matching planID
+        $update = ['$pull' => ['List' => ['planID' => $planID]]];
+
+        // Create an instance of MongoDB\Driver\BulkWrite and add the update operation
+        $bul = new MongoDB\Driver\BulkWrite();
+        $bul->update($filter, $update);
+        $result = $manager->executeBulkWrite("Learniverse.calendar", $bul);
+
         echo 1;
     } else echo 0;
     exit;
+} elseif (isset($_POST['savePlanCalendar'])) //save a plan calendar
+{
+    $planID = $_POST['planID'];
+    //check if the plan is already saved
+    $query = new MongoDB\Driver\Query(['planID' => $planID]);
+    $result = $manager->executeQuery("Learniverse.studyPlan", $query);
+    $p = $result->toArray()[0];
+    if ($p->saved===true) {
+        echo "saved";
+        exit;
+    }
+
+    // retrieve plan calendar events to copy them
+    // Define the query filter
+    $filter = ['user_id' => $planID];
+    // Define the query options
+    $options = [
+        'projection' => ['List' => 1], // Retrieve only the List field
+    ];
+    // Create a query object
+    $query = new MongoDB\Driver\Query($filter, $options);
+    $cursor = $manager->executeQuery('Learniverse.calendar', $query);
+    // Create an array to store the events
+    $planEvents = [];
+    // Get the first matching document from the result set
+    $document = current($cursor->toArray());
+    if ($document) {
+        // Retrieve the List array from the document
+        $list = $document->List;
+
+        // Iterate over the List array starting from the second item
+        for ($i = 1; $i < count($list); $i++) {
+            // Retrieve the event object
+            $event = $list[$i];
+
+            // Add the event to the planEvents array
+            $planEvents[] = $event;
+        }
+    }
+    //get the user's calnedar to insert the plans events
+    $query = new MongoDB\Driver\Query(array('user_id' => $_SESSION['email']));
+    $cursor = $manager->executeQuery('Learniverse.calendar', $query);
+    $result_array = $cursor->toArray();
+    $result_json = json_decode(json_encode($result_array), true);
+    $id = $result_json[0]['counter'];
+
+    $bulk = new MongoDB\Driver\BulkWrite;
+    foreach ($planEvents as $event) {
+        // Check if $event has a planID property
+        if (!isset($event->planID)) {
+            // $event does not have a planID property, so add it
+            $event->title = "STUDY: " . $event->title;
+            $event->planID = $planID;
+            $event->color = "mediumseagreen";
+        }
+        $event->id = $id;
+        $event->reminder = true;
+        $bulk->update(
+            [
+                'user_id' => $_SESSION['email'],
+            ],
+            ['$push' => ['List' => $event]]
+        );
+        $id++;
+    }
+
+    $bulk->update(
+        [
+            'user_id' => $_SESSION['email'],
+        ],
+        ['$set' => ['counter' => $id]]
+    );
+
+    $result = $manager->executeBulkWrite("Learniverse.calendar", $bulk);
+    if ($result->getModifiedCount() > 0) {
+        $bulk =  new MongoDB\Driver\BulkWrite;
+        $bulk->update(
+            [
+                'planID' => $planID,
+            ],
+            ['$set' => ['saved' => true]]
+        );
+        $result = $manager->executeBulkWrite("Learniverse.studyPlan", $bulk);
+
+        echo 1;
+    } else echo 0;
+} elseif (isset($_POST['regeneratePlan'])) //regenrate a plan
+{
 }
 
-header("Location:studyplan.php");
+// header("Location:studyplan.php");

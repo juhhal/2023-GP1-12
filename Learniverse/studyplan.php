@@ -420,9 +420,12 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
             <div class="modal">
                 <div class="container calendar">
                     <div class="wrapper">
-                        <span>
-                            <h2>Viewing <span id="studyPlanNameView"></span> Plan</h2>
-                        </span>
+                        <div class="top-shelf">
+                            <span>
+                                <h2>Viewing <span id="studyPlanNameView"></span> Plan</h2>
+                            </span>
+                            <span class="top-button"><button id="regenerate">Regenerate</button><button id="save-to-calendar">Save to Calendar</button></span>
+                        </div>
                         <!-- Calendar container -->
                         <div id="calendar"></div>
 
@@ -496,6 +499,51 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
             function display(plan) {
                 planID = plan;
                 overlayDisplay.style.display = 'flex';
+                var savePlanBTN = document.getElementById("save-to-calendar");
+                var regeneratePlanBTN = document.getElementById("regenerate");
+
+                savePlanBTN.addEventListener("click", function() {
+                    savePlanBTN.disabled = true;
+                    $.ajax({
+                        url: 'processStudyPlan.php',
+                        method: 'post',
+                        data: {
+                            planID: planID,
+                            savePlanCalendar: true
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            Swal.fire({
+                                title: 'Plan Calendar Saved',
+                                text: 'Study Plan has been saved successfully.',
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 2500,
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error saving plan calendar');
+                        }
+                    });
+                });
+
+                regeneratePlanBTN.addEventListener("click", function() {
+                    $.ajax({
+                        url: 'processStudyPlan.php',
+                        method: 'post',
+                        data: {
+                            planID: planID,
+                            regeneratePlan: true
+                        },
+                        success: function(response) {
+                            console.log(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error regenerating plan calendar');
+                        }
+                    });
+                });
+                // plan calendar
                 var calendarEl = document.getElementById('calendar');
 
                 calendar = new FullCalendar.Calendar(calendarEl, {
