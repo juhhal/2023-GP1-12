@@ -20,7 +20,10 @@ require 'session.php'; ?>
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    </script>
+
+    <!-- Sweetalert2 -->
+    <script src="js/sweetalert2.all.min.js"></script>
+
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
         $(document).ready(function() {
@@ -376,7 +379,7 @@ require 'session.php'; ?>
                                 $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
                                 $adminCursor = $manager->executeQuery('Learniverse.users', $query);
                                 $admin = $adminCursor->toArray()[0];
-                                echo "<div class='spaceDiv' title='awating admission'><span>" . $space['name'] . "</span><i id='removePending' title='cancel request' data-sid='" . $space['spaceID'] . "' class='fa-solid fa-trash'></i></div>";
+                                echo "<div class='spaceDiv' title='awating admission'><span>" . $space['name'] . "</span><i title='cancel request' data-sid='" . $space['spaceID'] . "' class='fa-solid fa-trash removePending'></i></div>";
                             }
                         }
                             ?>
@@ -421,24 +424,49 @@ require 'session.php'; ?>
             document.addEventListener('DOMContentLoaded', function() {
                 if ($('.spaceDiv').length === 0)
                     noSpaceMsg.style.display = 'flex';
-                if ($('#removePending').length > 0) {
-                    $('#removePending').on('click', function() {
-                        spaceID = $(this).attr('sid');
-                        $.ajax({
-                            url: "pendingMemberProcess.php",
-                            method: 'post',
-                            data: {
-                                operation: 'reject',
-                                spacename: "",
-                                spaceid: spaceID,
-                                member: '<?php echo $_SESSION['email']; ?>'
-                            },
-                            success: function() {
-                                $(this).closest(".spaceDiv").remove();
+                // Get all elements with the class "removePending"
+                var removePendingElements = $('.removePending');
+
+                // Loop through each element
+                removePendingElements.each(function() {
+                    var element = $(this);
+
+                    // Attach click event listener
+                    element.on('click', function() {
+                        var spaceID = element.attr('data-sid');
+                        Swal.fire({
+                            title: 'Heads Up!',
+                            text: 'Are you sure you want to no longer request access to this space?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform AJAX request
+                                $.ajax({
+                                    url: "pendingMemberProcess.php",
+                                    method: 'post',
+                                    data: {
+                                        operation: 'reject',
+                                        spacename: "",
+                                        spaceid: spaceID,
+                                        member: '<?php echo $_SESSION['email']; ?>'
+                                    },
+                                    success: function(res) {
+                                        element.closest(".spaceDiv").remove();
+                                        // Check if #pendingSpaces has no .spaceDiv
+                                        if ($('#pendingSpaces .spaceDiv').length === 0) {
+                                            $('#pendingSpaces').hide(); // Hide the parent container
+                                            if ($('.spaceDiv').length === 0)
+                                                noSpaceMsg.style.display = 'flex';
+                                        }
+                                    }
+                                });
                             }
                         });
                     });
-                }
+                });
             });
 
             overlay = document.getElementsByClassName("overlay")[0];
