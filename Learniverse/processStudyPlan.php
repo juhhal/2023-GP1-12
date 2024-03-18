@@ -11,16 +11,41 @@ if (isset($_POST['new-plan-name'])) {
     $name = $_POST['new-plan-name'];
     $start = $_POST['start'];
     $end = $_POST['end'];
+    $uploadedMats;
+    $fullText="";
+    function callPythonScript($filePath) {
+        $command = escapeshellcmd("python3 python/extracter.py '" . $filePath . "'");
+        $output = shell_exec($command);
+        return $output;
+    }
     if (isset($_POST['myFilesMats'])) {
+        require_once __DIR__ . '/vendor/autoload.php';
+        $client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+        $database = $client->selectDatabase('Learniverse');
+        $usersCollection = $database->selectCollection('users');
+
+        // Get the email from the session
+        $email = $_SESSION['email'];
+
+        // Query the database for the user
+        $userDocument = $usersCollection->findOne(['email' => $email]);
+
+        // If user found, retrieve the _id
+        $user_id = null;
+        if ($userDocument) {
+            $user_id = $userDocument->_id;
+        }
+        $path = 'user_files'.$DIRECTORY_SEPARATOR. $user_id . $DIRECTORY_SEPARATOR;
         $uploadedMats = json_decode($_POST['myFilesMats']);
         foreach ($uploadedMats as $f)
-            echo "$f,  ";
+        $fullText = $fullText ."\n". callPythonScript($path.$f);
     }
 
     // Check if local files were uploaded
     if (isset($_FILES['localMats'])) {
         $fileCount = count($_FILES['localMats']['name']);
         echo "<br>";
+
         // Process each uploaded file
         for ($i = 0; $i < $fileCount; $i++) {
             $file = $_FILES['localMats']['tmp_name'][$i];
@@ -30,12 +55,25 @@ if (isset($_POST['new-plan-name'])) {
 
             // Handle the file as needed
             if ($fileError === UPLOAD_ERR_OK) {
-                // File was uploaded successfully
-                // Output success message or perform any other actions
-                echo "File $fileName was uploaded successfully.";
+            // File was uploaded successfully
+            $tmpFilePath = $_FILES['localMats']['tmp_name'][$i];
+            // Move uploaded file to a permanent directory (optional)
+            // Ensure your server has write permissions to the target directory
+            $targetFilePath = "studyplanTemp". $DIRECTORY_SEPARATOR . basename($_FILES['localMats']['name'][$i]);
+            if (move_uploaded_file($tmpFilePath, $targetFilePath)) {
+                // Call the Python script with the permanent file path
+                $fullText = $fullText ."\n". callPythonScript($targetFilePath);
+                
+                // Delete the uploaded file after processing
+                if (file_exists($targetFilePath)) {
+                    unlink($targetFilePath);
+                    echo "Processed and deleted file: $fileName<br>";
+                } else {
+                    echo "Failed to delete processed file: $fileName<br>";
+                }
             } else {
-                // Handle file upload error
-                echo "Error uploading file $fileName. Error code: $fileError";
+                echo "Failed to move uploaded file for processing.<br>";
+            }
             }
             echo "<br>";
         }
@@ -100,31 +138,57 @@ if (isset($_POST['new-plan-name'])) {
 
     // Python request
 
-    // demo: instead of this json replace with the python response json
-    $jsonData = '{
-        "studyPlan": [
-          {
-            "date": "2024-03-04",
-            "title": "Computer Crime Investigation Overview",
-        
-                "description": "Law enforcement officers and digital devices in investigations"
-             
-             
-          },
-          {
-            "date": "2024-03-05",
-            "title": "Systematic Approach to Investigation",
-       
+    $tempFilePath = tempnam(sys_get_temp_dir(), 'txt');
+    if ($tempFilePath === false) {
+        // Failed to create a temporary file
+        echo "Failed to create temporary file.";
+    } else {
+        // Write the contents to the temporary file
+        if (file_put_contents($tempFilePath, $fullText) === false) {
+            // Failed to write to the temporary file
+            echo "Failed to write to temporary file.";
+        } else {
+            // Construct the command to call the Python script with the file path as an argument
+            $previousEventsJson = escapeshellarg(json_encode($previousEvents));
+            $generate_command = "python3 python/StudyPlanner.py '" . escapeshellarg($tempFilePath) . "' '" . escapeshellarg($start) . "' '" . escapeshellarg($end) . "' " . $previousEventsJson;
+            $generate_file = "python3 python/savePDF.py '" . escapeshellarg($tempFilePath);
+            // Execute the command and capture output
+            exec($generate_command, $plan, $resultsCode);
+            if (isset($plan[0]) && trim($plan[0]) !== '') {
+                $temp_file_path = trim($plan[0]);
+                $plan_data = json_decode(file_get_contents($temp_file_path), true);
+                $jsonData = $plan_data['study_plan'];
+            } else {
+                echo "Python script did not return any output.";
+            }
+        }
+        unlink($tempFilePath);
+    }
+
+
+    //////DON'T COPY THIS SECTION FOR REGENERATING//////
+    // Define file name and path
+    $fileName = "". uniqid().".txt";
+    $filePath = "studyplan/" . $fileName;
+    // Write content to file
+    file_put_contents($filePath, $fullText);
+
+    // New file name with .pdf extension
+    $newFileName = "".$planID.".pdf";
+    $newFilePath = "studyplan/" . $newFileName;
+
+    // Rename the file
+    rename($filePath, $newFilePath);
 
         
 
  
 
-    $data = json_decode($jsonData, true);
+    $data = $jsonData;
     $studyObjects = [];
     $studyPlanEvent = new MongoDB\Driver\BulkWrite;
 
-    foreach ($data['studyPlan'] as $study) {
+    foreach ($data as $study) {
         $studyObject = new stdClass();
         $studyObject->startDate = $study['date'];
         $studyObject->endDate = date('Y-m-d', strtotime($study['date'] . ' + 1 day'));
@@ -315,6 +379,7 @@ if (isset($_POST['new-plan-name'])) {
     } else echo 0;
 } elseif (isset($_POST['regeneratePlan'])) //regenrate a plan
 {
+
 }
 
-// header("Location:studyplan.php");
+header("Location:studyplan.php");
