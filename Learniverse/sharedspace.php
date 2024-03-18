@@ -175,8 +175,13 @@ require 'session.php'; ?>
         }
 
         function showForm() {
-            var form = $('.workarea_item form');
-            form.toggle();
+            var overlay = $('.overlay');
+            overlay.css("display", "flex");
+        }
+
+        function hideForm() {
+            var overlay = $('.overlay');
+            overlay.hide();
         }
     </script>
 </head>
@@ -251,7 +256,7 @@ require 'session.php'; ?>
 
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
+            <ul class="tool_list">
                 <li class="tool_item">
                     <a href="workspace.php"> Calendar & To-Do
                     </a>
@@ -260,16 +265,16 @@ require 'session.php'; ?>
                     <a href="theFiles.php"> My Files</a>
                 </li>
                 <li class="tool_item">
-                <a href="quizes/index.php"> Quizzes</a>
+                    <a href="quizes/index.php"> Quizzes</a>
                 </li>
                 <li class="tool_item">
-                <a href="flashcard.php"> Flashcards</a>
+                    <a href="flashcard.php"> Flashcards</a>
                 </li>
                 <li class="tool_item">
-                <a href="summarization/summarization.php"> Summarization</a>
+                    <a href="summarization/summarization.php"> Summarization</a>
                 </li>
                 <li class="tool_item">
-                <a href="studyplan.php"> Study Plan</a>
+                    <a href="studyplan.php"> Study Plan</a>
                 </li>
                 <li class="tool_item"><a href="Notes/notes.php">
                         Notes</a>
@@ -293,103 +298,65 @@ require 'session.php'; ?>
         </div>
 
         <div class="workarea">
-
             <div class="workarea_item">
                 <div class="top-shelf">
                     <h1>Shared Spaces</h1>
                     <button id="newSpaceBTN" onclick="showForm()">New Space</button>
                 </div>
-                <form id="newSpaceForm" style="display: none;">
-                    <label>Space Name</label> <input id="spaceName" name="spaceName" type="text">
-                    <input id="color" type="color" name="color">
-                    <button type="submit" class="formSubmitBTN">Create</button>
-                    <h3>OR</h3>
-                </form>
-
-                <form id="joinSpaceForm" method="post" style="display: none;">
-                    <label>Join a Space</label> <input required id="spaceID" name="spaceID" type="text">
-                    <button type="submit" class="formSubmitBTN">Join</button>
-                </form>
-                <p class="errorMessage" style="color:red"></p>
                 <div id="spaces">
-                    <div id="adminSpaces">
-                        <span class="spacesTitle">Owned Spaces:</span>
-                        <?php
-                        $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
-
-                        $filter = ['admin' => $_SESSION['email']];
-                        // MongoDB query
-                        $query = new MongoDB\Driver\Query($filter);
-                        // MongoDB collection name
-                        $collectionName = "Learniverse.sharedSpace";
-                        // Execute the query
-                        $spaces = $manager->executeQuery($collectionName, $query);
-                        $space = [];
-                        foreach ($spaces as $s) {
-                            $space[] = $s;
-                        }
-                        $spaces = json_decode(json_encode($space), true);
-                        foreach ($spaces as $space) {
-                            echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $fetch['firstname'] . " " .  $fetch['lastname'] . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div></div>";
-                        }
-                        ?>
-                        <script>
-                            $("#newSpaceForm").on("submit", function() {
-                                $.ajax({
-                                    url: "addSharedSpace.php",
-                                    method: "post",
-                                    data: {
-                                        spaceName: $("#spaceName").val(),
-                                        color: $("#color").val()
-                                    },
-                                    success: function(response) {
-                                        console.log(response);
-                                        r = JSON.parse(response);
-                                        $("#newSpaceForm").css("display", "block");
-                                        $(".errorMessage").text("*" + r.msg);
-                                        window.location.href = "viewspace.php?space=" + r.createdSpace;
-                                    },
-                                });
-                            });
-
-                            $("#joinSpaceForm").on("submit", function() {
-                                $.ajax({
-                                    url: "addSharedSpace.php",
-                                    method: "post",
-                                    data: {
-                                        spaceID: $("#spaceID").val()
-                                    },
-                                    success: function(response) {
-                                        $("#joinSpaceForm").css("display", "block");
-                                        $(".errorMessage").text("*" + response);
-                                    },
-                                });
-                            });
-                        </script>
+                    <div id="noSpaceMSG"><img src="images/rocket-clouds.png">
+                        <span>You are not a part of any Space yet. Start by creating a new one!</span>
                     </div>
-                    <div id="otherSpaces">
-                        <span class="spacesTitle">Joined Spaces:</span>
-                        <?php
-                        //get spaces where active user is a member of
-                        $filterMember = ['members.email' => $_SESSION['email']];
-                        $queryMember = new MongoDB\Driver\Query($filterMember);
-                        $spaces = $manager->executeQuery($collectionName, $queryMember);
-                        $space = [];
-                        foreach ($spaces as $s) {
-                            $space[] = $s;
-                        }
-                        $spaces = json_decode(json_encode($space), true);
+                    <?php
+                    $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 
+                    $filter = ['admin' => $_SESSION['email']];
+                    // MongoDB query
+                    $query = new MongoDB\Driver\Query($filter);
+                    // MongoDB collection name
+                    $collectionName = "Learniverse.sharedSpace";
+                    // Execute the query
+                    $spaces = $manager->executeQuery($collectionName, $query);
+                    $space = [];
+                    foreach ($spaces as $s) {
+                        $space[] = $s;
+                    }
+                    $spaces = json_decode(json_encode($space), true);
+                    if (count($spaces) != 0) {
+                    ?>
+                        <div id="adminSpaces">
+                            <span class="spacesTitle">Owned Spaces</span>
+                        <?php
                         foreach ($spaces as $space) {
-                            $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
-                            $adminCursor = $manager->executeQuery('Learniverse.users', $query);
-                            $admin = $adminCursor->toArray()[0];
-                            echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div></div>";
+                            echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv' title='" . $space['name'] . "'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span> You </span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div></div>";
                         }
-                        ?>
-                    </div>
-                    <div id="pendingSpaces">
-                        <span class="spacesTitle">Pending Spaces:</span>
+                    } ?>
+                        </div>
+                        <div id="otherSpaces">
+                            <?php
+                            //get spaces where active user is a member of
+                            $filterMember = ['members.email' => $_SESSION['email']];
+                            $queryMember = new MongoDB\Driver\Query($filterMember);
+                            $spaces = $manager->executeQuery($collectionName, $queryMember);
+                            $space = [];
+                            foreach ($spaces as $s) {
+                                $space[] = $s;
+                            }
+                            $spaces = json_decode(json_encode($space), true);
+                            if (count($spaces) != 0) {
+                            ?>
+                                <span class="spacesTitle">Joined Spaces</span>
+
+                            <?php
+                                foreach ($spaces as $space) {
+                                    $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
+                                    $adminCursor = $manager->executeQuery('Learniverse.users', $query);
+                                    $admin = $adminCursor->toArray()[0];
+                                    echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.location.href=\"viewspace.php?space=" . $space['spaceID'] . "\"' class='spaceDiv' title='" . $space['name'] . "'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span> <i title='members' class='fa-solid fa-user'></i><span>" . count($space['members']) . "</span></span></div></div>";
+                                }
+                            }
+                            ?>
+                        </div>
                         <?php
                         //get spaces where active user is a member of
                         $filterMember = ['pendingMembers' => $_SESSION['email']];
@@ -400,18 +367,134 @@ require 'session.php'; ?>
                             $space[] = $s;
                         }
                         $spaces = json_decode(json_encode($space), true);
-
-                        foreach ($spaces as $space) {
-                            $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
-                            $adminCursor = $manager->executeQuery('Learniverse.users', $query);
-                            $admin = $adminCursor->toArray()[0];
-                            echo "<div class='spaceDiv'><span>" . $space['name'] . "</span><span class='spaceInfo'><i title='admin' class='fa-solid fa-user-tie'></i><span>" . $admin->firstname . " " .  $admin->lastname . "</span></span></div>";
-                        }
+                        if (count($spaces) != 0) {
                         ?>
-                    </div>
+                            <div id="pendingSpaces">
+                                <span class="spacesTitle">Pending Spaces</span>
+                            <?php
+                            foreach ($spaces as $space) {
+                                $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
+                                $adminCursor = $manager->executeQuery('Learniverse.users', $query);
+                                $admin = $adminCursor->toArray()[0];
+                                echo "<div class='spaceDiv' title='awating admission'><span>" . $space['name'] . "</span><i id='removePending' title='cancel request' data-sid='" . $space['spaceID'] . "' class='fa-solid fa-trash'></i></div>";
+                            }
+                        }
+                            ?>
+                            </div>
                 </div>
             </div>
         </div>
+
+        <!-- overlay -->
+        <div class="overlay">
+            <div class="modal">
+                <h2 id="overlayTitle">Create a New Space</h2>
+                <form id="newSpaceForm">
+                    <label>Space Name</label> <input required id="spaceName" name="spaceName" type="text" placeholder="Enter the space name" autocomplete="off">
+                    <input id="color" type="color" name="color" list="presets">
+                    <datalist id="presets">
+                        <option value="#2724ff">Blue</option>
+                        <option value="#783fa6">Purple</option>
+                        <option value="#ffaddd">Light Pink</option>
+                        <option value="#ff3d81">Coral Pink</option>
+                        <option value="#bb1111">Crimson Red</option>
+                        <option value="#61c2ff">Light Blue</option>
+                        <option value="#74e2cf">Turquoise</option>
+                        <option value="#54ab63">Forest Green</option>
+                        <option value="#e0c200">Gold</option>
+                        <option value="#ffa061">Orange</option>
+
+                    </datalist>
+                    <button type="submit" class="formSubmitBTN">Create</button>
+                </form>
+                <h3>OR</h3>
+                <form id="joinSpaceForm" method="post">
+                    <label>Join a Space</label> <input required id="spaceID" name="spaceID" type="text" placeholder="Enter the space Code">
+                    <input id="c1" type="color" name="c1" disabled style="visibility: hidden;" list="presets">
+                    <button type="submit" class="formSubmitBTN">Join</button>
+                </form>
+                <p class="errorMessage" style="color:red"></p>
+            </div>
+        </div>
+        <script>
+            noSpaceMsg = document.getElementById('noSpaceMSG');
+            document.addEventListener('DOMContentLoaded', function() {
+                if ($('.spaceDiv').length === 0)
+                    noSpaceMsg.style.display = 'flex';
+                if ($('#removePending').length > 0) {
+                    $('#removePending').on('click', function() {
+                        spaceID = $(this).attr('sid');
+                        $.ajax({
+                            url: "pendingMemberProcess.php",
+                            method: 'post',
+                            data: {
+                                operation: 'reject',
+                                spacename: "",
+                                spaceid: spaceID,
+                                member: '<?php echo $_SESSION['email']; ?>'
+                            },
+                            success: function() {
+                                $(this).closest(".spaceDiv").remove();
+                            }
+                        });
+                    });
+                }
+            });
+
+            overlay = document.getElementsByClassName("overlay")[0];
+            overlay.addEventListener('click', function(event) {
+                if (event.target === overlay) {
+                    hideForm();
+                }
+            });
+
+            var spaceNameInput = document.getElementById('spaceName');
+            var spaceIdInput = document.getElementById('spaceID');
+
+            spaceNameInput.addEventListener('input', function() {
+                spaceIdInput.value = "";
+                $("#joinSpaceForm button").hide();
+                $("#newSpaceForm button").show()
+            });
+
+            spaceIdInput.addEventListener('input', function() {
+                spaceNameInput.value = "";
+                $("#newSpaceForm button").hide();
+                $("#joinSpaceForm button").show();
+            });
+
+            $("#newSpaceForm").on("submit", function() {
+                $.ajax({
+                    url: "addSharedSpace.php",
+                    method: "post",
+                    data: {
+                        spaceName: $("#spaceName").val(),
+                        color: $("#color").val()
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        r = JSON.parse(response);
+                        $("#newSpaceForm").css("display", "block");
+                        $(".errorMessage").text("*" + r.msg);
+                        window.location.href = "viewspace.php?space=" + r.createdSpace;
+                    },
+                });
+            });
+
+            $("#joinSpaceForm").on("submit", function() {
+                $.ajax({
+                    url: "addSharedSpace.php",
+                    method: "post",
+                    data: {
+                        spaceID: $("#spaceID").val()
+                    },
+                    success: function(response) {
+                        $("#joinSpaceForm").css("display", "block");
+                        $(".errorMessage").text("*" + response);
+                    },
+                });
+            });
+        </script>
     </main>
     <footer id="footer" style="margin-top: 7%;">
 

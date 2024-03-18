@@ -27,7 +27,7 @@
     background-color: #f2f1ff;
 }
 
-.wrapper .top-shelf{
+.wrapper .top-shelf {
     width: auto;
 }
 
@@ -43,7 +43,7 @@
     width: 30%;
 }
 
-.top-button button{
+.top-button button {
     width: fit-content;
     height: 40%;
     margin-top: auto;
@@ -61,11 +61,11 @@
     /* Smooth transition for hover effects */
 }
 
-.top-button button:last-of-type{
+.top-button button:last-of-type {
     background-color: #bf97d8;
 }
 
-.top-button button:last-of-type:hover{
+.top-button button:last-of-type:hover {
     background-color: #946aae;
 }
 
@@ -88,7 +88,8 @@
 }
 
 
-#newStudyPlan:hover, .top-button button:hover {
+#newStudyPlan:hover,
+.top-button button:hover {
     cursor: pointer;
     background-color: #ec947e;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
@@ -377,4 +378,12 @@
 
 #fileList .selectedFileDiv {
     background-color: #bebebe;
+}
+
+.swal2-confirm {
+    background-color: rgb(238, 15, 15) !important;
+}
+
+.swal2-deny {
+    background-color: #bf97d8 !important;
 }

@@ -523,6 +523,10 @@ html {
   cursor: pointer;
 }
 
+.quickDueLabel:hover {
+  cursor: pointer;
+}
+
 /* Inputs */
 
 .form-inputs {
@@ -718,6 +722,7 @@ html {
 
 .dueDate {
   color: #ec947e;
+  font-size: 0.9rem;
 }
 
 .taskName {
@@ -769,6 +774,7 @@ html {
 .cancel-submit-container .delete-task-button {
   background-color: rgb(216, 84, 84);
   margin-right: auto;
+  color: #fff;
 }
 
 .delete-task-button:hover {
@@ -920,6 +926,7 @@ html {
   font-weight: bold;
   margin-top: 15px;
 }
+
 /* Overview section*/
 
 /* FILES TAB*/
@@ -931,8 +938,10 @@ html {
 }
 
 #allfiles .box {
-  width: 70px; /* Adjust the width as desired */
-  height: 80px; /* Adjust the height as desired */
+  width: 70px;
+  /* Adjust the width as desired */
+  height: 80px;
+  /* Adjust the height as desired */
   background: rgb(255, 255, 255);
   border-radius: 10px;
   border: 2px solid rgba(233, 233, 233, 0.795);
@@ -1050,9 +1059,9 @@ a.file {
   width: fit-content;
 }
 
-.formSubmitBTN{
+.formSubmitBTN {
   padding: 0.5rem 1rem;
-  background-color:#fdae9b;
+  background-color: #fdae9b;
   border-radius: 10px;
   border: none;
   text-align: center;
@@ -1061,7 +1070,7 @@ a.file {
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-.formSubmitBT:hover{
+.formSubmitBT:hover {
   cursor: pointer;
   background-color: #ec947e;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);

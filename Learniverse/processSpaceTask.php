@@ -108,6 +108,7 @@ if ($operation === 'addTask') {
             }
         }
         $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
+        echo $taskID;
         if ($taskDue != "") { //add the timed task to the calendar
             $task = $taskName;
             $due = $taskDue;
@@ -144,8 +145,6 @@ if ($operation === 'addTask') {
             );
             //execute the update command
             $result = $manager->executeBulkWrite('Learniverse.calendar', $bulk);
-            unset($_SESSION['timedTask']);
-            unset($_SESSION['due']);
 
 
             if ($result->isAcknowledged()) {
@@ -153,7 +152,6 @@ if ($operation === 'addTask') {
                     'status' => 1
                 ];
                 header("Location:workspace.php");
-                echo json_encode($output);
             } else {
                 header("Location:workspace.php");
                 echo json_encode(['error' => 'Event Add request failed!']);
@@ -468,4 +466,132 @@ if ($operation === 'addTask') {
     if ($result->getModifiedCount() > 0) {
         echo "checked task: $checked";
     } else echo "error checking task: $checked";
+} elseif ($operation === 'quickDue') {
+    $bulkwrite = new MongoDB\Driver\BulkWrite();
+    $taskID = $_POST['taskID'];
+    $taskDue = $_POST['newDue'];
+    $taskName = $_POST['taskName'];
+
+    // Define the filter to match the document and the specific task within the tasks array
+    $filter = [
+        "spaceID" => $spaceID,
+        "tasks.taskID" => $taskID
+    ];
+    // Define the update operation using the $set operator
+    $updateOperation = [
+        '$set' => [
+            'tasks.$[element].due' => $taskDue,
+        ]
+    ];
+
+    // Define the array filters for the update operation
+    $arrayFilters = [
+        [
+            'element.taskID' => $taskID
+        ]
+    ];
+
+
+    // Add the update operation to the bulk write
+    $bulkWrite->update($filter, $updateOperation, ['multi' => false, 'arrayFilters' => $arrayFilters]);
+
+
+    $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
+    if ($result->getModifiedCount() > 0) {
+        $dateTime = new DateTime();
+        $string = $dateTime->format('Y-m-d H:i:s');
+        $bulk = new MongoDB\Driver\BulkWrite();
+        $bulk->update(
+            ['spaceID' => $spaceID],
+            ['$push' => ['logUpdates' => [
+                "type" => "edit",
+                "editor" => $_SESSION['email'],
+                "date" => $string
+            ]]]
+        );
+        $taskAssignee = "";
+        foreach ($space->tasks as $task) {
+            if ($task->taskID === $taskID)
+                $taskAssignee = $task->assignee;
+        }
+        $query = new MongoDB\Driver\Query([""]);
+        if ($taskAssignee != "unassigned") {
+            //send alert email of assignment to member
+            $query = new MongoDB\Driver\Query(['email' => $taskAssignee]);
+            $cursor = $manager->executeQuery("Learniverse.users", $query);
+            $data = $cursor->toArray();
+
+            $firstname = $data[0]->firstname;
+            $lastname = $data[0]->lastname;
+            $smtpUsername = 'Learniverse.website@gmail.com';
+            $smtpPassword = 'hnrl utwf fxup rnyd';
+            $smtpHost = 'smtp.gmail.com';
+            $smtpPort = 587;
+
+
+            // Create a new PHPMailer instance
+            $mail = new PHPMailer;
+
+            // Enable SMTP debugging
+            $mail->SMTPDebug = 0;
+
+            // Set the SMTP settings
+            $mail->isSMTP();
+            $mail->Host = $smtpHost;
+            $mail->Port = $smtpPort;
+            $mail->SMTPSecure = 'tls';
+            $mail->SMTPAuth = true;
+            $mail->Username = $smtpUsername;
+            $mail->Password = $smtpPassword;
+
+            // Set the email content
+            $mail->setFrom('Learniverse.website@gmail.com');
+            $mail->addAddress($taskAssignee);
+            $mail->Subject = 'You have been assigned a Task!';
+            $mail->Body = "Dear " . $firstname . " " . $lastname . ",\n\nYou have been assigned a task in '$spaceName' space, come and check it out! \n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
+
+            // Send the email
+            if ($mail->send()) {
+                echo "acceptance mail sent";
+            } else {
+                echo "acceptance mail NOT sent";
+            }
+        }
+        $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
+        if ($taskDue != "") {
+
+            $filter = [
+                'user_id' => $spaceID,
+                'List' => [
+                    '$elemMatch' => [
+                        'taskID' => $taskID
+                    ]
+                ]
+            ];
+            $bulk = new MongoDB\Driver\BulkWrite;
+            $bulk->update(
+                $filter,
+                ['$set' =>
+                [
+                    'List.$.title' => "TASK: " . $taskName,
+                    'List.$.start' => $taskDue . ":00+03:00",
+                    'List.$.end' => $taskDue . ":01+03:00"
+                ]],
+                ['multi' => false]
+            );
+            //execute the update command
+            $result = $manager->executeBulkWrite('Learniverse.calendar', $bulk);
+
+            if ($result->isAcknowledged()) {
+                $output = [
+                    'status' => 1
+                ];
+                echo json_encode($output);
+            } else {
+                echo json_encode(['error' => 'Event Edit request failed!']);
+            }
+        }
+    } else {
+        echo "Failed to edit task";
+    }
 }

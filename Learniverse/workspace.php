@@ -942,7 +942,7 @@ usort($todo, 'compareDueDate');
                                         }
                                         print("
                                         <li class='stask'>
-                                             <img src='images/bin.png' class='deleteBTN' data-task='" . $task->taskID . "'><img src='images/rescheduling.png' id='reschedule' onclick='reschedule($i);'><img src='images/edit.png' onclick='editTask($i);'> <input id='task$i' type='checkbox' onchange=\"ischeckedSpace('" . $spaceID . "','$task->taskID', this.id);\">
+                                              <input id='task$i' type='checkbox' onchange=\"ischeckedSpace('" . $spaceID . "','$task->taskID', this.id);\">
                                             <label id='label$i' for='task$i'>
                                                 <p class='editableP taskName'><span id='task$i-name'>" . $task->task_name . "</span><br>$due</p>
                                             </label>

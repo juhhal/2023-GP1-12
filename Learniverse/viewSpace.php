@@ -120,7 +120,7 @@ $admin = $result->toArray()[0];
                         preConfirm: () => {
                             return [
                                 document.getElementById('swalEvtTitle').value,
-                                document.getElementById('swalEvtDesc').value + ": Event Added By <?php echo "$user->firstname $user->lastname" ?>, From Space: <?php echo $space->name ?>",
+                                document.getElementById('swalEvtDesc').value + " Event Added By <?php echo "$user->firstname $user->lastname" ?>, From Space: <?php echo $space->name ?>",
                                 document.getElementById('swalEvtReminder').checked
 
                             ]
@@ -166,7 +166,8 @@ $admin = $result->toArray()[0];
                                             event_data: formValues,
                                             spaceID: '<?php echo $space->spaceID ?>',
                                             color: '<?php echo $space->color ?>',
-                                            member: '<?php echo $space->admin ?>'
+                                            member: '<?php echo $space->admin ?>',
+                                            refID: '<?php echo $space->spaceID ?>-' + data.eventID
                                         })
                                     });
                                     <?php
@@ -183,7 +184,8 @@ $admin = $result->toArray()[0];
                                                 event_data: formValues,
                                                 spaceID: '<?php echo $space->spaceID ?>',
                                                 color: '<?php echo $space->color ?>',
-                                                member: '<?php echo $m->email ?>'
+                                                member: '<?php echo $m->email ?>',
+                                                refID: '<?php echo $space->spaceID ?>-' + data.eventID
                                             }),
                                             success: function(response) {
                                                 console.log(response);
@@ -238,6 +240,41 @@ $admin = $result->toArray()[0];
                                 .then(response => {
                                     if (response.status == 1) {
                                         Swal.fire('Event deleted successfully!', '', 'success');
+                                        // delete from admin's workspace
+                                        fetch("eventHandler.php", {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type": "application/json"
+                                            },
+                                            body: JSON.stringify({
+                                                request_type: 'deleteEvent',
+                                                event_id: info.event.id,
+                                                spaceID: '<?php echo $space->spaceID ?>',
+                                                member: '<?php echo $space->admin ?>',
+                                                refID: '<?php echo $space->spaceID ?>-' + info.event.id,
+                                            }),
+                                        });
+                                        // delete from members workspace
+                                        <?php
+                                        foreach ($space->members as $m) { ?>
+                                            fetch("eventHandler.php", {
+                                                method: "post",
+                                                headers: {
+                                                    "Content-Type": "application/json"
+                                                },
+                                                body: JSON.stringify({
+                                                    request_type: 'deleteEvent',
+                                                    event_id: info.event.id,
+                                                    spaceID: '<?php echo $space->spaceID ?>',
+                                                    refID: '<?php echo $space->spaceID ?>-' + info.event.id,
+                                                    member: '<?php echo $m->email ?>'
+                                                }),
+                                                success: function(response) {
+                                                    console.log(response);
+                                                }
+                                            });
+                                        <?php }
+                                        ?>
                                     } else {
                                         Swal.fire(response.error, '', 'error');
                                     }
@@ -285,6 +322,46 @@ $admin = $result->toArray()[0];
                                         .then(data => {
                                             if (data.status == 1) {
                                                 Swal.fire('Event updated successfully!', '', 'success');
+                                                //update event for admin
+                                                fetch("eventHandler.php", {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Content-Type": "application/json"
+                                                    },
+                                                    body: JSON.stringify({
+                                                        request_type: 'editEvent',
+                                                        start: info.event.startStr,
+                                                        end: info.event.endStr,
+                                                        event_id: info.event.id,
+                                                        event_data: result.value,
+                                                        spaceID: '<?php echo $space->spaceID ?>',
+                                                        color: '<?php echo $space->color ?>',
+                                                        refID: '<?php echo $space->spaceID ?>-' + info.event.id,
+                                                        member: '<?php echo $space->admin ?>'
+                                                    })
+                                                });
+
+                                                //update event for members
+                                                <?php
+                                                foreach ($space->members as $m) { ?>
+                                                    fetch("eventHandler.php", {
+                                                        method: "POST",
+                                                        headers: {
+                                                            "Content-Type": "application/json"
+                                                        },
+                                                        body: JSON.stringify({
+                                                            request_type: 'editEvent',
+                                                            start: info.event.startStr,
+                                                            end: info.event.endStr,
+                                                            event_id: info.event.id,
+                                                            event_data: result.value,
+                                                            spaceID: '<?php echo $space->spaceID ?>',
+                                                            color: '<?php echo $space->color ?>',
+                                                            refID: '<?php echo $space->spaceID ?>-' + info.event.id,
+                                                            member: '<?php echo $m->email ?>'
+                                                        })
+                                                    });
+                                                <?php } ?>
                                             } else {
                                                 Swal.fire(data.error, '', 'error');
                                             }
@@ -582,6 +659,54 @@ $admin = $result->toArray()[0];
                 }
             });
         }
+
+        function formatDateTime(dateTimeString) {
+            var options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            };
+
+            var dateTime = new Date(dateTimeString);
+            var formattedDateTime = dateTime.toLocaleString('en-US', options);
+            formattedDateTime = formattedDateTime.replace(/\//g, '-');
+            formattedDateTime = formattedDateTime.replace(',', ' at');
+
+            var parts = formattedDateTime.split(' ');
+            var datePart = parts[0].split('-').reverse().join('-');
+
+            formattedDateTime = datePart + ' ' + parts[1] + " " + parts[2] + " " + parts[3];
+
+            return formattedDateTime;
+        }
+
+        function quickDue(taskID, name, label) {
+            var picker = label.getElementsByClassName("quickDue")[0];
+            picker.showPicker();
+            picker.addEventListener("change", function() {
+                value = picker.value;
+                $.ajax({
+                    url: "processSpaceTask.php",
+                    method: "post",
+                    data: {
+                        newDue: value,
+                        taskID: taskID,
+                        taskName: name,
+                        spaceID: '<?php echo $space->spaceID ?>',
+                        operation: "quickDue"
+                    },
+                    success: function(res) {
+                        console.log(res);
+                        label.parentNode.getElementsByTagName("span")[0].textContent = formatDateTime(value);
+                        calendar.refetchEvents();
+                    }
+                });
+            })
+
+        }
     </script>
 
 </head>
@@ -651,7 +776,7 @@ $admin = $result->toArray()[0];
 
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
+            <ul class="tool_list">
                 <li class="tool_item">
                     <a href="workspace.php"> Calendar & To-Do
                     </a>
@@ -660,16 +785,16 @@ $admin = $result->toArray()[0];
                     <a href="theFiles.php"> My Files</a>
                 </li>
                 <li class="tool_item">
-                <a href="quizes/index.php"> Quizzes</a>
+                    <a href="quizes/index.php"> Quizzes</a>
                 </li>
                 <li class="tool_item">
-                <a href="flashcard.php"> Flashcards</a>
+                    <a href="flashcard.php"> Flashcards</a>
                 </li>
                 <li class="tool_item">
-                <a href="summarization/summarization.php"> Summarization</a>
+                    <a href="summarization/summarization.php"> Summarization</a>
                 </li>
                 <li class="tool_item">
-                <a href="studyplan.php"> Study Plan</a>
+                    <a href="studyplan.php"> Study Plan</a>
                 </li>
                 <li class="tool_item"><a href="Notes/notes.php">
                         Notes</a>
@@ -780,8 +905,9 @@ $admin = $result->toArray()[0];
                         <?php foreach ($space->tasks as $task) {
                             $due = "";
                             if ($task->due != "") {
-                                $due = explode("T", $task->due);
-                                $due = " " . $due[0] . " at " . $due[1];
+                                $dateTime = new DateTime($task->due);
+                                $formattedDateTime = $dateTime->format('Y-m-d \a\t h:i A');
+                                $due = $formattedDateTime;
                             } ?>
                             <div class="taskDiv <?php echo ($task->checked) ? "checkedTask" : "uncheckedTask"; ?>">
                                 <span class="taskHead">
@@ -806,9 +932,9 @@ $admin = $result->toArray()[0];
                                 </span>
                                 <span class="taskInfo">
                                     <span class="description"><?php echo $task->description ?></span>
-                                    <span class="dueDate"><i class="fa-solid fa-calendar-days"></i><?php echo $due ?></span>
+                                    <span class="dueDate"><label class="quickDueLabel" title="reschedule" onclick="quickDue('<?php echo $task->taskID . '\', \'' . $task->task_name ?>', this)"><i class=" fa-solid fa-calendar-days"></i> <input class="quickDue" name="quickDue" type="datetime-local" style="display: none;"></label><span><?php echo $due ?></span></span>
                                     <form>
-                                        <select class="assignee <?php echo ($task->assignee === "unassigned") ? "unassigned" : ""; ?>" title="Assign to Someone Else">
+                                        <select class="assignee <?php echo ($task->assignee === "unassigned") ? "unassigned" : ""; ?>" title="reassign">
                                             <option <?php echo ($task->assignee === "unassigned") ? "selected class='unassigned'" : ""; ?> value="unassigned">Unassigned</option>
                                             <option <?php echo ($task->assignee === $space->admin) ? "selected " : "";
                                                     echo "value=$space->admin" ?>><?php echo "$admin->firstname $admin->lastname"; ?></option>
@@ -903,7 +1029,7 @@ $admin = $result->toArray()[0];
                                         <div class="lastEditedBy"></div>
                                     </div>
                                     <div class="cancel-submit-container">
-                                        <button class="delete-task-button" type="button">Delete Task</button>
+                                        <button class="delete-task-button" title="delete task" type="button"><i class="fa-solid fa-trash"></i></button>
                                         <button class="cancel-button" type="button">Cancel</button>
                                         <button class="add-task-submit-button" type="button" disabled>Add task</button>
                                         <button class="add-task-update-button" type="button" disabled>Update Task</button>
@@ -915,7 +1041,7 @@ $admin = $result->toArray()[0];
                     <script>
                         var addTaskBTN = document.getElementById('addTaskBTN');
                         var overlayTask = document.getElementById('addTaskDiv');
-
+                        var tasksContainer = document.getElementsByClassName("tasksContainer")[0];
                         var addTaskForm = document.getElementById('add-task-form');
                         var taskNameINPUT = document.getElementById('task-name-input');
                         var submitAddTaskBTN = document.getElementsByClassName('add-task-submit-button')[0];
@@ -1024,7 +1150,11 @@ $admin = $result->toArray()[0];
                                 });
                                 // Enable save button when form fields change
                                 $("#add-task-form input, #add-task-form select").on("input", function() {
-                                    saveBTN.prop("disabled", false);
+                                    if (taskNameINPUT.value.trim() !== '') {
+                                        saveBTN.prop("disabled", false);
+                                    } else {
+                                        saveBTN.prop("disabled", true);
+                                    }
                                 });
 
                                 saveBTN.attr('id', 'editTask');
@@ -1078,6 +1208,7 @@ $admin = $result->toArray()[0];
 
                         submitAddTaskBTN.addEventListener('click', function() {
                             const formData = new FormData(addTaskForm);
+                            //operation addTask starts here
                             formData.append('operation', 'addTask');
 
                             $.ajax({
@@ -1088,9 +1219,73 @@ $admin = $result->toArray()[0];
                                 contentType: false,
                                 success: function(response) {
                                     // Handle success response from the server
-                                    console.log(response);
+                                    taskID = response;
                                     overlayTask.style.display = 'none';
                                     calendar.refetchEvents();
+                                    // append the newly created tasks to the task container
+                                    // Create a new div element
+                                    var newTaskDiv = document.createElement('div');
+                                    newTaskDiv.className = 'taskDiv uncheckedTask';
+
+                                    // Construct the inner HTML for the new task div
+                                    newTaskDiv.className = 'taskDiv uncheckedTask';
+
+                                    // Construct the inner HTML for the new task div
+                                    var innerHTML =
+                                        '<span class="taskHead">' +
+                                        '  <input class="taskID" type="hidden" readonly value="' + taskID + '" name="taskID">' +
+                                        '  <input type="checkbox" id="' + taskID + '" name="taskCheck" class="taskCheck" onchange="checkTask(\'' + taskID + '\')">' +
+                                        '  <span class="taskName">' + formData.get('task_name') + '</span>' +
+                                        '  <span class="more"><i class="fa-solid fa-ellipsis-vertical"></i></span>' +
+                                        '</span>' +
+                                        '<span class="creator"> <?php echo $fetch['firstname'] . " " . $fetch['lastname'] ?> </span>' +
+                                        '<span class="lastEditedBy"></span>' +
+                                        '<span class="taskInfo">' +
+                                        '  <span class="description">' + formData.get('description') + '</span>' +
+                                        '  <span class="dueDate">' +
+                                        '    <label class="quickDueLabel" title="reschedule" onclick="quickDue(\'' + taskID + '\', \'' + formData.get('task_name') + '\', this)">' +
+                                        '      <i class="fa-solid fa-calendar-days"></i>' +
+                                        '      <input class="quickDue" name="quickDue" type="datetime-local" style="display: none;">' +
+                                        '    </label>' +
+                                        '    <span>' + formData.get('due') + '</span>' +
+                                        '  </span>' +
+                                        '  <form>';
+
+                                    // Retrieve the assignee options dynamically from the $space object
+                                    var assigneeOptions = <?php $assigness[] = "$admin->firstname $admin->lastname";
+                                                            foreach ($space->members as $member) {
+                                                                $query = new MongoDB\Driver\Query(['email' => $member->email]);
+                                                                $memberCursor = $manager->executeQuery('Learniverse.users', $query);
+                                                                $memberName = $memberCursor->toArray()[0];
+                                                                $assigness[] = "$memberName->firstname $membernae->lastname";
+                                                            }
+                                                            echo json_encode($assigness) ?>;
+                                    var selectOps = "";
+                                    var op1 = "<option  value='unassgined'>Unassigned</option>";
+                                    var unassignedClass = "";
+                                    // Append the assignee options to the inner HTML
+                                    for (var i = 0; i < assigneeOptions.length; i++) {
+                                        var assigneeOption = assigneeOptions[i];
+                                        var isSelected = assigneeOption.email === formData.get('assignee');
+                                        var selectedAttribute = isSelected ? 'selected' : '';
+                                        unassignedClass = isSelected ? '' : 'unassigned';
+
+                                        selectOps +=
+                                            '<option value="' + assigneeOption.email + '" ' + selectedAttribute + '>' + assigneeOption + '</option>';
+                                    }
+                                    if (unassignedClass === "unassigned")
+                                        op1 = '<option selected class="unassigned" value="unassigned">Unassigned</option>';
+                                    innerHTML +=
+                                        '<select class="assignee ' + unassignedClass + '"' + ' title="reassign">' +
+                                        op1 + selectOps + '</select>' +
+                                        '  </form>' +
+                                        '</span>';
+
+                                    // Set the inner HTML of the new task div
+                                    newTaskDiv.innerHTML = innerHTML;
+
+                                    // Append the new task div to the tasksContainer
+                                    tasksContainer.appendChild(newTaskDiv);
                                 },
                                 error: function(xhr, status, error) {
                                     // Handle error response from the server
@@ -1128,6 +1323,114 @@ $admin = $result->toArray()[0];
 
                         // Set the minimum value to the current datetime
                         taskDue.min = formattedDate;
+
+                        // add functionality to more button
+                        $(".more").click(function() {
+                            $("#overlayTitle").text("Edit This Task");
+
+                            var taskDiv = $(this).closest(".taskDiv");
+                            var taskName = taskDiv.find(".taskName").text().trim();
+                            var creator = taskDiv.find(".creator").text().trim();
+                            var editor = taskDiv.find(".lastEditedBy").text().trim();
+                            var dueDate = taskDiv.find(".dueDate").text().trim().replace(" at ", "T").trim();
+                            var assignee = taskDiv.find(".assignee").val();
+                            var description = taskDiv.find(".description").text().trim();
+                            var taskID = taskDiv.find(".taskID").val();
+                            var taskCheck = taskDiv.find(".taskCheck").prop("checked");
+
+                            // Fill the overlay fields with the values
+                            $("#add-task-form #task-name-input").val(taskName);
+                            $("#add-task-form #task-description-input").val(description);
+                            $("#add-task-form #creator-input").val(creator);
+                            $("#add-task-form #taskDue").val(dueDate);
+                            $("#add-task-form .assignee-selector").val(assignee);
+                            $("#add-task-form #taskCheck").prop("checked", taskCheck);
+                            $("#add-task-form .creator").text("Creator: " + creator);
+                            if (editor != "") {
+                                $("#add-task-form .lastEditedBy").text("Last Edited By: " + editor);
+                                $("#add-task-form .lastEditedBy").show();
+                            } else $("#add-task-form .lastEditedBy").hide();
+
+                            //target the form submit button and change it from add to save
+                            $("#add-task-form .add-task-submit-button").hide();
+                            $("#add-task-form .add-task-update-button").show();
+                            $("#add-task-form .delete-task-button").show();
+                            $("#add-task-form .creator-editor").show();
+                            $("#add-task-form .creator").show();
+
+                            var saveBTN = $("#add-task-form .add-task-update-button");
+                            var deleteBTN = $("#add-task-form .delete-task-button");
+
+                            deleteBTN.on('click', function() {
+                                Swal.fire({
+                                    title: 'Heads Up!',
+                                    text: 'Are you sure you want to delete this task?',
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Yes',
+                                    cancelButtonText: 'No',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $.ajax({
+                                            url: 'processSpaceTask.php',
+                                            method: 'post',
+                                            data: {
+                                                operation: 'deleteTask',
+                                                taskID: taskID,
+                                                spaceID: '<?php echo $space->spaceID ?>'
+                                            },
+                                            success: function(response) {
+                                                taskDiv.remove();
+                                                console.log(response);
+                                                overlayTask.style.display = 'none';
+                                                calendar.refetchEvents();
+                                            },
+                                            error: function(xhr, status, error) {
+                                                console.error(error);
+                                            }
+                                        });
+                                    }
+                                });
+                            });
+                            // Enable save button when form fields change
+                            $("#add-task-form input, #add-task-form select").on("input", function() {
+                                if (taskNameINPUT.value.trim() !== '') {
+                                    saveBTN.prop("disabled", false);
+                                } else {
+                                    saveBTN.prop("disabled", true);
+                                }
+                            });
+
+                            saveBTN.attr('id', 'editTask');
+                            //edit task operation starts here
+                            saveBTN.on('click', function() {
+                                const formData = new FormData(addTaskForm);
+                                formData.append('operation', 'editTask');
+                                formData.append('taskID', taskID);
+
+                                $.ajax({
+                                    url: "processSpaceTask.php",
+                                    method: "post",
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function(response) {
+                                        // Handle success response from the server
+                                        console.log(response);
+                                        overlayTask.style.display = 'none';
+                                        calendar.refetchEvents();
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error response from the server
+                                        console.error(error);
+                                    }
+                                });
+                            });
+
+                            // Show the overlay
+                            overlayTask.style.display = 'flex';
+                            $("#addTaskDiv").show();
+                        });
                     </script>
                 </div>
 
