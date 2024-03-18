@@ -99,7 +99,6 @@ if (isset($_POST['new-plan-name'])) {
     $id = $result_json[0]['counter'];
 
     // Python request
-    // Python response
 
     // demo: instead of this json replace with the python response json
     $jsonData = '{
@@ -116,19 +115,10 @@ if (isset($_POST['new-plan-name'])) {
             "date": "2024-03-05",
             "title": "Systematic Approach to Investigation",
        
-         
-                "description": "Planning investigation activities and evidence processing"
-             
-          },
-          {
-            "date": "2024-03-06",
-            "title": "High-Tech Investigations and Interviews",
+
         
-                "description": "Interviewing techniques and data recovery workstations"
-             
-          }
-        ]
-      }';
+
+ 
 
     $data = json_decode($jsonData, true);
     $studyObjects = [];
