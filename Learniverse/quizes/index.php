@@ -335,9 +335,9 @@ error_reporting(E_ERROR | E_PARSE);
         <a href="/summarization/summarization.php"> Summarization
           </a>
         </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
+        <li class="tool_item"><a href="/studyplan.php">
+        Study Planner</a>
+                  </li>
         <li class="tool_item"><a href="/Notes/notes.php">
             Notes</a>
         </li>
@@ -348,9 +348,9 @@ error_reporting(E_ERROR | E_PARSE);
         <li class="tool_item"><a href="/gpa.php">
             GPA Calculator</a>
         </li>
-        <li class="tool_item">
-          Shared spaces
-        </li>
+        <li class="tool_item"><a href="/sharedspace.php">
+        Shared spaces</a>
+                 </li>
         <li class="tool_item">
           Meeting Room
         </li>
@@ -703,7 +703,7 @@ error_reporting(E_ERROR | E_PARSE);
 </main>
     <footer id="footer" style="margin-top: 7%; margin-top:0%;">
 
-<div id="copyright">Learniverse &copy; 2023</div>
+<div id="copyright">Learniverse &copy; 2024</div>
 </footer>
 
 

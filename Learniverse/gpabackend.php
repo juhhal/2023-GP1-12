@@ -8,7 +8,6 @@ require "session.php";
 use MongoDB\Client;
 use MongoDB\Driver\ServerApi;
 use MongoDB\Driver\BulkWrite;
-
 // MongoDB connection
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 $bulk = new MongoDB\Driver\BulkWrite();
@@ -120,6 +119,7 @@ function getAllGPA($userId)
         printf($e->getMessage());
         return null;
     }
+    exit();
 }
 
 // Function to update an existing GPA document
@@ -183,42 +183,6 @@ if ($user == null) {
     exit;
 }
 
-// Handling POST requests to update or insert GPA records
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["xxxx"])) {
-
-    // // Retrieve the data
-    // $gpaName = $_POST['gpaName'];
-    // $year = $_POST['year'];
-    // $gpaType = $_POST['gpaType'];
-    // $semesterCount = $_POST['semesterCount'];
-    // echo $gpaType;
-    // // Access the semester data
-    // for ($i = 1; $i <= $semesterCount; $i++) {
-    //     $subjectNames = $_POST['subjectName' . $i];
-    //     $marks = $_POST['marks' . $i];
-    //     $hours = $_POST['hours' . $i];
-    //     $grades = $_POST['grade' . $i];
-    // }
-
-
-
-    // $gpa = $_POST["gpa"]; //?
-    // $type = $_POST["type"];
-    // $hours = $_POST["hours"];
-    // $year = $_POST["year"];
-    // $id = $_POST["id"];
-
-    // if ($id != -1) {
-    //     // Updating the existing GPA record
-    //     updateGPA($id, $gpa, $hours);
-    // } else {
-    //     // Inserting a new GPA record
-    //     insertGPA($user["_id"], $gpa, $type, $hours, $year);
-    // }
-
-    // // Returning true as a response
-    // echo true;
-}
 // Handling POST requests to retrieve all GPA records for a user
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["getall"])) {
     // Retrieving all GPA records for the user
@@ -229,19 +193,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["getall"])) {
 }
 
 //ADD NEW GPA
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['gpaName'])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['addNewGpa']) && $_POST['addNewGpa']) {
+    echo("<script>alert(PHP: Add);</script>");
     $gpa = $_POST['gpa'];
     $type = $_POST['gpaType'];
     $name = $_POST['gpaName'];
     $year = $_POST['gpaYear'];
     end($_POST);
     prev($_POST);
+    prev($_POST);
     $lastInputKey = key($_POST);
     preg_match_all('/Sem(\d+)Sub(\d+)/', $lastInputKey, $matches);
     $numSem = $matches[1][0];
     $numSub = $matches[2][0];
-    // $logMessage = $numSem;
-    // $jsCode = sprintf('<script>console.log("%s");</script>', $logMessage);
     $semesters = [];
     $hours = 0;
 
@@ -280,19 +244,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['gpaName'])) {
     $bulk->insert($newgpa);
     $result = $manager->executeBulkWrite("Learniverse.gpa", $bulk);
 
-    if ($result->isAcknowledged()) {
-        $logMessage = "success.";
-        $jsCode = sprintf('<script>console.log("%s");</script>', $logMessage);
-        echo $jsCode;
+    if ($result->getInsertedCount() > 0) {
         echo json_encode('success');
     } else {
         echo json_encode('fail');
-        $logMessage = "fail";
-        $jsCode = sprintf('<script>console.log("%s");</script>', $logMessage);
-        echo $jsCode;
     }
     getAllGPA($user['_id']);
 }
+
 
 //DELETE GPA
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['deleteGPA'])) {
@@ -312,4 +271,73 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['deleteGPA'])) {
     } else {
         echo 'Document not found or deletion failed';
     }
+}
+
+//update
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['updateGpa']) && $_POST['updateGpa']) {
+    $gpaID = $_POST['id'];
+    $gpaNew = $_POST['gpa'];
+    $gpaName = $_POST['gpaName'];
+    $gpaYear = $_POST['gpaYear'];        
+    $type = $_POST['gpaType'];
+  
+ end($_POST);            
+    prev($_POST);    
+    prev($_POST);    
+    prev($_POST);    
+    prev($_POST);    
+    prev($_POST);    
+    $lastInputKey = key($_POST);
+    echo("('PHP: lastInputKey " . $lastInputKey . "')");    
+    preg_match_all('/Sem(\d+)Sub(\d+)/', $lastInputKey, $matches);
+    
+    $numSem = $matches[1][0];
+    $numSub = $matches[2][0];
+   $semesters = [];
+    $hours = 0;
+    echo("('PHP:numSem " . $numSem . "')");    
+    echo("('PHP:numSub " . $numSub . "')");    
+    for ($i = 1; $i <= $numSem; $i++) {
+        if (isset($_POST["subjectNameSem$i" . "Sub1"])) {
+            $semester = []; // Create an empty array to store subjects for the current semester
+
+            for ($j = 1; $j <= count($_POST); $j++) {
+                if (isset($_POST["subjectNameSem$i" . "Sub$j"])) {
+                    $subject = [
+                        'name' => $_POST["subjectNameSem$i" . "Sub$j"],
+                        'marks' => $_POST["marksSem$i" . "Sub$j"],
+                        'hours' => isset($_POST["hoursSem$i" . "Sub$j"])? $_POST["hoursSem$i" . "Sub$j"]  : 0 ,
+                        'grade' => $_POST["gradeSem$i" . "Sub$j"],
+                        'points' => isset($_POST["pointsSem$i" . "Sub$j"]) ? $_POST["pointsSem$i" . "Sub$j"]  : 0
+                    ];
+                    if ($type != 100)
+                        $hours += $_POST["hoursSem$i" . "Sub$j"];
+
+                    $semester[] = $subject; // Add subject to the current semester's subjects array
+                }
+            }
+            $semesters[] = $semester; // Assign the semester object to the current semester
+        }
+    }
+
+    // Define the collection where the document resides
+    $collection = $client->Learniverse->gpa;
+
+    // Define the query criteria
+    $filter = [
+        "_id" => new MongoDB\BSON\ObjectId($gpaID)
+    ];
+    // Define the update operation
+    $update = ['$set' => ['semesters' => $semesters, 'gpa' => $gpaNew, 'name' => $gpaName, 'year' => $gpaYear, 'hours' => $hours]];
+
+    // Find the document and update it
+    $result = $collection->findOneAndUpdate($filter, $update);
+
+    // Check if the update was successful
+    if ($result) {
+        echo "Document updated successfully.";
+    } else {
+        echo "Failed to update the document.";
+    }
+    getAllGPA($user['_id']);
 }

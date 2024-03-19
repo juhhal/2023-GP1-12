@@ -1,0 +1,337 @@
+html {
+    font-size: 100%;
+    width: 99%;
+    height: 99%;
+    font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+        "sans-serif";
+    color: #000e23;
+    background-color: #faf7ff;
+}
+
+@media only screen and (max-width: 991px) {
+    .nav__menu {
+        visibility: hidden;
+    }
+}
+
+#sidebar-tongue {
+    width: fit-content;
+    padding: 50px 3px;
+    border-radius: 2px 10px 10px 2px;
+    font-size: 1.5rem;
+    box-shadow: 0px 1px 2px 1px rgba(58, 60, 67, 0.15);
+    display: inline-block;
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #bf97d8;
+    color: #faf7ff;
+    margin-left: 0;
+    z-index: 150;
+}
+
+#sidebar-tongue:hover {
+    transition-duration: 0.3s;
+    filter: brightness(0.5);
+    cursor: pointer;
+}
+
+#tools_div {
+    background-color: #bf97d8;
+    width: 12%;
+    padding: 2% 0.5% 0;
+    float: left;
+    margin-left: -13.9%;
+    transition: 0.2s;
+    box-shadow: 0px 1px 2px 1px rgba(58, 60, 67, 0.15);
+    position: fixed;
+    z-index: 100;
+    height: 99vh;
+}
+
+.tool_list {
+    display: inline-block;
+    padding-inline-start: 0;
+}
+
+.tool_item {
+    font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+        "sans-serif";
+    font-size: 1rem !important;
+    list-style-type: none;
+    padding: 9%;
+    margin-bottom: 5%;
+    white-space: nowrap;
+    text-indent: 1rem;
+    font-size: 0.9rem;
+    text-align: left;
+    color: #000e23;
+    width: 110%;
+    transition: color 0.3s, background-color 0.3s;
+    border-radius: 5%;
+}
+
+.tool_item:hover {
+    cursor: pointer;
+    transition-duration: 0.3s;
+    color: #faf7ff !important;
+    background-color: rgba(212, 179, 233, 0.933);
+}
+
+.tool_item:hover a {
+    cursor: pointer;
+    transition-duration: 0.3s;
+    color: #faf7ff !important;
+    background-color: rgba(212, 179, 233, 0.933);
+}
+
+.tool_item a {
+    text-decoration: none;
+    color: #000e23;
+}
+
+.tool_item img {
+    width: 15%;
+    float: left;
+    margin-left: 2%;
+}
+
+.workarea {
+    padding: 1%;
+    display: flex;
+}
+
+.workarea_item {
+    margin: 1%;
+    margin-left: 7%;
+    width: 85%;
+}
+
+.top-shelf {
+    display: flex;
+}
+
+#newSpaceBTN {
+    margin-left: auto;
+    margin-right: 10%;
+    margin-top: 3%;
+    background-color: #fdae9b;
+    padding: 0.5rem 1rem;
+    height: fit-content;
+    border-radius: 10px;
+    border: none;
+    /* Remove borders */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+
+#newSpaceBTN:hover {
+    cursor: pointer;
+    background-color: #ec947e;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+.modal h3 {
+    text-align: center;
+}
+
+.modal h3:before,
+.modal h3:after {
+    content: "";
+    flex: 1 1;
+    border-bottom: 1px solid #a7a7a7;
+    margin: auto;
+}
+
+form {
+    display: flex;
+    align-items: baseline;
+    justify-content: baseline;
+}
+
+form input {
+    line-height: 1.2rem;
+    margin-left: 2%;
+}
+
+.formSubmitBTN {
+    margin-left: 1%;
+    margin-top: 3%;
+    width: 5rem;
+    background-color: #bf97d8;
+    padding: 0.5rem 1rem;
+    height: fit-content;
+    border-radius: 10px;
+    border: none;
+    /* Remove borders */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+.formSubmitBTN:hover {
+    cursor: pointer;
+    background-color: #9d7bb1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+input {
+    padding-top: 0.5%;
+}
+
+#noSpaceMSG {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+    font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.5rem;
+    color: grey;
+}
+
+#noSpaceMSG img {
+    width: 30%;
+    height: 30%;
+    margin-bottom: 3%;
+}
+
+#spaces {
+    display: flex;
+    justify-content: space-between;
+    align-items: first baseline;
+    margin-top: 2%;
+    border-top: 1px solid rgb(197, 197, 197);
+    padding-top: 3%;
+}
+
+#adminSpaces .spaceDiv {
+    background-color: #e8cdf9;
+}
+
+#otherSpaces .spaceDiv {
+    background-color: #f8dfd9;
+}
+
+#pendingSpaces .spaceDiv {
+    background-color: #b6b5b4;
+    border-radius: 5px;
+    border: 1px solid rgb(197, 197, 197);
+}
+
+.spaceDiv {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 22rem;
+    height: 3rem;
+    padding: 2% 1%;
+    margin-top: 1%;
+    margin-right: 4%;
+    border: 1px solid rgb(197, 197, 197);
+    border-left: none;
+    border-radius: 0px 5px 5px 0px;
+    font-family: '-apple-system', system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 0.85rem;
+    /* Smaller title size */
+    font-weight: bold;
+    /* Keeps it prominent */
+    margin-bottom: 0.3em;
+    /* Less spacing below the title */
+    color: #575757;
+    /* A color that's easy to read */
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+.spaceDiv span:first-of-type {
+    align-items: baseline;
+}
+
+.spacesTitle {
+    font-size: 1rem;
+}
+
+.spaceDiv:hover {
+    filter: saturate(1.5);
+    color: #000e23;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+.spaceInfo {
+    font-size: 0.7rem;
+    font-weight: normal;
+    display: flex;
+    justify-content: flex-end;
+    width: 25%;
+}
+
+.spaceInfo i {
+    margin-right: 2%;
+}
+
+.spaceInfo span {
+    margin-right: 7%;
+}
+
+.cont {
+    display: flex;
+    padding: 0;
+}
+
+.spaceColor {
+    float: left;
+    width: 2%;
+    border-radius: 5px 0px 0px 5px;
+    margin-top: 1%;
+    margin-bottom: 0.3em;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.251);
+    /* Adjust the opacity as desired */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+.modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 40%;
+}
+
+.modal button {
+    margin-left: 5%;
+    display: none;
+}
+
+.modal label {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.swal2-confirm {
+    background-color: rgb(238, 15, 15) !important;
+}
+
+.swal2-cancel {
+    background-color: #bf97d8 !important;
+}

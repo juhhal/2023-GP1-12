@@ -13,9 +13,11 @@ html {
     visibility: hidden;
   }
 }
-#calendar{
+
+#calendar {
   margin: 1% !important;
 }
+
 #calendar_area {
   margin: 1em !important;
 }
@@ -43,25 +45,29 @@ html {
   cursor: pointer;
 }
 
-#notasks {
+#notasks,
+#nostasks {
   margin-left: auto;
   margin-right: auto;
   align-items: center;
 }
 
-#notasks img {
+#notasks img,
+#nostasks img {
   display: block;
   width: 70%;
   margin: 10% auto 0 auto;
 }
 
-#notasks p {
+#notasks p,
+#nostasks p {
   text-align: center;
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   color: #000e23;
 }
 
-#notasks p:last-of-type {
+#notasks p:last-of-type,
+#nostasks p:last-of-type {
   color: grey;
   margin: 0 5%;
 }
@@ -87,7 +93,7 @@ html {
 .tool_item {
   font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
     "sans-serif";
-    font-size: 1rem !important;
+  font-size: 1rem !important;
   list-style-type: none;
   padding: 9%;
   margin-bottom: 5%;
@@ -101,17 +107,18 @@ html {
   border-radius: 5%;
 }
 
-.tool_item:hover{
-cursor: pointer;
-transition-duration: 0.3s;
-color: #faf7ff !important;
-background-color: rgba(212, 179, 233, 0.933);
+.tool_item:hover {
+  cursor: pointer;
+  transition-duration: 0.3s;
+  color: #faf7ff !important;
+  background-color: rgba(212, 179, 233, 0.933);
 }
-.tool_item:hover a{
-cursor: pointer;
-transition-duration: 0.3s;
-color: #faf7ff !important;
-background-color: rgba(212, 179, 233, 0.933);
+
+.tool_item:hover a {
+  cursor: pointer;
+  transition-duration: 0.3s;
+  color: #faf7ff !important;
+  background-color: rgba(212, 179, 233, 0.933);
 }
 
 .tool_item a {
@@ -154,8 +161,22 @@ background-color: rgba(212, 179, 233, 0.933);
 .todolist {
   background-color: #f6e8ff;
   border-radius: 20px;
-  padding: 1.5% 0;
+  padding: 5% 0 1.5%;
   box-shadow: 0px 1px 10px 1px rgba(43, 45, 57, 0.15);
+}
+
+.todolist #todoView {
+  padding: 0.2rem;
+  background-color: #efd4ff28;
+  border: solid 0.5px #ccc;
+  border-radius: 5px;
+  width: fit-content;
+  margin-left: 5%;
+}
+
+.todolist #todoView:hover {
+  cursor: pointer;
+  filter: brightness(0.5);
 }
 
 .todolist ul {
@@ -204,7 +225,7 @@ background-color: rgba(212, 179, 233, 0.933);
   cursor: pointer;
 }
 
-.todolist input[type="checkbox"]:checked + label {
+.todolist input[type="checkbox"]:checked+label {
   accent-color: #fdae9b;
   text-decoration: line-through;
   font-style: italic;
@@ -368,4 +389,25 @@ background-color: rgba(212, 179, 233, 0.933);
 
 .rescheduleDueDate input[type="datetime"] {
   display: inline;
+}
+
+.fc-button:not(:disabled) {
+  background-color: #bf97d8 !important;
+
+}
+
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background-color: #fdae9b !important;
+}
+
+.spaceName a {
+  text-decoration: none;
+  color: #bf97d8;
+  font-weight: bold;
+}
+
+.spaceName:hover{
+  cursor: pointer;
+  text-decoration: underline;
 }

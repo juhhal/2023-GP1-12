@@ -2,6 +2,12 @@
     "require": {
         "mongodb/mongodb": "^1.12",
         "phpmailer/phpmailer": "^6.8",
-        "google/apiclient": "^2.0"
+        "google/apiclient": "^2.0",
+        "cboden/ratchet": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "MyApp\\": ""
+        }
     }
 }

@@ -5,7 +5,6 @@ require_once __DIR__ . '/vendor/autoload.php';
 $client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 $database = $client->selectDatabase('Learniverse');
 $usersCollection = $database->selectCollection('users');
-
 // Get the email from the session
 $email = $_SESSION['email'];
 
@@ -21,7 +20,7 @@ if ($userDocument) {
 // Now $user_id contains the _id field for the user with the specified email
 
 // Create directory path with user ID
-$userDirectory = "user_files".DIRECTORY_SEPARATOR."{$user_id}";
+$userDirectory = "user_files".$DIRECTORY_SEPARATOR."{$user_id}";
 
 // Check if folder is provided in the POST request
 if (isset($_POST['folder']) && isset($_POST['userDirectory'])) {
@@ -29,7 +28,7 @@ if (isset($_POST['folder']) && isset($_POST['userDirectory'])) {
     $folderName = $_POST['folder'];
     $userDirectories = $_POST['userDirectory'];
     // Construct the full path to the folder
-    $directoryPath = $userDirectory . DIRECTORY_SEPARATOR . $folderName;
+    $directoryPath = $userDirectory . $DIRECTORY_SEPARATOR . $folderName;
     // Check if the folder exists
     if (is_dir($directoryPath)) {
         // Get the list of files in the folder
@@ -39,20 +38,19 @@ if (isset($_POST['folder']) && isset($_POST['userDirectory'])) {
         echo "<ul id='file-list' style='display: flex; flex-wrap: wrap; justify-content: space-around;'>"; // Adding styles for flexbox layout
         foreach ($files as $file) {
             // Exclude "." and ".." directories and hidden files
-            if ($file != "." && $file != ".." && !is_dir($directoryPath . DIRECTORY_SEPARATOR . $file) && substr($file, 0, 1) != '.') {
+            if ($file != "." && $file != ".." && !is_dir($directoryPath . $DIRECTORY_SEPARATOR . $file) && substr($file, 0, 1) != '.') {
                 // Create a unique ID for the file item
                 $fileID = 'file_' . uniqid();
                 // Create the file item and append it using jQuery
                 echo "<script>
                     $(document).ready(function() {
                         var fileElement = $('<span>').addClass('box').attr('id', 'box_" . $fileID . "');
-                        var iframeElement = $('<iframe>').css('overflow', 'hidden').attr('src', '" . $directoryPath . DIRECTORY_SEPARATOR . $file . "');
+                        var iframeElement = $('<iframe>').css('overflow', 'hidden').attr('src', '" . $directoryPath . $DIRECTORY_SEPARATOR . $file . "');
                         var collectionElement = $('<span>').addClass('collection');
-                        var fileLink = $('<a>').attr('target', '_blank').addClass('file').attr('href', '". $directoryPath . DIRECTORY_SEPARATOR . $file . "').text('" . htmlspecialchars($file) . "');
-                        var basePath = 'images". DIRECTORY_SEPARATOR ."'; // Define the base path for images
-                        var deleteBtn = $('<img>').addClass('icon deleteic').attr('src', 'images" . DIRECTORY_SEPARATOR . "delete.jpeg').attr('id', 'deleteFile');
+                        var fileLink = $('<a>').attr('target', '_blank').addClass('file').attr('href', '". $directoryPath . $DIRECTORY_SEPARATOR . $file . "').text('" . htmlspecialchars($file) . "');
+                        var deleteBtn = $('<img>').addClass('icon deleteic').attr('src', 'images" . $DIRECTORY_SEPARATOR . "delete.jpeg').attr('id', 'deleteFile');
 
-        var filePath = '" . $directoryPath . DIRECTORY_SEPARATOR . $file . "';
+        var filePath = '" . $directoryPath . $DIRECTORY_SEPARATOR . $file . "';
         var menuIcon = $('<img>').addClass('menu-icon').attr('src', 'images/dots.svg').css({
             'position': 'absolute',
             'top': '10px',
@@ -62,7 +60,7 @@ if (isset($_POST['folder']) && isset($_POST['userDirectory'])) {
 
         var deleteBtn = $('<img>').addClass('icon deleteic').attr('src', 'images/delete.jpeg');
 
-        var fileLink = $('<a>').attr('target', '_blank').addClass('file').attr('href', '". $directoryPath . DIRECTORY_SEPARATOR . $file . "').text('" . htmlspecialchars($file) . "');
+        var fileLink = $('<a>').attr('target', '_blank').addClass('file').attr('href', '". $directoryPath . $DIRECTORY_SEPARATOR . $file . "').text('" . htmlspecialchars($file) . "');
 
         var summarizeBtn = $('<button>').addClass('custom-btn').text('Summarize').on('click', function() {
             window.location.href = 'summarization/summarization.php?file=' + encodeURIComponent(filePath);
@@ -107,7 +105,7 @@ if (isset($_POST['folder']) && isset($_POST['userDirectory'])) {
             event.stopPropagation();
         });
 
-        var iframeElement = $('<iframe>').css('overflow', 'hidden').attr('src', '" . $directoryPath . DIRECTORY_SEPARATOR . $file . "');
+        var iframeElement = $('<iframe>').css('overflow', 'hidden').attr('src', '" . $directoryPath . $DIRECTORY_SEPARATOR . $file . "');
 
         // Append the collectionElement to the fileElement
         var fileElement = $('<span>').addClass('box').attr('id', 'box_" . $fileID . "');
@@ -117,7 +115,7 @@ if (isset($_POST['folder']) && isset($_POST['userDirectory'])) {
   
 
                         deleteBtn.click(function() {
-                            var filePath = '" . $directoryPath .  DIRECTORY_SEPARATOR . $file . "';
+                            var filePath = '" . $directoryPath .  $DIRECTORY_SEPARATOR . $file . "';
                             Swal.fire({
                                 title: \"Are you sure?\",
                                 text: \"Once deleted, you will not be able to recover this file!\",

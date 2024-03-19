@@ -1,0 +1,389 @@
+.studyplan-container {
+    border: none;
+    /* Remove borders */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    width: 75%;
+    margin-left: 10%;
+    padding: 3%;
+}
+
+
+#allPlans {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#allPlans th,
+#allPlans td {
+    text-align: center;
+    padding: 0;
+    width: 50px;
+    height: 50px;
+}
+
+#allPlans tr:nth-child(even) {
+    background-color: #f2f1ff;
+}
+
+.wrapper .top-shelf {
+    width: auto;
+}
+
+.top-shelf {
+    display: flex;
+    justify-content: space-between;
+    justify-items: baseline;
+}
+
+.top-button {
+    display: flex;
+    justify-content: space-around;
+    width: 30%;
+}
+
+.top-button button {
+    width: fit-content;
+    height: 40%;
+    margin-top: auto;
+    margin-bottom: auto;
+    background-color: #fdae9b;
+    padding: 0.5rem 1rem;
+    height: fit-content;
+    border-radius: 10px;
+    border: none;
+    /* Remove borders */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+.top-button button:last-of-type {
+    background-color: #bf97d8;
+}
+
+.top-button button:last-of-type:hover {
+    background-color: #946aae;
+}
+
+#newStudyPlan {
+    margin-left: auto;
+    margin-right: 10%;
+    margin-top: 3%;
+    background-color: #fdae9b;
+    padding: 0.5rem 1rem;
+    height: fit-content;
+    border-radius: 10px;
+    border: none;
+    /* Remove borders */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+
+}
+
+
+#newStudyPlan:hover,
+.top-button button:hover {
+    cursor: pointer;
+    background-color: #ec947e;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.251);
+    /* Adjust the opacity as desired */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+.modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+#newPlanOverlay .modal {
+    width: 35%;
+    font-family: '-apple-system', 'BlinkMacSystemFont', "Segoe UI", Roboto, "Apple Color Emoji", Helvetica, Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+#new-plan-form input {
+    display: flex;
+    padding: 2px;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid grey;
+    border-radius: 5px;
+    line-height: 1.2rem;
+}
+
+#new-plan-form input[type="submit"] {
+    background-color: #fdae9b;
+    float: right;
+    margin-top: 5%;
+    padding: 0.5rem 1rem;
+    height: fit-content;
+    border-radius: 10px;
+    border: none;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+#new-plan-form input[type="submit"]:hover {
+    cursor: pointer;
+    background-color: #ec947e;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+#uploadMats,
+#localMats {
+    display: flex;
+    background-color: #bf97d8;
+    padding: 0.4rem 0.7rem 0.4rem 0.5rem;
+    width: fit-content;
+    margin-left: 1.5rem;
+    margin-top: 4%;
+    height: fit-content;
+    border-radius: 10px;
+    border: none;
+    /* Remove borders */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+#uploadMats:hover {
+    cursor: pointer;
+    background-color: #946aae;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+
+}
+
+#allPlans {
+    margin-top: 5%;
+}
+
+#allPlans tr:first-of-type {
+    background-color: #d1b4e3;
+}
+
+#allPlans td {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+#display .modal {
+    width: 80%;
+    height: 75%;
+    padding: 2%;
+}
+
+#studyPlanNameView {
+    color: #bf97d8;
+    font-weight: bold;
+}
+
+.calendar {
+    margin-right: 5%;
+    width: auto;
+}
+
+.calendar .wrapper {
+    width: 100%;
+}
+
+#calendar {
+    font-size: 0.6rem;
+    font-weight: 400;
+    /* Set the desired height */
+    width: 700px;
+    height: 400px !important;
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.fc-button:not(:disabled) {
+    background-color: #bf97d8 !important;
+}
+
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: #fdae9b !important;
+}
+
+
+
+.plan-name:hover {
+    cursor: pointer;
+    background-color: #e5e3ff;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+/* button */
+
+.viewPlan,
+.deletePlan {
+    color: white;
+    font-size: 0.8rem;
+    background-color: #ec947e;
+    padding: 0.4rem 0.7rem;
+    height: fit-content;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.viewPlan:hover,
+.deletePlan:hover {
+    background-color: #cc7c68;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+.viewPlan:focus,
+.deletePlan:focus {
+    background-color: #cc7c68;
+    color: white;
+}
+
+
+/* file modal */
+/* Modal Background */
+#fileModal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Modal Container */
+.modal-container {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    /* Adjust based on your preference */
+    max-height: 80%;
+    overflow-y: auto;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center-align the items vertically */
+}
+
+/* Directory and File Items */
+.dirItem,
+.fileItem {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    width: 100%;
+    /* Make items full width of their container */
+    box-sizing: border-box;
+    /* Include padding and border in the width */
+}
+
+/* Optionally, if you want the items to be only as wide as their content,
+     you can remove the width property and add the following: */
+.dirItem,
+.fileItem {
+    display: inline-block;
+    /* Allows the item to be as wide as its content */
+    white-space: nowrap;
+    /* Prevents the text from wrapping */
+}
+
+
+/* Close Button */
+#fileModal button {
+    padding: 10px 20px;
+    background-color: #bf97d8;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 5px;
+    align-self: flex-end;
+    /* Align the button to the right */
+}
+
+#fileModal button:hover {
+    background-color: #946aae;
+}
+
+#directoryButtons {
+    margin-bottom: 20px;
+}
+
+.dirButton {
+    padding: 10px 20px;
+    margin-right: 10px;
+    /* Space between buttons */
+    background-color: #bf97d8;
+    /* Bootstrap primary color */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    /* Rounded corners */
+    display: inline-block;
+    /* Display buttons inline */
+}
+
+.dirButton:hover {
+    background-color: #946aae;
+    /* Darker blue on hover */
+}
+
+/* Style the file list items similarly to before */
+#fileList .fileItem {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#fileList .selectedFileDiv {
+    background-color: #bebebe;
+}
+
+.swal2-confirm {
+    background-color: rgb(238, 15, 15) !important;
+}
+
+.swal2-deny {
+    background-color: #bf97d8 !important;
+}

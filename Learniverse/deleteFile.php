@@ -24,7 +24,7 @@ if ($userDocument) {
 // Now $user_id contains the _id field for the user with the specified email
 
 // Create directory path with user ID
-$userDirectory = "user_files".DIRECTORY_SEPARATOR."{$user_id}";
+$userDirectory = "user_files".$DIRECTORY_SEPARATOR."{$user_id}";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'deleteFile') {
     // Check if filePath is provided

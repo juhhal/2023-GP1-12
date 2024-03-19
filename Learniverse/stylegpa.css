@@ -3,11 +3,21 @@
 }
 
 .nav__menu {
-  margin: 0;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 body {
   background-color: #Faf7ff !important;
+}
+
+html {
+  width: 100%;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif !important;
+}
+
+.dropdown-button {
+  width: 100% !important;
 }
 
 .gpa-container {
@@ -126,14 +136,16 @@ body {
   color: #000e23;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-size: 0.9em;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Soft shadow for depth */
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .main-content #new-gpa-btn:hover {
   cursor: pointer;
   background-color: #ec947e;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);}
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
 
 
 #myModal {
@@ -199,16 +211,16 @@ body {
 
 .gallery {
   width: 90%;
-  margin-left: 45%;
+  margin-left: 5%;
   margin-top: 3%;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   transition: all .3s ease;
-  justify-content: space-between;
+  justify-content: left;
 }
 
-#load-msg{
+#load-msg {
   align-items: center;
 }
 
@@ -256,33 +268,34 @@ body {
 }
 
 .tool_item {
-font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
-  "sans-serif";
+  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+    "sans-serif";
   font-size: 1rem !important;
-list-style-type: none;
-padding: 9%;
-margin-bottom: 5%;
-white-space: nowrap;
-text-indent: 1rem;
-font-size: 0.9rem;
-text-align: left;
-color: #000e23;
-width: 120%;
-transition: color 0.3s, background-color 0.3s;
-border-radius: 5%;
+  list-style-type: none;
+  padding: 9%;
+  margin-bottom: 5%;
+  white-space: nowrap;
+  text-indent: 1rem;
+  font-size: 0.9rem;
+  text-align: left;
+  color: #000e23;
+  width: 120%;
+  transition: color 0.3s, background-color 0.3s;
+  border-radius: 5%;
 }
 
-.tool_item:hover{
-cursor: pointer;
-transition-duration: 0.3s;
-color: #faf7ff !important;
-background-color: rgba(212, 179, 233, 0.933);
+.tool_item:hover {
+  cursor: pointer;
+  transition-duration: 0.3s;
+  color: #faf7ff !important;
+  background-color: rgba(212, 179, 233, 0.933);
 }
-.tool_item:hover a{
-cursor: pointer;
-transition-duration: 0.3s;
-color: #faf7ff !important;
-background-color: rgba(212, 179, 233, 0.933);
+
+.tool_item:hover a {
+  cursor: pointer;
+  transition-duration: 0.3s;
+  color: #faf7ff !important;
+  background-color: rgba(212, 179, 233, 0.933);
 }
 
 .tool_item a {
@@ -297,7 +310,7 @@ background-color: rgba(212, 179, 233, 0.933);
 }
 
 
-  /* General Modal Styling */
+/* General Modal Styling */
 .swal2-popup {
   font-family: 'Arial', sans-serif;
   border-radius: 5px;
@@ -329,9 +342,10 @@ background-color: rgba(212, 179, 233, 0.933);
   color: #333;
 }
 
-/* Button Styling */ 
+/* Button Styling */
 #addSemesterBtn {
-  background-color: #fdae9b !important; /* SlateBlue color for the buttons */
+  background-color: #fdae9b !important;
+  /* SlateBlue color for the buttons */
   border: none !important;
   border-radius: 4px;
   color: white;
@@ -340,17 +354,19 @@ background-color: rgba(212, 179, 233, 0.933);
   text-transform: uppercase;
   transition: background-color 0.3s ease;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important; /* Soft shadow for depth */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+  /* Soft shadow for depth */
 }
 
 #addSemesterBtn:hover {
   cursor: pointer;
   background-color: #ec947e !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13) !important; /* A darker shade for hover effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13) !important;
+  /* A darker shade for hover effect */
 }
 
-.addSubjectBtn{
-  background-color:#bf97d8;
+.addSubjectBtn {
+  background-color: #bf97d8;
   border: none !important;
   border-radius: 4px;
   color: white;
@@ -362,7 +378,7 @@ background-color: rgba(212, 179, 233, 0.933);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
 }
 
-.addSubjectBtn:hover{
+.addSubjectBtn:hover {
   cursor: pointer;
   background-color: #b080ce !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13) !important;
@@ -397,7 +413,7 @@ background-color: rgba(212, 179, 233, 0.933);
   top: 0;
 }
 
-.swal2-radio input[type="radio"]:checked + label:after {
+.swal2-radio input[type="radio"]:checked+label:after {
   content: '';
   display: inline-block;
   width: 12px;
@@ -419,12 +435,13 @@ background-color: rgba(212, 179, 233, 0.933);
 }
 
 /* Styling Headings inside the Modal */
-h3, h4 {
+h3,
+h4 {
   color: #333;
 }
 
 /* Styling for individual semester sections */
-#semesterContainer {
+#semesterContainer, #OLDsemesterContainer {
   padding: 15px;
   margin-bottom: 10px;
   margin-top: 5%;
@@ -444,11 +461,12 @@ h3, h4 {
   padding: 10px;
   border-radius: 4px;
 }
-.semester{
+
+.semester {
   background: #fff;
   padding: 15px;
   border-radius: 5px;
-  box-shadow: 0 0 3px 4px rgba(0, 0, 0, 0.05);    
+  box-shadow: 0 0 3px 4px rgba(0, 0, 0, 0.05);
   margin-bottom: 10px;
 }
 
@@ -464,16 +482,20 @@ h3, h4 {
 
 /* Style for the overall SweetAlert container to make it wider */
 .swal2-popup {
-  max-width: 80% !important; /* Override SweetAlert default max-width */
+  max-width: 80% !important;
+  /* Override SweetAlert default max-width */
 }
 
 
 
 
 /* Button styles */
-.addSubjectBtn, #addSemesterBtn {
-  flex-basis: 100%; /* Button takes full width */
-  margin-top: 10px; /* Space above the button */
+.addSubjectBtn,
+#addSemesterBtn {
+  flex-basis: 100%;
+  /* Button takes full width */
+  margin-top: 10px;
+  /* Space above the button */
 }
 
 
@@ -486,44 +508,48 @@ h3, h4 {
 
 /* Base styles */
 body {
-font-family: Arial, sans-serif;
-line-height: 1.6;
-background: #f4f4f4;
+  line-height: 1.6;
+  background: #f4f4f4;
 }
 
 /* Style for the form */
 #gpaForm1 {
-padding: 20px;
-max-width: 500px;
-margin: 20px auto;
+  padding: 20px;
+  max-width: 500px;
+  margin: 20px auto;
 }
 
 /* Style for the form elements */
 #gpaForm1 label {
-display: block;
-margin: 10px 0 5px;
-font-weight: 600;
-color: #333;
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: 600;
+  color: #333;
 }
-.subject{
+
+.subject {
   border-bottom: 1px solid rgba(114, 114, 114, 0.396) !important;
 }
 
-.subject label{
+.subject label {
   margin-left: 1%;
 }
-.subject select{
+
+.subject select {
   font-size: medium;
 }
-.subject input, .subject select {
-width: 5.5rem !important;
-padding: 10px;
-margin-bottom: 10px;
-border: 1px solid #ccc;
-border-radius: 4px;
-box-sizing: border-box;
+
+.subject input,
+.subject select {
+  width: 5.5rem !important;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
-#gpaForm1 input{
+
+#gpaForm1 input {
   width: calc(100% - 22px);
   padding: 10px;
   margin-bottom: 10px;
@@ -531,88 +557,115 @@ box-sizing: border-box;
   border-radius: 4px;
   box-sizing: border-box;
 }
-input:focus, select:focus {
-border-color: #007bff;
-outline: none;
+
+input:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
 }
 
 /* Hidden radio buttons */
 #gpaForm1 input[type="radio"] {
-display: none;
+  display: none;
 }
 
 /* Style for radio labels */
 #gpaForm1 label.radio {
-display: inline-block;
-background: #f4f4f4;
-padding: 10px 20px;
-border: 1px solid #ccc;
-border-radius: 4px;
-margin-right: 10px;
-cursor: pointer;
+  display: inline-block;
+  background: #f4f4f4;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
 }
+
 #gpaForm1 label.radio:hover {
   background: #e3e3e3;
 }
 
 /* Style for checked radio label */
-#gpaForm1 input[type="radio"]:checked + label.radio {
-background: #c691e7;
-color: white;
-border-color: #b97ede;
+#gpaForm1 input[type="radio"]:checked+label.radio {
+  background: #c691e7;
+  color: white;
+  border-color: #b97ede;
 }
 
 /* Adjusting margins for alignment */
 #gpaForm1 label.radio:last-child {
-margin-right: 0;
+  margin-right: 0;
 }
 
 /* Style for buttons */
 button {
-padding: 10px 20px;
-border: none;
-border-radius: 4px;
-cursor: pointer;
-margin-right: 5px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
 }
 
 button:hover {
-opacity: 0.9;
+  opacity: 0.9;
 }
 
 button.primary {
-background-color: #fdae9b;
-color: white;
+  background-color: #fdae9b;
+  color: white;
 }
 
 button.secondary {
-background-color: #e1e1e1;
+  background-color: #e1e1e1;
 }
-.txt{
+
+.txt {
   float: left;
   margin-left: 4% !important;
 }
 
-.swal2-confirm.swal2-styled{
+.swal2-confirm.swal2-styled {
   background-color: #7066e0 !important;
 }
 
-.swal2-cancel.swal2-styled{
+.swal2-cancel.swal2-styled {
   background-color: #8e959b !important;
 }
 
-#swal2-html-container h3, #swal2-html-container b, #gpaResult{
+#swal2-html-container h3,
+#swal2-html-container b,
+.gpaResult {
   float: left;
   margin-left: 3%;
 }
-#swal2-html-container span *{
+.gpaResult{
+  margin-left: 1% !important;
+}
+
+#swal2-html-container span * {
   vertical-align: middle !important;
 }
-.semester h3{
+
+.semester h3 {
   float: none;
   margin-left: 0%;
 }
-#gpaResult {
+
+.middle {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  width: fit-content;
+}
+.middle input{
+  width:8rem !important;
+}
+.middle b{
+  width:10rem;
+}
+
+.gpaResult,
+#prevGPA {
   display: inline-block;
   background: #f4f4f4;
   padding: 10px 20px;
@@ -625,15 +678,20 @@ background-color: #e1e1e1;
 
 
 .subject {
-  align-items: center !important; /* Centers items vertically */
-  justify-content: space-between !important; /* Distributes space evenly between elements */
-  gap: 1% !important; /* Space between items */
+  align-items: center !important;
+  /* Centers items vertically */
+  justify-content: space-between !important;
+  /* Distributes space evenly between elements */
+  gap: 1% !important;
+  /* Space between items */
   margin-top: 3% !important;
 }
 
 .subject label {
-  margin-right: 2px; /* Space after labels */
-  white-space: nowrap !important; /* Prevent labels from wrapping */
+  margin-right: 2px;
+  /* Space after labels */
+  white-space: nowrap !important;
+  /* Prevent labels from wrapping */
 }
 
 /* Assign widths to inputs and selects to fit the desired table-like layout */
@@ -642,8 +700,9 @@ background-color: #e1e1e1;
 .subject input[type="number"].hours,
 .subject select.grade,
 .subject input[type="text"].points {
-  flex: 1; 
-  width: 9% !important;/* Allows inputs to grow and take available space */
+  flex: 1;
+  width: 9% !important;
+  /* Allows inputs to grow and take available space */
 }
 
 /* Button should take the full width */
@@ -653,19 +712,58 @@ background-color: #e1e1e1;
 }
 
 /* If you want the inputs to have a more specific width like a table column, you can set a flex-basis */
-.subject input[type="text"].subjectName { flex-basis: 30%; }
-.subject input[type="number"].marks { flex-basis: 10%; }
-.subject input[type="number"].hours { flex-basis: 10%; }
-.subject select.grade { flex-basis: 20%; }
-.subject input[type="text"].points { flex-basis: 10%; }
+.subject input[type="text"].subjectName {
+  flex-basis: 30%;
+}
 
-.gpacell .gpacell-delete{
+.subject input[type="number"].marks {
+  flex-basis: 10%;
+}
+
+.subject input[type="number"].hours {
+  flex-basis: 10%;
+}
+
+.subject select.grade {
+  flex-basis: 20%;
+}
+
+.subject input[type="text"].points {
+  flex-basis: 10%;
+}
+
+.gpacell .gpacell-delete {
   position: absolute;
   bottom: 10px;
-  left: 130px;
+  right: 10px;
   background-color: #ec947e;
 }
 
-.gpacell .gpacell-delete:hover{
+.gpacell .gpacell-delete:hover {
   background-color: #cc7c68;
 }
+
+.oldSemesters {
+  margin-top: 15%;
+}
+
+.oldSemesters:before,
+.oldSemesters:after {
+  content: "";
+  border-bottom: solid 1px grey;
+}
+
+.subject .fa-trash {
+  color: rgb(181, 181, 181);
+}
+
+.subject .fa-trash:hover {
+  color: grey;
+  cursor: pointer;
+}
+
+#prevGPA {
+  float: left;
+  margin-left: 10px;
+}
+

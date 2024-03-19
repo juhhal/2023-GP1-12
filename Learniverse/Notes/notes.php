@@ -202,6 +202,45 @@ $FOLDERS = json_decode(json_encode($result_json), true);
       document.getElementById("tools_div").style.marginLeft = "-13.9%";
       document.getElementById("sidebar-tongue").style.marginLeft = '0';
     }
+
+    function newFolder() {
+    Swal.fire({
+      title: 'Enter your Notebook Name',
+      input: 'text',
+      showCancelButton: true,
+      inputValidator: async (value) => {
+        if (!value) {
+          return 'You need to enter something!';
+        } else {
+          await $.ajax({
+            url: "addFolder.php",
+            method: "POST",
+            data: {
+              name: value
+            },
+            success: async function(res) {
+              const addfolderRes = JSON.parse(res);
+              if (addfolderRes?.error) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: addfolderRes.error,
+                });
+              } else {
+                await Swal.fire({
+                  icon: 'success',
+                  title: 'Folder added successfully',
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+                window.location.reload();
+              }
+            },
+          });
+        }
+      }
+    });
+  }
   </script>
 </head>
 
@@ -289,7 +328,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
 
   <main>
   <div id="tools_div">
-      <ul class="tool_list">
+  <ul class="tool_list">
         <li class="tool_item">
           <a href="/workspace.php"> Calendar & To-Do
           </a>
@@ -309,9 +348,9 @@ $FOLDERS = json_decode(json_encode($result_json), true);
         <a href="/summarization/summarization.php"> Summarization
           </a>
         </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
+        <li class="tool_item"><a href="/studyplan.php">
+        Study Planner</a>
+                  </li>
         <li class="tool_item"><a href="/Notes/notes.php">
             Notes</a>
         </li>
@@ -322,9 +361,9 @@ $FOLDERS = json_decode(json_encode($result_json), true);
         <li class="tool_item"><a href="/gpa.php">
             GPA Calculator</a>
         </li>
-        <li class="tool_item">
-          Shared spaces
-        </li>
+        <li class="tool_item"><a href="/sharedspace.php">
+        Shared spaces</a>
+                 </li>
         <li class="tool_item">
           Meeting Room
         </li>
@@ -442,7 +481,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
     </div>
   </main>
   <footer id="footer" style="margin-top: 7%;">
-    <div id="copyright">Learniverse &copy; 2023</div>
+    <div id="copyright">Learniverse &copy; 2024</div>
 </footer>
 
   <div role="button" id="sidebar-tongue" style="margin-left: 0;">
@@ -507,44 +546,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
       });
     }
 
-  function newFolder() {
-    Swal.fire({
-      title: 'Enter your Notebook Name',
-      input: 'text',
-      showCancelButton: true,
-      inputValidator: async (value) => {
-        if (!value) {
-          return 'You need to enter something!';
-        } else {
-          await $.ajax({
-            url: "addFolder.php",
-            method: "POST",
-            data: {
-              name: value
-            },
-            success: async function(res) {
-              const addfolderRes = JSON.parse(res);
-              if (addfolderRes?.error) {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Oops...',
-                  text: addfolderRes.error,
-                });
-              } else {
-                await Swal.fire({
-                  icon: 'success',
-                  title: 'Folder added successfully',
-                  showConfirmButton: false,
-                  timer: 1500
-                });
-                window.location.reload();
-              }
-            },
-          });
-        }
-      }
-    });
-  }
+ 
 
 
 
