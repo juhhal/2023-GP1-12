@@ -106,12 +106,18 @@ input {
   cursor: pointer;
 }
 
-.skip-container {
+.action-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-top: 40px;
+}
+
+.skip-container {
   padding: 12px;
   cursor: pointer;
   color: #748094;
-  display: flex !important;
+  display: flex;
   align-items: center;
   gap: 20px;
 }

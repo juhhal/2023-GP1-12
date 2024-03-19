@@ -101,12 +101,14 @@
                   <label for="answer2" class="answer"> Answer Three </label>
                 </div>
               </div>
-              <div class="skip-container">
+             <div class="action-container">
                 <button class="quiz-back-btn">
-                  <img src="../images/arrow-back.svg" alt="" width="20px" />
+                    <img src="../images/arrow-back.svg" alt="" width="20px" />
                 </button>
-                <p class="skip-btn">Skip</p>
-              </div>
+                <div class="skip-container">
+                  <p class="skip-btn">Skip</p>
+                </div>
+             </div>
               <div class="btn-container">
                 <button class="next-btn quiz-btn">Next</button>
                 <button class="result-btn quiz-btn">Result</button>
@@ -241,7 +243,7 @@ if (selectedAnswer === correctAnswer) {
   questionColors[currentQuestion] =
     selectedAnswer === correctAnswer ? "#88CE57" : "#F86363";
 
-  if (currentQuestion === questions.length - 1) {
+  if (currentQuestion === questions.length - 1 && remainingAnswers === 0) {
     resultBtn.style.display = "block";
     skip.style.display = "none";
   } else {
@@ -324,10 +326,9 @@ answerContainers.forEach((answerContainer, index) => {
 
 skip.addEventListener("click", () => {
   if (currentQuestion < questions.length) {
-
     questionStatus[currentQuestion].status = 'skipped';
     questionCount[currentQuestion].style.backgroundColor = "#6766661F";
-    
+
     remainingAnswers++;
     remainingResult.textContent = remainingAnswers;
 
@@ -337,36 +338,33 @@ skip.addEventListener("click", () => {
     });
 
     currentQuestion++;
-
     answerSelected = false;
-
-    answeredQuestions.textContent =
-      currentQuestion === questions.length
-        ? questions.length
-        : currentQuestion + 1;
-
-    handleResultBtn();
-    displayQuestions();
-
-    nextBtn.style.display = "none";
+    answeredQuestions.textContent = currentQuestion + 1;
 
     if (currentQuestion < questions.length) {
-      skip.style.display = "block";
+      displayQuestions();
+      skip.style.display = "block"; // Show skip if not on last question
+      nextBtn.style.display = "none";
     } else {
-      skip.style.display = "none";
+      skip.style.display = "none"; // Hide skip if on last question
+      nextBtn.style.display = "none";
     }
+    handleResultBtn(); // Decide if it's time to show the result button
   }
 });
 
+
 function handleResultBtn() {
-  if (currentQuestion === questions.length - 1) {
-    nextBtn.style.display = "none";
-    skip.style.display = "none";
+  // This will now purely check if it's time to display the result button without changing its state here
+  if (currentQuestion >= questions.length - 1) {
     resultBtn.style.display = "block";
+    skip.style.display = "none";
+    nextBtn.style.display = "none";
   } else {
     resultBtn.style.display = "none";
   }
 }
+
 
 nextBtn.addEventListener("click", () => {
   answerContainers.forEach((container) => {
@@ -399,6 +397,7 @@ backBtn.addEventListener('click', () => {
   handleBackBtnVisibility();
   displayQuestions();
   restoreAnswerState();
+  nextBtn.style.display = "block";
 });
 
 
@@ -449,7 +448,6 @@ resultBtn.addEventListener("click",async () => {
 });
 
 function handleBackBtnVisibility() {
-  // If there is no history, disable or hide the back button
   if (questionHistory.length === 0) {
     backBtn.style.display = 'none';
   } else {
