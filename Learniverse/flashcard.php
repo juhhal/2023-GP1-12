@@ -94,6 +94,7 @@ function getFilesByUserId($userId, $FileCollection) {
 
   <!-- PROFILE STYLESHEET -->
   <link rel="stylesheet" href="profile.css">
+
   <!-- Custom stylesheet -->
   <link href="css/style.css" rel="stylesheet" />
   <!-- Sweetalert2 -->
@@ -103,37 +104,125 @@ function getFilesByUserId($userId, $FileCollection) {
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
-<style>
-        /* Style for the loading overlay */
-        .overlay {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-            display: none; /* Hide by default */
-        }
-        .spinner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+<?php
+if (isset($_GET['file'])) {
+  $path = $_GET['file'];
+  $file_name = basename($path);
+  $safe_path = escapeshellarg($path);
+  $command = escapeshellcmd("python3 python/extracter.py '" . $path . "'");
+  $outputString = shell_exec($command);  // After your exec() call
+
+  require_once __DIR__ . '/vendor/autoload.php';
+
+  // Connect to MongoDB
+  $client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+  
+  
+  // Select database and collections
+  $database = $client->selectDatabase('Learniverse');
+  $flashcardCollection = $database->selectCollection('subjectReview');
+  
+  // Function to insert a new summary for a user, replacing the oldest one if necessary
+  function insertFlashcard($userId, $subjectName, $flashcardData, $flashcardCollection) {
+      // Find the user's document
+      $userDoc = $flashcardCollection->findOne(['userId' => $userId,]);
+  
+      // Initialize user data array
+      $userData = [
+          'userId' => $userId,
+          'subjects' => []
+      ];
+  
+      // If the user document exists, convert it to a PHP array
+      if ($userDoc) {
+          $userData = (array) $userDoc;
+      }
+  
+      $time = time();
+      // If the subject doesn't exist, create a new entry for it
+          $userData['subjects'][] = [
+              'subjectName' => $subjectName,
+              'data_created' => $time,
+              'flashcards' => []
+          ];
+          $subjectIndex = count($userData['subjects']) - 1;
+      
+      foreach ($flashcardData as $cardIndex => $card) {
+  
+          // Extract the card number from the key (e.g., 'card1' => '1')
+          $cardNumber = substr($cardIndex, 4);
+  
+          // Extract the flashcard content and answer from the nested array
+          $content = $card['content'];
+          $answer = $card['answer'];
+      
+          // Create the new flashcard array
+          $newFlashcard = [
+              'cardNumber' => $cardNumber,
+              'content' => $content,
+              'answer' => $answer,
+          ];
+      
+          // Add the new flashcard to the user data
+          $userData['subjects'][$subjectIndex]['flashcards'][] = $newFlashcard;
+      }
+      
+      
+      // Upsert the user's document with the updated user data
+      $flashcardCollection->replaceOne(
+          ['userId' => $userId],
+          $userData,
+          ['upsert' => true]
+      );
+  
+      echo "<script type='text/javascript'>
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+
+          retrieve($time, '$subjectName');
+        }, 3000);
+      });
+    </script>";    }
+  
+  
+  // Process the 'extracted_text' as needed
+  $tempFilePath = tempnam(sys_get_temp_dir(), 'txt');
+  if ($tempFilePath === false) {
+      // Failed to create a temporary file
+      echo "Failed to create temporary file.";
+  } else {
+      // Write the contents to the temporary file
+      if (file_put_contents($tempFilePath, $outputString) === false) {
+          // Failed to write to the temporary file
+          echo "Failed to write to temporary file.";
+      } else {
+          // Construct the command to call the Python script with the file path as an argument
+          $flashcard_command = "python3 python/flashcards.py '" . $tempFilePath . "' 2>&1";  // Redirect stderr to stdout
+          // Execute the command and capture output
+          exec($flashcard_command, $content, $resultsCode);
+          // Check if the command executed successfully
+          if ($resultsCode === 0) {
+              // Read the contents of the temporary file
+              $temp_file_path = trim($content[0]);
+              $flashcard_data = json_decode(file_get_contents($temp_file_path), true);
+              // Call the insertSummary function to store the summary in the database
+              $result = insertFlashcard($_SESSION['email'], $file_name, $flashcard_data, $flashcardCollection);
+              echo json_encode($result);
+             } else {
+              // Output an error message
+              echo "Error executing Python script.";
+          }
+          // Clean up: Delete the temporary file
+          unlink($tempFilePath);
+      }}
+    }
+?>
 <style>
   .btn-cl {
     background-color: #bf97d8;
@@ -154,10 +243,10 @@ function getFilesByUserId($userId, $FileCollection) {
     border: 1px solid #bf97d8;
   }
 
-  .table-primary {
-    border: 1px solid #d1b4e3;
+  .table-primary tr{
+    border: 1px solid #d1b4e3 !important;
     color: white;
-    background-color: #d1b4e3;
+    background-color: #d1b4e3 !important;
 
   }
 
@@ -177,6 +266,7 @@ function getFilesByUserId($userId, $FileCollection) {
     background-color: #cc7c68;
     color: white;
   }
+
 
   .file-edit {
     font-size: 8px;
@@ -211,6 +301,33 @@ function getFilesByUserId($userId, $FileCollection) {
     color: white;
   }
 
+  /* Style for the loading overlay */
+  .overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none; /* Hide by default */
+  }
+  .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 
 
   /* The flip card container - set the width and height to whatever you want. We have added the border property to demonstrate that the flip itself goes out of the box on hover (remove perspective if you don't want the 3D effect */
@@ -261,7 +378,117 @@ function getFilesByUserId($userId, $FileCollection) {
     color: black;
     transform: rotateY(180deg);
   }
+
+  /* file modal */
+  /* Modal Background */
+  #fileModal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Modal Container */
+  .modal-container {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    /* Adjust based on your preference */
+    max-height: 80%;
+    overflow-y: auto;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center-align the items vertically */
+  }
+
+  /* Directory and File Items */
+  .dirItem,
+  .fileItem {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    width: 100%;
+    /* Make items full width of their container */
+    box-sizing: border-box;
+    /* Include padding and border in the width */
+  }
+
+  /* Optionally, if you want the items to be only as wide as their content,
+    you can remove the width property and add the following: */
+  .dirItem,
+  .fileItem {
+    display: inline-block;
+    /* Allows the item to be as wide as its content */
+    white-space: nowrap;
+    /* Prevents the text from wrapping */
+  }
+
+
+  /* Close Button */
+  #fileModal button {
+    padding: 10px 20px;
+    background-color: #bf97d8;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 5px;
+    align-self: flex-end;
+    /* Align the button to the right */
+  }
+
+  #fileModal button:hover {
+    background-color: #946aae;
+  }
+
+  #directoryButtons {
+    margin-bottom: 20px;
+  }
+
+  .dirButton {
+    padding: 10px 20px;
+    margin-right: 10px;
+    /* Space between buttons */
+    background-color: #bf97d8;
+    /* Bootstrap primary color */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    /* Rounded corners */
+    display: inline-block;
+    /* Display buttons inline */
+  }
+
+  .dirButton:hover {
+    background-color: #946aae;
+    /* Darker blue on hover */
+  }
+
+  /* Style the file list items similarly to before */
+  #fileList .fileItem {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+  }
 </style>
+
 
 <body>
   <header>
@@ -425,10 +652,19 @@ function getFilesByUserId($userId, $FileCollection) {
                         <?php } ?>
                         <td>
                             <a href="javascript:void(0)" id="updateFile">
-                            <button onclick="retrieve(<?php echo $date;?>)" class="file-edit btn">
+                            <button onclick="retrieve('<?php echo $date; ?>','<?php echo $file['subjectName']; ?>')" class="file-edit btn">
                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                 </button>
                             </a>
+                            <button onclick="savePDF(<?php echo $date;?>)" class="file-edit btn">
+                                <i class="fas fa-download iconpdf" aria-hidden="true"></i>
+                            </button>
+                            <button onclick="toFiles(<?php echo $date;?>)" class="file-edit btn">
+                            <i class="fa fa-bookmark" aria-hidden="true"></i>
+                            </button>
+
+
+
                             <a href="javascript:void(0)" >
                                 <button onclick="deleteFlashcard(<?php echo $date;?>)" class="file-delete btn">
                                     <i class="fas fa-trash"></i>
@@ -465,13 +701,17 @@ function getFilesByUserId($userId, $FileCollection) {
           </button>
         </div>
 
-        <div class="modal-body">
+        <div id="modal-body" class="modal-body">
 
           <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
               <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button"
-                role="tab" aria-controls="home" aria-selected="true">Uplod File</button>
+                role="tab" aria-controls="home" aria-selected="true">Upload File</button>
             </li>
+            <!-- <li class="nav-item" role="presentation">
+              <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#file" type="button"
+                role="tab" aria-controls="profile" aria-selected="false" onclick="showModal();">My Files</button>
+            </li> -->
             <li class="nav-item" role="presentation">
               <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button"
                 role="tab" aria-controls="profile" aria-selected="false">Manualy</button>
@@ -489,6 +729,7 @@ function getFilesByUserId($userId, $FileCollection) {
                   <label for="fileUpload">Select File (PDF)*</label>
                   <input type="file" class="form-control-file" id="fileUpload" name="fileUpload"
                   accept=".pdf" required>
+
                 </div>
                 <div class="form-group text-center">
                   <button type="submit" class="btn btn-cl">Submit</button>
@@ -498,6 +739,26 @@ function getFilesByUserId($userId, $FileCollection) {
 
             </div>
 
+
+            <!-- <div class="tab-pane fade " id="file" role="tabpanel" aria-labelledby="file-tab">
+
+              <form enctype="multipart/form-data" method="post" action="" id="uploadForm"
+                style="padding: 24px; margin-bottom: 48px;">
+
+                  <div class="form-group">
+                    <label for="fileSelect">Select from your uploaded files</label>
+
+                  </div>
+                  <div class="form-group text-center">
+                    <button type="submit" class="btn btn-cl">Submit</button>
+                  </div>
+
+              </form>
+
+            </div> -->
+            <!-- <label id="myLabel" onclick="showModal()" >
+                   <button> My uploaded files </button>
+                  </label> -->
             <!--MANUAL--->
             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 
@@ -522,11 +783,10 @@ function getFilesByUserId($userId, $FileCollection) {
                   </div>
 
                   <div class="form-group text-center" style="margin-top: 16px;">
-                    <button type="submit" class="btn btn-cl" name="submit">Save</button>
+                    <button type="submit" class="btn btn-cl" name="submit" id="saveButton">Save</button>
                     <input type="button" class="btn btn-cl" value="Save Card Content" name="submitNext" id="submitNext">
                   </div>
 
-                </form>
 
               </div>
 
@@ -551,6 +811,42 @@ function getFilesByUserId($userId, $FileCollection) {
   <div role="button" id="sidebar-tongue" style="margin-left: 0;">
     &gt;
   </div>
+
+
+  <script>
+    function loadDirectories() {
+  fetch('listDirectories.php')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('directoryButtons').innerHTML = html;
+    })
+    .catch(err => {
+      console.error('Failed to load directories', err);
+    });
+}
+
+function loadFiles(directoryName) {
+  fetch(`listFiles.php?directory=${directoryName}`)
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('fileList').innerHTML = html;
+    })
+    .catch(err => {
+      console.error('Failed to load files', err);
+    });
+}
+
+
+// Modify the showModal function to call loadDirectories initially
+function showModal() {
+  document.getElementById('modal-body').style.display = 'none';
+  document.getElementById('fileModal').style.display = 'flex';
+  loadDirectories(); // Load directories first
+  loadFiles('Uploaded Files')
+}
+  </script>
+
+
 
 
 
@@ -706,7 +1002,136 @@ function getFilesByUserId($userId, $FileCollection) {
 
 </script>
 
+<script type="text/javascript">
 
+function toFiles(datad){
+  $.ajax({
+        url: 'cardsData.php',
+        method: 'POST',
+        data: { datas: datad },
+        success: function(response) {
+    // Assuming response is already a JavaScript object, not JSON
+    var responseData = response;
+    console.log(response);
+    // Access the fields of the response object
+    var paragraph = "";
+
+// Loop through each card in the success array
+response.success.forEach(function(card) {
+  paragraph += "Question: " + card.content + " \nAnswer: " + card.answer + "\n\n";
+});
+console.log(paragraph);
+
+const { jsPDF } = window.jspdf;
+
+const doc = new jsPDF();
+
+Swal.fire({
+    title: "Enter filename",
+    input: "text",
+    inputPlaceholder: "Filename (without extension)",
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    cancelButtonText: "Cancel",
+    inputValidator: (value) => {
+        if (!value) {
+            return "Filename is required";
+        }
+    },
+}).then((result) => {
+    if (result.isConfirmed) {
+        console.log(result.value);
+
+        // Add the text content to the PDF
+        doc.text(paragraph, 20, 20); // Adjust the x and y coordinates as needed
+
+        // Convert the PDF to a Blob
+        const blob = doc.output('blob'); // Get blob directly
+
+        // Create FormData object to send data to the server
+        const formData = new FormData();
+        const fileName = result.value + '.pdf'; // Trim any leading/trailing spaces from the filename
+        formData.append('pdf', blob, fileName);
+
+        // Send the PDF to the server using AJAX
+        const xhr = new XMLHttpRequest();
+        const path = "save_cards.php"; // Make sure this is the correct path to your PHP script
+        xhr.open('POST', path, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                console.log(xhr.responseText); // Log server response
+            }
+        };
+        xhr.send(formData);
+    }
+});
+
+},
+
+        error: function (xhr, status, error) {
+            // Log the full response body to see what's causing the JSON parse error
+            console.error(xhr.responseText);
+        }   
+    });
+}
+
+
+
+function savePDF(datad){
+  $.ajax({
+        url: 'cardsData.php',
+        method: 'POST',
+        data: { datas: datad },
+        success: function(response) {
+    // Assuming response is already a JavaScript object, not JSON
+    var responseData = response;
+    console.log(response);
+// Initialize an empty string to hold the paragraph
+var paragraph = "";
+
+// Loop through each card in the success array
+response.success.forEach(function(card) {
+  paragraph += "Question: " + card.content + " \nAnswer: " + card.answer + "\n\n";
+});
+console.log(paragraph);
+
+
+const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Retrieve the text content of the element
+
+  // Use SweetAlert for the filename prompt
+  Swal.fire({
+    title: "Enter filename",
+    input: "text",
+    inputPlaceholder: "Filename (without extension)",
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    cancelButtonText: "Cancel",
+    inputValidator: (value) => {
+      if (!value) {
+        return "Filename is required";
+      }
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Add the text content to the PDF
+      doc.text(paragraph, 20, 20); // Adjust the x and y coordinates as needed
+      
+      // Save the PDF with the chosen filename
+      doc.save(result.value + ".pdf");
+    }
+  });
+},
+
+        error: function (xhr, status, error) {
+            // Log the full response body to see what's causing the JSON parse error
+            console.error(xhr.responseText);
+        }   
+    });
+}
+</script>
   <script>
     
     function confirmFileDelete(data) {
@@ -772,7 +1197,7 @@ function getFilesByUserId($userId, $FileCollection) {
     let fileInput = document.querySelector('#fileUpload');
     let formData = new FormData();
     formData.append('fileUpload', fileInput.files[0]);
-
+      let gen_date = 0;
     // No need to convert FormData to an array
     // Simply pass formData to the data property of the AJAX call
     $.ajax({
@@ -782,9 +1207,16 @@ function getFilesByUserId($userId, $FileCollection) {
         processData: false, // Important: don't process the files
         contentType: false, // Important: set this to false, don't set a content type
         success: function (response) {
-          window.location.href = 'displayFlashcards.php?data=' + encodeURIComponent(response);
-            // Hide loading overlay on success
-            $('#loadingOverlay').hide();
+          let datatext = JSON.parse(response);
+
+          console.log(datatext);
+          $('#uploadFileModel').modal('hide'); 
+
+
+          gen_date = datatext['success'];
+          console.log('time: '+ gen_date);
+          retrieve(gen_date, fileInput.files[0].name);
+
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.error("Error: ", textStatus, errorThrown);
@@ -792,6 +1224,7 @@ function getFilesByUserId($userId, $FileCollection) {
             $('#loadingOverlay').hide();
         }
     });
+
 });
 
 
@@ -800,37 +1233,33 @@ function getFilesByUserId($userId, $FileCollection) {
 
 // Define an array to store the subject reviews
 let subjectReviews = [];
-
+let name = " ";
+let array ={};
 // Function to add subject review to the array
 function addSubjectReview() {
-  let subjectName = document.querySelector('#nameSubject').value.trim();
+  let subjectName = document.querySelector('#nameSubject').value;
   let question = document.querySelector('#question').value.trim();
   let answer = document.querySelector('#answer').value.trim();
 
   if (subjectName !== "" && question !== "" && answer !== "") {
     // Check if the subject already exists in the array
-    let existingSubjectIndex = subjectReviews.findIndex(review => review.subjectName === subjectName);
 
-    if (existingSubjectIndex === -1) {
       // If the subject does not exist, create a new subject object
       let newSubject = {
-        'subjectName': subjectName,
-        'questions': [{ 'question': question, 'answer': answer }]
+        'question': question,
+        'answer': answer
       };
-
+      name = subjectName;
       // Push the new subject object into the subjectReviews array
       subjectReviews.push(newSubject);
-    } else {
-      // If the subject already exists, push the new question to its questions array
-      subjectReviews[existingSubjectIndex].questions.push({ 'question': question, 'answer': answer });
-    }
-
+    
+      array['name'] = name;
+      array['subjectReviews'] = subjectReviews;
     // Clear the input fields
     document.querySelector('#question').value = "";
     document.querySelector('#answer').value = "";
 
     // Print the updated subjectReviews array
-    alert(JSON.stringify(subjectReviews));
 
     // Prevent form submission
     return false;
@@ -842,28 +1271,73 @@ function addSubjectReview() {
 // Event listener for the "Next Card" button
 document.querySelector('#submitNext').addEventListener('click', addSubjectReview);
 
-// Event listener for the form submission
-document.querySelector('#manualForm').addEventListener('submit', (e) => {
-  e.preventDefault();
 
-  $.ajax({
-    url: 'subjectReview.php',
-    data: { action: 'addSubjectReview', subjectReviews: subjectReviews },
-    method: 'POST',
-    dataType: 'json', // Set the expected response type
-    success: function (res) {
-      // alert(res.message);
-      if (res.success) {
-        location.reload();
-      }
-    },
-    error: function (xhr, status, error) {
-  // Assuming the server responds with a JSON object on error that includes an 'error' field
-  var errorMsg = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Unknown error';
-  alert('Error: ' + errorMsg);
+
+function retrieve(datad, subjectName) {
+    // Make AJAX request to the PHP file
+    console.log(datad);
+    $.ajax({
+        url: 'cardsData.php',
+        method: 'POST',
+        data: { datas: datad },
+        success: function(response) {
+    // Assuming response is already a JavaScript object, not JSON
+    var responseData = response;
+    console.log(response);
+    // Access the fields of the response object
+    var dataParam = encodeURIComponent(JSON.stringify(responseData));
+    window.location.href = 'flashcard/displayFlashcards.php?data=' + dataParam + '&subjectName=' + subjectName;
+
+ 
+},
+
+        error: function (xhr, status, error) {
+            // Log the full response body to see what's causing the JSON parse error
+            console.error(xhr.responseText);
+        }   
+    });
 }
+
+document.querySelector('#saveButton').addEventListener('click', function() {
+  addSubjectReview();
+  
+  let array = {
+    'name': name,
+    'questions': subjectReviews
+  };
+ let retdate = 0;
+  // Send the data as JSON
+  fetch('addCards.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(array) // Convert the JavaScript object to a JSON string
+  })
+  .then(response => response.text())
+  .then(data => {
+    // Handle the response data from the server
+    console.log('up');
+    let datatext = JSON.parse(data);
+    console.log('down');
+
+    console.log(datatext);
+    $('#uploadFileModel').modal('hide'); 
+    
+
+   retdate = datatext['success'];
+   retrieve(retdate, name);
+
+  })
+  .catch(error => {
+    // Handle any errors
+    console.error('Error:', error);
   });
+
 });
+
+
+
 
 function deleteFlashcard(date) {
     // Make AJAX request to the PHP file
