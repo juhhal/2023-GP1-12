@@ -666,8 +666,8 @@ usort($todo, 'compareDueDate');
                 </li>
                 <li class="tool_item"><a href="sharedspace.php">
                         Shared spaces</a></li>
-                <li class="tool_item">
-                    Meeting Room
+                <li class="tool_item"><a href="MeetingRoom.php">
+                        Meeting Room</a>
                 </li>
                 <li class="tool_item"><a href="community.php">
                         Community</a>
