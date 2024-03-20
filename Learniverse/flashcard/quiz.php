@@ -23,7 +23,7 @@ $subject = $_GET['subject'];
                 <h1 class="title">
                     <?php echo $subject; ?>
                 </h1>
-                <a href="/flashcard">
+                <a href="../flashcard.php">
                     <img class="close-icon" src="../quizes/icons/close.svg" alt="" />
                 </a>
             </div>
@@ -51,7 +51,7 @@ $subject = $_GET['subject'];
                     <div class="answered-questions">
                         <p>1</p>
                     </div>
-                    <a href="/flashcard">
+                    <a href="../flashcard.php">
                         <button class="back-btn">Back to Home</button>
                     </a>
                 </div>

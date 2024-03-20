@@ -189,7 +189,7 @@
         <div class="header-container">
             <div class="flex-parent">
                 <div class="header_logo">
-                    <img src="LOGO.png">
+                    <img src="../LOGO.png">
                     <div>Learniverse</div>
                 </div>
                 <div class="header_nav">
@@ -331,7 +331,7 @@
     </div>
 
    <div class="button">
-   <a  style="margin: 0 10px;" class="disabled" href="/flashcard/quiz.php?data=<?php echo urlencode(json_encode($flashcardsData)); ?>&subject=<?php echo $subject; ?>">
+   <a  style="margin: 0 10px;" class="disabled" href="quiz.php?data=<?php echo urlencode(json_encode($flashcardsData)); ?>&subject=<?php echo $subject; ?>">
        
         <i class="fa-solid fa-wand-magic-sparkles"></i>
           &nbsp; Start Learning
@@ -424,7 +424,7 @@ editForm.addEventListener('submit', function(event) {
             showConfirmButton: false,
             timer: 1500
         });
-        window.location.href = '/flashcard/displayFlashcards.php?data=' + JSON.stringify({ success: flashcards }) + '&subjectName=' + subjectName;
+        window.location.href = 'displayFlashcards.php?data=' + JSON.stringify({ success: flashcards }) + '&subjectName=' + subjectName;
 
     } else {
         alert(response.message || 'Failed to update flashcard.');

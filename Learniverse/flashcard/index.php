@@ -89,13 +89,13 @@ function getFilesByUserId($userId, $FileCollection) {
   <title>Flashcards </title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-  <link rel="stylesheet" href="theFiles.css">
-  <link rel="stylesheet" href="header-footer.css">
+  <link rel="stylesheet" href="../theFiles.css">
+  <link rel="stylesheet" href="../header-footer.css">
 
   <!-- PROFILE STYLESHEET -->
-  <link rel="stylesheet" href="profile.css">
+  <link rel="stylesheet" href="../profile.css">
   <!-- Custom stylesheet -->
-  <link href="css/style.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
   <!-- Sweetalert2 -->
   <!-- <script src="js/sweetalert2.all.min.js"></script> -->
   <!-- GPA STYLESHEET -->
@@ -274,7 +274,7 @@ function getFilesByUserId($userId, $FileCollection) {
     <div class="header-container">
       <div class="flex-parent">
         <div class="header_logo">
-          <img src="LOGO.png">
+          <img src="../LOGO.png">
           <div>Learniverse</div>
         </div>
         <div class="header_nav">
