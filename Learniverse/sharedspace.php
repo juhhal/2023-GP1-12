@@ -308,7 +308,7 @@ require 'session.php'; ?>
                 </div>
                 <div id="spaces">
                     <div id="noSpaceMSG"><img src="images/rocket-clouds.png">
-                        <span>You are not a part of any Space yet. Start by creating a new one!</span>
+                        <span>You are not a part of any <span style="color: #fdae9b;">Space</span> yet. Start by creating a new one!</span>
                     </div>
                     <?php
                     $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");

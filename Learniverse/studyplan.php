@@ -26,7 +26,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- Include FullCalendar JS & CSS library -->
     <link href="js/fullcalendar/lib/main.css" rel="stylesheet" />
@@ -388,10 +388,12 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                     $cursor = $manager->executeQuery("Learniverse.studyPlan", $query);
                     $planCount = 0;
                     foreach ($cursor as $plan) {
-                        $planCount++; ?>
+                        $planCount++;
+                        $creation_date = date('Y-m-d', strtotime($plan->creation_date));
+                    ?>
                         <tr id="<?php echo $plan->planID ?>" class="planRow">
-                            <td class="plan-name"><span onclick="display(<?php echo $plan->planID ?>);"><?php echo $plan->name ?></span></td>
-                            <td><?php echo $plan->creation_date ?></td>
+                            <td class="plan-name"><span><input readonly type="text" value="<?php echo $plan->name ?>"></span><i class="fa-solid fa-pen editPlanName"></i></td>
+                            <td><?php echo $creation_date ?></td>
                             <td>
                                 <i class="fa fa-eye viewPlan" aria-hidden="true" title="View Plan"></i>
                                 <i class="fas fa-trash deletePlan" title="Delete Plan"></i>
@@ -410,7 +412,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 <h2 id="overlayTitle">Create a New Study Plan</h2>
                 <form id="new-plan-form" name="new-plan-form" method="post" action="processStudyPlan.php" enctype="multipart/form-data">
                     Plan Name: <input required autocomplete="off" type="text" name="new-plan-name" id="new-plan-name">
-                    Plan start: <input required name="start" type="date"> Plan end: <input name="end" type="date">
+                    Plan start: <input required id="start" name="start" type="date"> Plan end: <input id="end" name="end" type="date">
                     Study Material: <button id="uploadMats" onclick="showModal()">Upload from My Files</button> or <input id="localMats" name="localMats[]" value="Upload from my device" type="file" multiple>
                     <input id="generatePlan" type="submit" value="Generate">
                 </form>
@@ -447,6 +449,43 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
             </div>
         </div>
         <script>
+            // edit the plan name
+            $('.plan-name').on('click', '.editPlanName', function() {
+                var td = $(this).closest('.plan-name');
+                var input = td.find('input');
+
+                if (input.prop('readonly')) {
+                    input.prop('readonly', false).focus();
+                    $(this).removeClass('fa-pen').addClass('fa-save');
+                } else {
+                    var newName = input.val();
+                    var pid = td.parent().attr('id');
+
+                    if ($(this).hasClass('fa-save')) {
+                        $.ajax({
+                            url: 'processStudyPlan.php',
+                            method: 'post',
+                            data: {
+                                editPlanName: 1,
+                                planID: pid,
+                                newName: newName
+                            },
+                            success: function(response) {
+                                // Handle the response from the server
+                                console.log(response);
+
+                                // After editing is done, make the input read-only again and change the icon back to the edit icon
+                                input.prop('readonly', true);
+                                $(this).removeClass('fa-save').addClass('fa-pen');
+                            },
+                            error: function(xhr, status, error) {
+                                // Handle the error case
+                                console.log(error);
+                            }
+                        });
+                    }
+                }
+            });
             // Retrieve the form element
             var form = document.getElementById("new-plan-form");
 
@@ -461,12 +500,45 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 
                 // Append the input element to the form
                 form.appendChild(matsInput);
+
+                // verifiy start and end
                 if (selectedMats.length > 0 || document.getElementById("localMats").files.length > 0) {
                     // Check if the submit button is clicked
                     var submitButton = document.getElementById("generatePlan");
                     if (submitButton === document.activeElement) {
-                        // Safely submit the form
-                        form.submit();
+                        var startDate = new Date(document.getElementById('start').value);
+                        var endDate = new Date(document.getElementById('end').value);
+                        var today = new Date();
+                        var startInput = document.getElementById('start');
+                        var endInput = document.getElementById('end').min;
+
+                        value = 1;
+                        if (startDate >= endDate) {
+                            value = 0;
+                            var errorMsg = document.createElement("p");
+                            errorMsg.textContent = "Start date must be before the end date.";
+                            errorMsg.style.color = "red";
+                            startInput.parentNode.insertBefore(errorMsg, startInput.nextSibling);
+                        }
+
+                        if (startDate < today) {
+                            value = 0;
+                            var errorMsg = document.createElement("p");
+                            errorMsg.textContent = "Start date cannot be in the past.";
+                            errorMsg.style.color = "red";
+                            startInput.parentNode.insertBefore(errorMsg, startInput.nextSibling);
+                        }
+
+                        if (endDate < today) {
+                            value = 0;
+                            var errorMsg = document.createElement("p");
+                            errorMsg.textContent = "End date cannot be in the past.";
+                            errorMsg.style.color = "red";
+                            endInput.parentNode.insertBefore(errorMsg, endInput.nextSibling);
+                        }
+                        if (value != 0)
+                            // Safely submit the form
+                            form.submit();
                     }
                 }
             });
@@ -502,47 +574,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 var savePlanBTN = document.getElementById("save-to-calendar");
                 var regeneratePlanBTN = document.getElementById("regenerate");
 
-                savePlanBTN.addEventListener("click", function() {
-                    savePlanBTN.disabled = true;
-                    $.ajax({
-                        url: 'processStudyPlan.php',
-                        method: 'post',
-                        data: {
-                            planID: planID,
-                            savePlanCalendar: true
-                        },
-                        success: function(response) {
-                            console.log(response);
-                            Swal.fire({
-                                title: 'Plan Calendar Saved',
-                                text: 'Study Plan has been saved successfully.',
-                                icon: 'success',
-                                showConfirmButton: false,
-                                timer: 2500,
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error saving plan calendar');
-                        }
-                    });
-                });
 
-                regeneratePlanBTN.addEventListener("click", function() {
-                    $.ajax({
-                        url: 'processStudyPlan.php',
-                        method: 'post',
-                        data: {
-                            planID: planID,
-                            regeneratePlan: true
-                        },
-                        success: function(response) {
-                            console.log(response);
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error regenerating plan calendar');
-                        }
-                    });
-                });
                 // plan calendar
                 var calendarEl = document.getElementById('calendar');
 
@@ -719,11 +751,60 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 });
 
                 calendar.render();
+
+                savePlanBTN.addEventListener("click", function() {
+                    savePlanBTN.disabled = true;
+                    $.ajax({
+                        url: 'processStudyPlan.php',
+                        method: 'post',
+                        data: {
+                            planID: planID,
+                            savePlanCalendar: true
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            Swal.fire({
+                                title: 'Plan Calendar Saved',
+                                text: 'Study Plan has been saved successfully.',
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 2500,
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error saving plan calendar');
+                        }
+                    });
+                });
+
+                regeneratePlanBTN.addEventListener("click", function() {
+                    $.ajax({
+                        url: 'processStudyPlan.php',
+                        method: 'post',
+                        data: {
+                            planID: planID,
+                            regeneratePlan: true
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            calendar.refetchEvents();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error regenerating plan calendar');
+                        }
+                    });
+                });
             }
 
             document.addEventListener('DOMContentLoaded', function() {
                 var deleteButtons = document.getElementsByClassName('deletePlan');
                 var viewButtons = document.getElementsByClassName('viewPlan');
+                var startInput = document.getElementById('start');
+                var endInput = document.getElementById('end');
+
+                // Set the minimum value to the current date inputs
+                startInput.min = new Date().toISOString().split('T')[0];;
+                endInput.min = new Date().toISOString().split('T')[0];;
 
                 // Add event listener to delete buttons
                 Array.from(deleteButtons).forEach(function(button) {
@@ -751,8 +832,8 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                                     type: 'POST',
                                     data: data,
                                     success: function(response) {
-                                        if (response == 1) {
-                                            console.log('Plan deleted successfully');
+                                        if (response) {
+                                            console.log(response);
                                             button.closest('tr').remove();
                                             if (planRows.length == 0) {
                                                 var tbody = document.querySelector("#allPlans tbody");
@@ -778,7 +859,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                         var trId = tr.id;
                         // Perform view action using trId
                         planID = trId;
-                        planName = tr.getElementsByClassName("plan-name")[0].textContent;
+                        planName = tr.getElementsByTagName("input")[0].value;
                         document.getElementById("studyPlanNameView").textContent = planName;
                         display(planID);
                         console.log('Viewing plan with ID: ' + trId);

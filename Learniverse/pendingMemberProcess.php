@@ -119,6 +119,7 @@ if ($operation === "accept") {
     // Add the update operations to the bulk write operation
     $bulkWrite->update($filter, $updateOperation);
     $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
+    echo "backend";
 } else if ($operation === "kick") {
     // Construct the update operation using $pull operator
     $updateOperation = ['$pull' => ['members' => ['email' => $member]]];

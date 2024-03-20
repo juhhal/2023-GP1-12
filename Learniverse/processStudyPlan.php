@@ -4,20 +4,22 @@ require "session.php";
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 //create a bulk writer to update data in the db
 $bulkWrite = new MongoDB\Driver\BulkWrite;
-
+function callPythonScript($filePath)
+{
+    $command = escapeshellcmd("python3 python/extracter.py '" . $filePath . "'");
+    $output = shell_exec($command);
+    return $output;
+}
 //add new plan
 if (isset($_POST['new-plan-name'])) {
     $planID = uniqid();
     $name = $_POST['new-plan-name'];
     $start = $_POST['start'];
     $end = $_POST['end'];
+    $studyMaterial = [];
     $uploadedMats;
-    $fullText="";
-    function callPythonScript($filePath) {
-        $command = escapeshellcmd("python3 python/extracter.py '" . $filePath . "'");
-        $output = shell_exec($command);
-        return $output;
-    }
+    $fullText = "";
+
     if (isset($_POST['myFilesMats'])) {
         require_once __DIR__ . '/vendor/autoload.php';
         $client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
@@ -35,10 +37,11 @@ if (isset($_POST['new-plan-name'])) {
         if ($userDocument) {
             $user_id = $userDocument->_id;
         }
-        $path = 'user_files'.$DIRECTORY_SEPARATOR. $user_id . $DIRECTORY_SEPARATOR;
+        $path = 'user_files' . $DIRECTORY_SEPARATOR . $user_id . $DIRECTORY_SEPARATOR;
         $uploadedMats = json_decode($_POST['myFilesMats']);
+        $studyMaterial = $uploadedMats;
         foreach ($uploadedMats as $f)
-        $fullText = $fullText ."\n". callPythonScript($path.$f);
+            $fullText = $fullText . "\n" . callPythonScript($path . $f);
     }
 
     // Check if local files were uploaded
@@ -55,25 +58,25 @@ if (isset($_POST['new-plan-name'])) {
 
             // Handle the file as needed
             if ($fileError === UPLOAD_ERR_OK) {
-            // File was uploaded successfully
-            $tmpFilePath = $_FILES['localMats']['tmp_name'][$i];
-            // Move uploaded file to a permanent directory (optional)
-            // Ensure your server has write permissions to the target directory
-            $targetFilePath = "studyplanTemp". $DIRECTORY_SEPARATOR . basename($_FILES['localMats']['name'][$i]);
-            if (move_uploaded_file($tmpFilePath, $targetFilePath)) {
-                // Call the Python script with the permanent file path
-                $fullText = $fullText ."\n". callPythonScript($targetFilePath);
-                
-                // Delete the uploaded file after processing
-                if (file_exists($targetFilePath)) {
-                    unlink($targetFilePath);
-                    echo "Processed and deleted file: $fileName<br>";
+                // File was uploaded successfully
+                $tmpFilePath = $_FILES['localMats']['tmp_name'][$i];
+                // Ensure your server has write permissions to the target directory
+                $targetFilePath = "studyplanTemp" . $DIRECTORY_SEPARATOR . basename($_FILES['localMats']['name'][$i]);
+                if (move_uploaded_file($tmpFilePath, $targetFilePath)) {
+                    $studyMaterial[] = $targetFilePath;
+                    // Call the Python script with the permanent file path
+                    $fullText = $fullText . "\n" . callPythonScript($targetFilePath);
+
+                    // Delete the uploaded file after processing
+                    if (file_exists($targetFilePath)) {
+                        unlink($targetFilePath);
+                        echo "Processed and deleted file: $fileName<br>";
+                    } else {
+                        echo "Failed to delete processed file: $fileName<br>";
+                    }
                 } else {
-                    echo "Failed to delete processed file: $fileName<br>";
+                    echo "Failed to move uploaded file for processing.<br>";
                 }
-            } else {
-                echo "Failed to move uploaded file for processing.<br>";
-            }
             }
             echo "<br>";
         }
@@ -137,7 +140,7 @@ if (isset($_POST['new-plan-name'])) {
     $id = $result_json[0]['counter'];
 
     // Python request
-
+    $jsonData = null;
     $tempFilePath = tempnam(sys_get_temp_dir(), 'txt');
     if ($tempFilePath === false) {
         // Failed to create a temporary file
@@ -151,7 +154,6 @@ if (isset($_POST['new-plan-name'])) {
             // Construct the command to call the Python script with the file path as an argument
             $previousEventsJson = escapeshellarg(json_encode($previousEvents));
             $generate_command = "python3 python/StudyPlanner.py '" . escapeshellarg($tempFilePath) . "' '" . escapeshellarg($start) . "' '" . escapeshellarg($end) . "' " . $previousEventsJson;
-            $generate_file = "python3 python/savePDF.py '" . escapeshellarg($tempFilePath);
             // Execute the command and capture output
             exec($generate_command, $plan, $resultsCode);
             if (isset($plan[0]) && trim($plan[0]) !== '') {
@@ -168,26 +170,26 @@ if (isset($_POST['new-plan-name'])) {
 
     //////DON'T COPY THIS SECTION FOR REGENERATING//////
     // Define file name and path
-    $fileName = "". uniqid().".txt";
+    $fileName = "" . uniqid() . ".txt";
     $filePath = "studyplan/" . $fileName;
     // Write content to file
     file_put_contents($filePath, $fullText);
 
     // New file name with .pdf extension
-    $newFileName = "".$planID.".pdf";
+    $newFileName = "" . $planID . ".pdf";
     $newFilePath = "studyplan/" . $newFileName;
 
     // Rename the file
     rename($filePath, $newFilePath);
 
-        
 
- 
+
+
 
     $data = $jsonData;
     $studyObjects = [];
     $studyPlanEvent = new MongoDB\Driver\BulkWrite;
-
+    $color = sprintf('#%06X', mt_rand(0, 0xFFFFFF)); //generate random study plan color
     foreach ($data as $study) {
         $studyObject = new stdClass();
         $studyObject->startDate = $study['date'];
@@ -209,14 +211,14 @@ if (isset($_POST['new-plan-name'])) {
         $title = $studyObject->title;
         $description =  $studyObject->description;
         $uid = $planID;
-        $start = $studyObject->startDate;
-        $end =  $studyObject->endDate;
+        $startevent = $studyObject->startDate;
+        $endevent =  $studyObject->endDate;
 
 
         $incrementedID = intval($id) + 1;
 
-        $color = "mediumseagreen"; //default study plan color
-        $event = ['id' => $id, 'title' => "STUDY: " . $title, 'description' => "Plan: $name. $description", 'reminder' => false, 'start' => $start, 'end' => $end, 'color' => $color, 'planID' => $planID];
+
+        $event = ['id' => $id, 'title' => "STUDY: " . $title, 'description' => "Plan: $name. $description", 'reminder' => false, 'start' => $startevent, 'end' => $endevent, 'color' => $color, 'planID' => $planID];
         $id++;
         //
         $studyPlanEvent->update(
@@ -240,12 +242,13 @@ if (isset($_POST['new-plan-name'])) {
         "planID" => $planID,
         "user_id" => $_SESSION['email'],
         "name" => $name,
-        "creation_date" => date("Y-m-d"),
+        "creation_date" => date('Y-m-d H:i:s'),
         "start" => $start,
         "end" => $end,
         "study_plan" => $studyObjects,
+        "studyMaterials" => $studyMaterial,
         "saved" => false,
-        "color" => 'skyblue'
+        "color" => $color
 
     ];
     $bulkWrite->insert($plan);
@@ -256,6 +259,19 @@ if (isset($_POST['new-plan-name'])) {
         echo "success";
     } else
         echo "fail";
+} elseif (isset($_POST['editPlanName'])) {
+    $bulkWrite = new MongoDB\Driver\BulkWrite;
+    $planID = $_POST['planID'];
+    $newName =  $_POST['newName'];
+    // Define the filter to identify the document
+    $filter = ['planID' => $planID];
+    $bulkWrite->update(
+        $filter,
+        ['$set' =>
+        ['name' => $newName]]
+    );
+    $result = $manager->executeBulkWrite('Learniverse.studyPlan', $bulkWrite);
+    echo "edited name";
 } elseif (isset($_POST['deletePlan'])) { //delete a plan
     $bulkWrite = new MongoDB\Driver\BulkWrite;
     $planID = $_POST['planID'];
@@ -298,7 +314,7 @@ if (isset($_POST['new-plan-name'])) {
     $query = new MongoDB\Driver\Query(['planID' => $planID]);
     $result = $manager->executeQuery("Learniverse.studyPlan", $query);
     $p = $result->toArray()[0];
-    if ($p->saved===true) {
+    if ($p->saved === true) {
         echo "saved";
         exit;
     }
@@ -344,7 +360,7 @@ if (isset($_POST['new-plan-name'])) {
             // $event does not have a planID property, so add it
             $event->title = "STUDY: " . $event->title;
             $event->planID = $planID;
-            $event->color = "mediumseagreen";
+            $event->color =  $p->color;
         }
         $event->id = $id;
         $event->reminder = true;
@@ -377,9 +393,139 @@ if (isset($_POST['new-plan-name'])) {
 
         echo 1;
     } else echo 0;
-} elseif (isset($_POST['regeneratePlan'])) //regenrate a plan
+} elseif (isset($_POST['regeneratePlan']))  //regenrate a plan
 {
+    $planID = $_POST['planID'];
+    //remove all events from the plan's calendar
+    $bulk =  new MongoDB\Driver\BulkWrite;
+    $bulk->update(
+        [
+            'user_id' => $planID
+        ],
+        ['$set' => ['List' => [[]], 'counter' => 1]]
+    );
+    $result = $manager->executeBulkWrite("Learniverse.calendar", $bulk);
 
+    // get the plan's start and end to generate new one
+    $query = new MongoDB\Driver\Query(['planID' => $planID]);
+    $result = $manager->executeQuery("Learniverse.studyPlan", $query);
+    $thisPlan = $result->toArray()[0];
+    $start = $thisPlan->start;
+    $end = $thisPlan->end;
+
+    //get all user's events in the calendar during the plan duration
+    $filter = [
+        'user_id' => $_SESSION['email'],
+        'List.start' => [
+            '$gte' => $start
+
+        ],
+        'List.end' => [
+            '$lte' => $end
+        ],
+    ];
+
+    $query = new MongoDB\Driver\Query($filter);
+
+    // Execute the query
+    $cursor = $manager->executeQuery("Learniverse.calendar", $query);
+
+    // Fetch the matching events
+    $previousEvents = [];
+    foreach ($cursor as $document) {
+        foreach ($document->List as $item) {
+            if (!is_array($item)) {
+                $eventStart = $item->start;
+                $eventEnd = $item->end;
+
+                if (substr($eventStart, 0, 10) >= $start && substr($eventEnd, 0, 10) <= $end) {
+                    $previousEvents[] = $item;
+                }
+            }
+        }
+    }
+
+    // Python request
+    $jsonData = null;
+    $tempFilePath = "studyplan/$planID.pdf";
+
+    // Construct the command to call the Python script with the file path as an argument
+    $previousEventsJson = escapeshellarg(json_encode($previousEvents));
+    $generate_command = "python3 python/StudyPlanner.py '" . escapeshellarg($tempFilePath) . "' '" . escapeshellarg($start) . "' '" . escapeshellarg($end) . "' " . $previousEventsJson;
+    // Execute the command and capture output
+    exec($generate_command, $plan, $resultsCode);
+    if (isset($plan[0]) && trim($plan[0]) !== '') {
+        $temp_file_path = trim($plan[0]);
+        $plan_data = json_decode(file_get_contents($temp_file_path), true);
+        $jsonData = $plan_data['study_plan'];
+        $studyObjects = [];
+        $studyPlanEvent = new MongoDB\Driver\BulkWrite;
+
+        foreach ($jsonData as $study) {
+            $studyObject = new stdClass();
+            $studyObject->startDate = $study['date'];
+            $studyObject->endDate = date('Y-m-d', strtotime($study['date'] . ' + 1 day'));
+            $studyObject->title = $study['title'];
+            $studyObject->description = $study['description'];
+
+            $studyObjects[] = $studyObject;
+        }
+
+        $color = sprintf('#%06X', mt_rand(0, 0xFFFFFF)); //generate random study plan color
+        $updateStudyPlan = new MongoDB\Driver\BulkWrite;
+        $filter = ['planID' => $planID];
+        $updateStudyPlan->update(
+            $filter,
+            ['$set' => [
+                'studyPlan' => $studyObjects, 'color' => $color
+            ]]
+        );
+        $manager->executeBulkWrite("Learniverse.studyPlan", $updateStudyPlan);
+
+        // Printing the study objects
+        foreach ($studyObjects as $studyObject) {
+            $title = $studyObject->title;
+            $description =  $studyObject->description;
+            $uid = $planID;
+            $start = $studyObject->startDate;
+            $end =  $studyObject->endDate;
+            echo "///////////////////////////////////////////////" . $title;
+            // retrieve calendar id to generate distinctive ids for events in the loop
+            $query = new MongoDB\Driver\Query(array('user_id' => $planID));
+            $cursor = $manager->executeQuery('Learniverse.calendar', $query);
+            $result_array = $cursor->toArray();
+            $result_json = json_decode(json_encode($result_array), true);
+            $id = $result_json[0]['counter'];
+
+            $incrementedID = intval($id) + 1;
+
+            $color = $thisPlan->color; //get study plan color
+
+            $event = ['id' => $id, 'title' => "STUDY: " . $title, 'description' => "Plan: $thisPlan->name. $description", 'reminder' => false, 'start' => $start, 'end' => $end, 'color' => $color, 'planID' => $planID];
+            $id++;
+            //
+            $studyPlanEvent->update(
+                [
+                    'user_id' => $planID,
+                ],
+                ['$push' => ['List' => $event]]
+            );
+            $studyPlanEvent->update(
+                [
+                    'user_id' => $planID,
+                ],
+                ['$set' => ['counter' => $incrementedID]]
+            );
+        }
+        $result = $manager->executeBulkWrite('Learniverse.calendar', $studyPlanEvent);
+        if ($result->getModifiedCount() > 0)
+            echo "added regenerated events to plan calendar";
+        else
+            echo "filed to add regenerated plan events to plan calendar";
+        exit;
+    } else {
+        echo "Python script did not return any output.";
+    }
 }
 
 header("Location:studyplan.php");
