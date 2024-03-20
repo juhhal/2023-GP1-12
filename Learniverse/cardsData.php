@@ -77,7 +77,6 @@ if (isset($_POST['datas'])) {
             if ((int)$sum['data_created'] === $dateCreated) {
                 $found = true;
                 echo json_encode(['success'=> $sum['flashcards']]);
-                exit; // Terminate the script
             }
         }
 
