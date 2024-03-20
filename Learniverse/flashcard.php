@@ -135,10 +135,6 @@ function getFilesByUserId($userId, $FileCollection) {
         }
     </style>
 <style>
-  #updateFile{
-    text-decoration: none !important;  
-    color: transparent;
-  }
   .btn-cl {
     background-color: #bf97d8;
     color: white;
@@ -507,7 +503,6 @@ function getFilesByUserId($userId, $FileCollection) {
 
               <div style="padding: 24px;">
 
-                <form action="" method="post" id="manualForm">
 
                   <div class="form-group">
                     <label class="h2" for="nameSubject">Name Subject</label>
@@ -891,30 +886,6 @@ function deleteFlashcard(date) {
 }
 
 
-function retrieve(datad) {
-    // Make AJAX request to the PHP file
-    console.log(datad);
-    $.ajax({
-        url: 'cardsData.php',
-        method: 'POST',
-        data: { datas: datad },
-        success: function(response) {
-    // Assuming response is already a JavaScript object, not JSON
-    var responseData = response;
-    console.log(response);
-    // Access the fields of the response object
-    var dataParam = encodeURIComponent(JSON.stringify(responseData));
-    window.location.href = 'displayFlashcards.php?data=' + dataParam;
-
- 
-},
-
-        error: function (xhr, status, error) {
-            // Log the full response body to see what's causing the JSON parse error
-            console.error(xhr.responseText);
-        }   
-    });
-}
 
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -929,8 +900,6 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
   </script>
-
-
 
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
