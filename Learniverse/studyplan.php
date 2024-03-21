@@ -536,9 +536,11 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                             errorMsg.style.color = "red";
                             endInput.parentNode.insertBefore(errorMsg, endInput.nextSibling);
                         }
-                        if (value != 0)
+                        if (value != 0) {
                             // Safely submit the form
                             form.submit();
+                            document.getElementsByClassName('viewPlan')[0].click();
+                        }
                     }
                 }
             });
