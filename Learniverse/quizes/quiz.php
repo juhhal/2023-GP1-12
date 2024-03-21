@@ -59,7 +59,7 @@
                 <p>1</p>
               </div>
               <a href="/quizes/">
-                <button class="back-btn">Back to Home</button>
+                <button class="back-btn">Exit quiz</button>
               </a>
             </div>
           </div>

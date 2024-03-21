@@ -28,6 +28,8 @@ error_reporting(E_ERROR | E_PARSE);
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
 
 
 <style>
@@ -684,22 +686,26 @@ error_reporting(E_ERROR | E_PARSE);
                       ?>
                     </td>
                     <td>
-                    <a class="viewResultModal" id="updateFile" data-result-value="<?php echo htmlspecialchars(json_encode($file['result'])); ?>">
+                    <a class="viewResultModal view-quiz" id="updateFile" data-result-value="<?php echo htmlspecialchars(json_encode($file['result'])); ?>">
                         <button class="file-edit btn">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                         </button>
                     </a>
-                        <button class="file-edit btn" onclick="deleteQuiz('<?php echo $file['id']; ?>')">
-                        <i class="fas fa-trash"></i>
-                        </button>
 
-                        <button class="file-edit btn" onclick="saveQuizAsPDF('<?php echo $file['id']; ?>')">
+
+                    <button class="file-edit btn download-pdf" onclick="saveQuizAsPDF('<?php echo $file['id']; ?>')">
                                 <i class="fas fa-download" aria-hidden="true"></i>
                         </button>
 
-                        <button class="file-edit btn" onclick="saveQuizAsPDF('<?php echo $file['id']; ?>')">
+                        <button class="file-edit btn save-quiz" onclick="saveQuizAsPDF('<?php echo $file['id']; ?>')">
                         <i class="fa fa-bookmark" aria-hidden="true"></i>
                         </button>
+
+                        <button class="file-edit btn delete-quiz" onclick="deleteQuiz('<?php echo $file['id']; ?>')">
+                        <i class="fas fa-trash"></i>
+                        </button>
+
+
                   </td>
                
                 </tr>
@@ -1093,6 +1099,22 @@ function saveQuizAsPDF(id) {
   });
   doc.save(`${title}_quiz.pdf`);
 }
+
+tippy('.delete-quiz', {
+    content: 'Delete Quiz',
+});
+
+tippy('.save-quiz', {
+    content: 'Save Quiz',
+});
+
+tippy('.download-pdf', {
+    content: 'Download PDF',
+});
+
+tippy('.view-quiz', {
+    content: 'View Quiz',
+});
 
 
     </script>
