@@ -151,7 +151,8 @@ const questionStatus = questions.map(question => ({
   userAnswer: null,
   correct: false,
   status: 'unanswered',
-  score: question.score
+  score: question.score,
+  correctAnswer: question.correctAnswer,
 }));
 let questionHistory = [];
 

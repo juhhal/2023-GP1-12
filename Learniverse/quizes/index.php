@@ -27,6 +27,8 @@ error_reporting(E_ERROR | E_PARSE);
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 
 <style>
         .overlay {
@@ -690,6 +692,14 @@ error_reporting(E_ERROR | E_PARSE);
                         <button class="file-edit btn" onclick="deleteQuiz('<?php echo $file['id']; ?>')">
                         <i class="fas fa-trash"></i>
                         </button>
+
+                        <button class="file-edit btn" onclick="saveQuizAsPDF('<?php echo $file['id']; ?>')">
+                                <i class="fas fa-download" aria-hidden="true"></i>
+                        </button>
+
+                        <button class="file-edit btn" onclick="saveQuizAsPDF('<?php echo $file['id']; ?>')">
+                        <i class="fa fa-bookmark" aria-hidden="true"></i>
+                        </button>
                   </td>
                
                 </tr>
@@ -1052,6 +1062,36 @@ function deleteQuiz(id) {
             });
         }
     });
+}
+window.jsPDF = window.jspdf.jsPDF;
+
+
+function saveQuizAsPDF(id) {
+  const quizes = <?php echo json_encode($filesList); ?>;
+
+  const quiz = quizes.find(quiz => quiz.id === id);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const result = quiz.result;
+  const title = quiz.name;
+  doc.text(title, 10, 10);
+  let y = 20;
+
+  result.forEach(result => {
+    const question = result.question;
+    const userAnswer = result.userAnswer;
+    const correct = result.correct === 'true' ? 'Correct' : 'Wrong';
+    // const correctAnswer = result.correctAnswer;
+    doc.setFontSize(12);
+    doc.text(`Question: ${question}`, 10, y);
+    doc.setFontSize(12); 
+    doc.text(`Your Answer: ${userAnswer} (${correct})`, 10, y + 10);
+    doc.setFontSize(12); 
+    // doc.text(`Correct Answer: ${correctAnswer}`, 10, y +10);
+    // doc.setFontSize(12); 
+    y += 20;
+  });
+  doc.save(`${title}_quiz.pdf`);
 }
 
 
