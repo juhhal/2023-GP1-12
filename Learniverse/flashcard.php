@@ -203,7 +203,7 @@ if (isset($_GET['file'])) {
           echo "Failed to write to temporary file.";
       } else {
           // Construct the command to call the Python script with the file path as an argument
-          $flashcard_command = "python3 python/flashcards.py '" . $tempFilePath . "' 2>&1";  // Redirect stderr to stdout
+          $flashcard_command = "python3 python/flashcards.py '" . $tempFilePath . "'";  // Redirect stderr to stdout
           // Execute the command and capture output
           exec($flashcard_command, $content, $resultsCode);
           // Check if the command executed successfully
@@ -574,9 +574,9 @@ if (isset($_GET['file'])) {
           Quiz
         </li>
         <li class="tool_item">
-          Flashcard
-        </li>
-        <li class="tool_item">
+                <a href="flashcard.php"> Flashcards</a>
+                </li>
+                <li class="tool_item">
           Summarization
         </li>
         <li class="tool_item">
@@ -652,21 +652,21 @@ if (isset($_GET['file'])) {
                         <?php } ?>
                         <td>
                             <a href="javascript:void(0)" id="updateFile">
-                            <button onclick="retrieve('<?php echo $date; ?>','<?php echo $file['subjectName']; ?>')" class="file-edit btn">
+                            <button onclick="retrieve('<?php echo $date; ?>','<?php echo $file['subjectName']; ?>')" class="file-edit btn" data-toggle="tooltip" title="Display">
                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                 </button>
                             </a>
-                            <button onclick="savePDF(<?php echo $date;?>)" class="file-edit btn">
+                            <button onclick="savePDF(<?php echo $date;?>)" class="file-edit btn" data-toggle="tooltip" title="Save as PDF">
                                 <i class="fas fa-download iconpdf" aria-hidden="true"></i>
                             </button>
-                            <button onclick="toFiles(<?php echo $date;?>)" class="file-edit btn">
+                            <button onclick="toFiles(<?php echo $date;?>)" class="file-edit btn" data-toggle="tooltip" title="Save to Files">
                             <i class="fa fa-bookmark" aria-hidden="true"></i>
                             </button>
 
 
 
                             <a href="javascript:void(0)" >
-                                <button onclick="deleteFlashcard(<?php echo $date;?>)" class="file-delete btn">
+                                <button onclick="deleteFlashcard(<?php echo $date;?>)" class="file-delete btn" data-toggle="tooltip" title="Delete">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </a>
@@ -708,10 +708,10 @@ if (isset($_GET['file'])) {
               <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button"
                 role="tab" aria-controls="home" aria-selected="true">Upload File</button>
             </li>
-            <!-- <li class="nav-item" role="presentation">
+            <li class="nav-item" role="presentation">
               <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#file" type="button"
-                role="tab" aria-controls="profile" aria-selected="false" onclick="showModal();">My Files</button>
-            </li> -->
+                role="tab" aria-controls="profile" aria-selected="false" >My Files</button>
+            </li>
             <li class="nav-item" role="presentation">
               <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button"
                 role="tab" aria-controls="profile" aria-selected="false">Manualy</button>
@@ -815,35 +815,33 @@ if (isset($_GET['file'])) {
 
   <script>
     function loadDirectories() {
-  fetch('listDirectories.php')
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('directoryButtons').innerHTML = html;
-    })
-    .catch(err => {
-      console.error('Failed to load directories', err);
-    });
+        fetch('summarization/listDirectories.php')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('directoryButtons').innerHTML = html;
+            })
+            .catch(err => {
+                console.error('Failed to load directories', err);
+            });
+    }
+
+    function loadFiles(directoryName) {
+        fetch(`summarization/listFiles.php?directory=${directoryName}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('fileList').innerHTML = html;
+            })
+            .catch(err => {
+                console.error('Failed to load files', err);
+            });
 }
 
-function loadFiles(directoryName) {
-  fetch(`listFiles.php?directory=${directoryName}`)
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('fileList').innerHTML = html;
-    })
-    .catch(err => {
-      console.error('Failed to load files', err);
-    });
-}
 
+        // Add the 'selected' class to the clicked file item
+        event.target.classList.add('selected');
+    }
+});
 
-// Modify the showModal function to call loadDirectories initially
-function showModal() {
-  document.getElementById('modal-body').style.display = 'none';
-  document.getElementById('fileModal').style.display = 'flex';
-  loadDirectories(); // Load directories first
-  loadFiles('Uploaded Files')
-}
   </script>
 
 
@@ -1018,7 +1016,7 @@ function toFiles(datad){
 
 // Loop through each card in the success array
 response.success.forEach(function(card) {
-  paragraph += "Question: " + card.content + " \nAnswer: " + card.answer + "\n\n";
+  paragraph += "Title: " + card.answer + " \nContent: " + card.content + "\n\n";
 });
 console.log(paragraph);
 
@@ -1043,8 +1041,9 @@ Swal.fire({
         console.log(result.value);
 
         // Add the text content to the PDF
-        doc.text(paragraph, 20, 20); // Adjust the x and y coordinates as needed
-
+        var maxWidth = 150; // Adjust this value as needed
+        var textLines = doc.splitTextToSize(paragraph, maxWidth);
+        doc.text(textLines, 20, 20);
         // Convert the PDF to a Blob
         const blob = doc.output('blob'); // Get blob directly
 
@@ -1091,7 +1090,7 @@ var paragraph = "";
 
 // Loop through each card in the success array
 response.success.forEach(function(card) {
-  paragraph += "Question: " + card.content + " \nAnswer: " + card.answer + "\n\n";
+  paragraph += "Title: " + card.answer + " \nContent: " + card.content + "\n\n";
 });
 console.log(paragraph);
 
@@ -1117,8 +1116,9 @@ const { jsPDF } = window.jspdf;
   }).then((result) => {
     if (result.isConfirmed) {
       // Add the text content to the PDF
-      doc.text(paragraph, 20, 20); // Adjust the x and y coordinates as needed
-      
+      var maxWidth = 150; // Adjust this value as needed
+        var textLines = doc.splitTextToSize(paragraph, maxWidth);
+        doc.text(textLines, 20, 20);      
       // Save the PDF with the chosen filename
       doc.save(result.value + ".pdf");
     }
