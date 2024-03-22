@@ -12,7 +12,7 @@
 ?>
 <head>
     <meta charset="UTF-8">
-    <title>EMPTY</title>
+    <title>flashcards</title>
     <link rel="stylesheet" href="../emptyWorkspace.css">
     <link rel="stylesheet" href="../header-footer.css">
 

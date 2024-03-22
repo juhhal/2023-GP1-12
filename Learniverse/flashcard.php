@@ -224,6 +224,8 @@ if (isset($_GET['file'])) {
     }
 ?>
 <style>
+
+
   .btn-cl {
     background-color: #bf97d8;
     color: white;
@@ -458,8 +460,9 @@ if (isset($_GET['file'])) {
   }
 
   .dirButton {
-    padding: 10px 20px;
+    padding: 7px 14px;
     margin-right: 10px;
+    margin-top: 1%;
     /* Space between buttons */
     background-color: #bf97d8;
     /* Bootstrap primary color */
@@ -486,6 +489,18 @@ if (isset($_GET['file'])) {
     cursor: pointer;
     width: 100%;
     box-sizing: border-box;
+  }
+  #selectFileButton{
+    margin-top: 2%;
+    background-color: #bf97d8;
+  }
+
+  #selectFileButton:hover, .btn-cl:hover {
+    background-color: #946aae;
+    /* Darker blue on hover */
+  }
+  .selected{
+    background-color: #e2e2e2;
   }
 </style>
 
@@ -562,46 +577,45 @@ if (isset($_GET['file'])) {
 
   <main>
     <div id="tools_div">
-      <ul class="tool_list">
-        <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
-          </a>
-        </li>
-        <li class="tool_item">
-          <a href="theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
-          Quiz
-        </li>
-        <li class="tool_item">
+    <ul class="tool_list">
+                <li class="tool_item">
+                    <a href="workspace.php"> Calendar & To-Do
+                    </a>
+                </li>
+                <li class="tool_item">
+                    <a href="theFiles.php"> My Files</a>
+                </li>
+                <li class="tool_item">
+                <a href="quizes/index.php"> Quizzes</a>
+                </li>
+                <li class="tool_item">
                 <a href="flashcard.php"> Flashcards</a>
                 </li>
                 <li class="tool_item">
-          Summarization
-        </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
-        <li class="tool_item"><a href="Notes/notes.php">
-            Notes</a>
-        </li>
-        <li class="tool_item">
-          <a href="pomodoro.php">
-            Pomodoro</a>
-        </li>
-        <li class="tool_item"><a href="gpa.php">
-            GPA Calculator</a>
-        </li>
-        <li class="tool_item">
-          Shared spaces
-        </li>
-        <li class="tool_item">
-          Meeting Room
-        </li>
-        <li class="tool_item"><a href="community.php">
-            Community</a>
-        </li>
-      </ul>
+                <a href="summarization/summarization.php"> Summarization</a>
+                </li>
+                <li class="tool_item">
+                <a href="studyplan.php"> Study Plan</a>
+                </li>
+                <li class="tool_item"><a href="Notes/notes.php">
+                        Notes</a>
+                </li>
+                <li class="tool_item">
+                    <a href="pomodoro.php">
+                        Pomodoro</a>
+                </li>
+                <li class="tool_item"><a href="gpa.php">
+                        GPA Calculator</a>
+                </li>
+                <li class="tool_item"><a href="sharedspace.php">
+                        Shared spaces</a></li>
+                <li class="tool_item">
+                    Meeting Room
+                </li>
+                <li class="tool_item"><a href="community.php">
+                        Community</a>
+                </li>
+            </ul>
     </div>
 
 
@@ -739,7 +753,11 @@ if (isset($_GET['file'])) {
 
             </div>
 
+            <div class="tab-pane fade" id="file" role="tabpanel" aria-labelledby="file-tab">
+                        <div id="directoryButtons"></div> <!-- Placeholder for directory buttons -->
+                        <div id="fileList"></div> <!-- Placeholder for file list -->
 
+                    </div>
             <!-- <div class="tab-pane fade " id="file" role="tabpanel" aria-labelledby="file-tab">
 
               <form enctype="multipart/form-data" method="post" action="" id="uploadForm"
@@ -814,6 +832,94 @@ if (isset($_GET['file'])) {
 
 
   <script>
+//     function loadDirectories() {
+//   fetch('listDirectories.php')
+//     .then(response => response.text())
+//     .then(html => {
+//       document.getElementById('directoryButtons').innerHTML = html;
+//     })
+//     .catch(err => {
+//       console.error('Failed to load directories', err);
+//     });
+// }
+
+// function loadFiles(directoryName) {
+//   fetch(`listFiles.php?directory=${directoryName}`)
+//     .then(response => response.text())
+//     .then(html => {
+//       document.getElementById('fileList').innerHTML = html;
+//     })
+//     .catch(err => {
+//       console.error('Failed to load files', err);
+//     });
+// }
+
+
+// // Modify the showModal function to call loadDirectories initially
+// function showModal() {
+//   document.getElementById('modal-body').style.display = 'none';
+//   document.getElementById('fileModal').style.display = 'flex';
+//   loadDirectories(); // Load directories first
+//   loadFiles('Uploaded Files')
+// }
+// Activate Bootstrap tooltips
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+let loadingOverlay = document.getElementById("loadingOverlay");
+function showLoading() {
+  loadingOverlay.style.display = 'block';
+}
+
+// Function to hide loading overlay
+function hideLoading() {
+  loadingOverlay.style.display = 'none';
+}
+function selectFile(fileName) {
+  // Handle file selection
+  console.log(fileName);
+  showLoading(); // Show the loading overlay
+
+  // Create FormData object to send the file name to the server
+  const formData = new FormData();
+  formData.append('flashcardFile', fileName);
+
+  // Send the file name to the server using AJAX
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', 'summarization/extract.php', true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) { // Check if request is complete
+      hideLoading(); // Hide the loading overlay once the request is complete
+      if (xhr.status === 200) {
+        // Parse the response JSON
+        const response = JSON.parse(xhr.responseText);
+        console.log(response);
+
+        // Check if the request was successful
+        if (response.success) {
+          // Access the time and subjectName properties
+          const time = response.time;
+          const subjectName = response.subjectName;
+          console.log(time, subjectName);
+          // Call the retrieve function with time and subjectName parameters
+          retrieve(time, subjectName);
+        } else {
+          console.error("Request was not successful");
+        }
+      } else {
+        // Handle HTTP error (status code other than 200)
+        console.error("Error response", xhr.statusText);
+      }
+    }
+  };
+  xhr.send(formData);
+}
+
+$('#uploadFileModel').on('shown.bs.modal', function (e) {
+        loadDirectories();
+        loadFiles('Uploaded Files');
+    });
+
     function loadDirectories() {
         fetch('summarization/listDirectories.php')
             .then(response => response.text())
@@ -834,8 +940,25 @@ if (isset($_GET['file'])) {
             .catch(err => {
                 console.error('Failed to load files', err);
             });
+    }
+    // JavaScript function to handle file selection
+function handleFileSelection() {
+    // Get the selected file name
+    var selectedFileName = document.querySelector('.fileItem.selected').textContent;
+
+    // Do something with the selected file name
+    console.log('Selected file:', selectedFileName);
 }
 
+// Event listener to handle file item selection
+document.addEventListener('click', function(event) {
+    // Check if clicked element is a file item
+    if (event.target.classList.contains('fileItem')) {
+        // Remove the 'selected' class from all file items
+        var fileItems = document.querySelectorAll('.fileItem');
+        fileItems.forEach(function(item) {
+            item.classList.remove('selected');
+        });
 
         // Add the 'selected' class to the clicked file item
         event.target.classList.add('selected');
