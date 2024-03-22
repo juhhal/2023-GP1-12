@@ -6,7 +6,17 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 $userEmail = $_SESSION['email'];
 $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
 ini_set('display_errors', '0');
-error_reporting(E_ERROR | E_PARSE); 
+error_reporting(E_ERROR | E_PARSE);
+
+// $filePath = $_GET['file'];
+$filePath = $_GET['file'] ? "../" . $_GET['file'] : null;
+$fileName = $_GET['fileName'];
+if (file_exists($filePath)) {
+
+} elseif ($filePath) {
+  echo 'File does not exist.';
+  exit();
+}
 ?>
 
 <html lang="en">
@@ -31,6 +41,22 @@ error_reporting(E_ERROR | E_PARSE);
   <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filePath = "<?php echo $filePath; ?>";
+    console.log({filePath})
+    if(filePath) {
+      // trigger modal
+      const introCard = document.querySelector('.intro-card');
+      const introCardContainer = document.querySelector('.intro-card-container');
+      const startModalCloseIcon = document.querySelector('.close-icon');
+
+      introCard.style.display = "flex";
+      introCardContainer.style.background = "rgba(0, 0, 0, 0.2)";
+      introCardContainer.style.zIndex = "1000";      
+    }
+  });
+</script>
 
 <style>
         .overlay {
@@ -294,29 +320,38 @@ error_reporting(E_ERROR | E_PARSE);
 </header>
 <main>
 <div class="intro-card-container">
-          <div class="intro-card">
-            <h2>Hello 👋</h2>
-            <p>How would you like to learn?</p>
-            <a id="summarize">
-              <div>
-                <h4>✍️ Multiple Choice</h4>
-                <p>
-                  Strengthen your understanding on every concept by solving
-                  multiple choice questions
-                </p>
-              </div>
-            </a>
-            <a id="summarizeTrueFalse">
-              <div>
-                <h4>✍️ True or False</h4>
-                <p>
-                  Strengthen your understanding on every concept by solving
-                  true or false questions
-                </p>
-              </div>
-            </a>
-            <img class="close-icon" src="icons/close.svg" alt="" />
-          </div>
+      <div class="intro-card">
+                  <h2>Hello 👋</h2>
+                  <p>How would you like to learn?</p>
+                  <a id="summarize" style="margin-top:10px;">
+                    <div>
+                      <h4>✍️ Multiple Choice</h4>
+                      <p>
+                        Strengthen your understanding on every concept by solving
+                        multiple choice questions
+                      </p>
+                    </div>
+                  </a>
+                  <a id="summarizeTrueFalse" style="margin-top:10px;">
+                    <div>
+                      <h4>✍️ True or False</h4>
+                      <p>
+                        Strengthen your understanding on every concept by solving
+                        true or false questions
+                      </p>
+                    </div>
+                  </a>
+                  <a id="summarizeMixed" style="margin-top:10px;">
+                    <div>
+                      <h4>✍️ Mix of both</h4>
+                      <p>
+                        Strengthen your understanding on every concept by solving
+                        a mix of both multiple choice and true or false questions
+                      </p>
+                    </div>
+                  </a>
+                  <img class="close-icon" src="icons/close.svg" alt="" />
+                </div>
          </div>
   <div id="tools_div">
         <ul class="tool_list">
@@ -801,15 +836,21 @@ fileInput.addEventListener("change", () => {
             //     xhr.send(formData);
             // });
 
-            $('#summarize').click(function() {
-              let fileName = fileInput.files[0].name;
+            $('#summarize').click(async function() {
+              let fileName = fileInput.files[0]?.name;
               let formData = new FormData();
-              formData.append('fileUpload', fileInput.files[0]);
+              const filePath = "<?php echo $filePath; ?>";
+              const fileName2 = "<?php echo $fileName; ?>";
+              if(filePath) {
+                formData.append('filePath', filePath);
+                formData.append('fileName', fileName2);
+              } else {
+                formData.append('fileUpload', fileInput.files[0]);
+              }
 
                   showLoading(); 
                   console.log("Sending request to extract.php...");
-                  var data = [fileName, extractedValue];   
-                  console.log({data})               
+                  var data = [fileName || fileName2, extractedValue];   
                       $.ajax({
                       url: 'extractQuizes.php',
                       type: 'POST',
@@ -822,11 +863,117 @@ fileInput.addEventListener("change", () => {
                           url: 'postQuiz.php',
                           method: 'POST',
                           data: {
-                            name: fileName,
+                            name: fileName || fileName2,
                             body: response.data
                           },
                           success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
+                            hideLoading();
+                          },
+                          error: function(jqXHR, textStatus, errorThrown) {
+                            console.error("Error:", textStatus, errorThrown);
+                          }
+                        });
+                      },
+                      error: function(jqXHR, textStatus, errorThrown) {
+                          hideLoading(); // Hide loading overlay
+                          console.error("Error:", textStatus, errorThrown);
+                          Swal.fire({
+                              title: 'Request Failed',
+                              text: 'There was an error processing your request.',
+                              icon: 'error',
+                              confirmButtonText: 'OK'
+                          });
+                      }
+                  });
+              
+          });
+          $('#summarizeTrueFalse').click(async function() {
+              let fileName = fileInput.files[0]?.name;
+              let formData = new FormData();
+              const filePath = "<?php echo $filePath; ?>";
+              const fileName2 = "<?php echo $fileName; ?>";
+              if(filePath) {
+                formData.append('filePath', filePath);
+                formData.append('fileName', fileName2);
+              } else {
+                formData.append('fileUpload', fileInput.files[0]);
+              }
+              formData.append('quizType', 'trueFalse');
+
+                  showLoading(); 
+                  console.log("Sending request to extract.php...");
+                  var data = [fileName || fileName2, extractedValue];   
+                      $.ajax({
+                      url: 'extractQuizes.php',
+                      type: 'POST',
+                      data: formData, 
+                      processData: false,
+                       contentType: false,
+
+                      success: function(response) {
+                        $.ajax({
+                          url: 'postQuiz.php',
+                          method: 'POST',
+                          data: {
+                            name: fileName || fileName2,
+                            body: response.data
+                          },
+                          success: function(res) {
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
+                            hideLoading();
+                          },
+                          error: function(jqXHR, textStatus, errorThrown) {
+                            console.error("Error:", textStatus, errorThrown);
+                          }
+                        });
+                      },
+                      error: function(jqXHR, textStatus, errorThrown) {
+                          hideLoading(); // Hide loading overlay
+                          console.error("Error:", textStatus, errorThrown);
+                          Swal.fire({
+                              title: 'Request Failed',
+                              text: 'There was an error processing your request.',
+                              icon: 'error',
+                              confirmButtonText: 'OK'
+                          });
+                      }
+                  });
+              
+          });
+          $('#summarizeMixed').click(async function() {
+              let fileName = fileInput.files[0]?.name;
+              let formData = new FormData();
+              const filePath = "<?php echo $filePath; ?>";
+              const fileName2 = "<?php echo $fileName; ?>";
+              if(filePath) {
+                formData.append('filePath', filePath);
+                formData.append('fileName', fileName2);
+              } else {
+                formData.append('fileUpload', fileInput.files[0]);
+              }
+              formData.append('quizType', 'mixed');
+
+                  showLoading(); 
+                  console.log("Sending request to extract.php...");
+                  var data = [fileName || fileName2, extractedValue];   
+                      $.ajax({
+                      url: 'extractQuizes.php',
+                      type: 'POST',
+                      data: formData, 
+                      processData: false,
+                       contentType: false,
+
+                      success: function(response) {
+                        $.ajax({
+                          url: 'postQuiz.php',
+                          method: 'POST',
+                          data: {
+                            name: fileName || fileName2,
+                            body: response.data
+                          },
+                          success: function(res) {
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
                             hideLoading();
                           },
                           error: function(jqXHR, textStatus, errorThrown) {
@@ -848,53 +995,9 @@ fileInput.addEventListener("change", () => {
               
           });
           
-          $('#summarizeTrueFalse').click(function() {
-              let fileName = fileInput.files[0].name;
-              let formData = new FormData();
-              formData.append('fileUpload', fileInput.files[0]);
-              formData.append('quizType', 'trueFalse');
 
-                  showLoading(); 
-                  console.log("Sending request to extract.php...");
-                  var data = [fileName, extractedValue];   
-                      $.ajax({
-                      url: 'extractQuizes.php',
-                      type: 'POST',
-                      data: formData, 
-                      processData: false,
-                       contentType: false,
-
-                      success: function(response) {
-                        $.ajax({
-                          url: 'postQuiz.php',
-                          method: 'POST',
-                          data: {
-                            name: fileName,
-                            body: response.data,
-                          },
-                          success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
-                            hideLoading();
-                          },
-                          error: function(jqXHR, textStatus, errorThrown) {
-                            console.error("Error:", textStatus, errorThrown);
-                          }
-                        });
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                          hideLoading(); // Hide loading overlay
-                          console.error("Error:", textStatus, errorThrown);
-                          Swal.fire({
-                              title: 'Request Failed',
-                              text: 'There was an error processing your request.',
-                              icon: 'error',
-                              confirmButtonText: 'OK'
-                          });
-                      }
-                  });
-              
-          });
-
+         
+          
 
           function showLoading() {
                 loadingOverlay.style.display = 'block';

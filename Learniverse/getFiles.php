@@ -67,7 +67,7 @@ if (isset($_POST['folder']) && isset($_POST['userDirectory'])) {
         }).css('display', 'none');
     
         var quizBtn = $('<button>').addClass('custom-btn').text('Quizzes').on('click', function() {
-            window.location.href = 'quizes/index.php?file=' + encodeURIComponent(filePath);
+            window.location.href = 'quizes/index.php?file=' + encodeURIComponent(filePath) + '&fileName=' + encodeURIComponent('" . $file . "');
         }).css('display', 'none');
     
         var flashcardsBtn = $('<button>').addClass('custom-btn').text('Flashcards').on('click', function() {
