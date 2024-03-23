@@ -2,23 +2,19 @@
 
 $quizType = isset($_POST['quizType']) ? $_POST['quizType'] : 'questionAnswers';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $pythonScript = '../python/quizzes.py';
-    $tempFilePath = '';
-    $cleanupRequired = false; 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fileUpload'])) {
+    $error = '';
+    $success = '';
 
-    if (isset($_FILES['fileUpload'])) {
+    $pythonScript = '../python/quizzes.py'; 
+    
         $fileTmpPath = $_FILES['fileUpload']['tmp_name'];
         $fileName = $_FILES['fileUpload']['name'];
         $error = $_FILES['fileUpload']['error'];
 
-        if ($error > 0) {
-            $response = ['error' => true, 'message' => 'Error uploading the file!'];
-            respondAndExit($response);
-        } else {
-            $tempDir = sys_get_temp_dir();
-            $tempFilePath = $tempDir . '/' . $fileName;
-            $cleanupRequired = true; 
+
+        $tempDir = sys_get_temp_dir();
+        $tempFilePath = $tempDir . '/' . $fileName;
 
             if (!move_uploaded_file($fileTmpPath, $tempFilePath)) {
                 $response = ['error' => true, 'message' => 'Failed to move uploaded file.'];
@@ -46,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $resultFilePath = trim($output);
             $quizData = file_get_contents($resultFilePath);
 
-            if ($cleanupRequired) {
                 unlink($tempFilePath);
             }
             unlink($resultFilePath); 
@@ -62,12 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     respondAndExit($response);
 } else {
     $response = ['error' => true, 'message' => 'Invalid request'];
-    respondAndExit($response);
-}
-
-function respondAndExit($response) {
     header('Content-Type: application/json');
     echo json_encode($response);
-    exit;
 }
 ?>

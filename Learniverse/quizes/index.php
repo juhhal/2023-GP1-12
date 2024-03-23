@@ -6,17 +6,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 $userEmail = $_SESSION['email'];
 $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
 ini_set('display_errors', '0');
-error_reporting(E_ERROR | E_PARSE);
-
-// $filePath = $_GET['file'];
-$filePath = $_GET['file'] ? "../" . $_GET['file'] : null;
-$fileName = $_GET['fileName'];
-if (file_exists($filePath)) {
-
-} elseif ($filePath) {
-  echo 'File does not exist.';
-  exit();
-}
+error_reporting(E_ERROR | E_PARSE); 
 ?>
 
 <html lang="en">
@@ -41,22 +31,6 @@ if (file_exists($filePath)) {
   <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const filePath = "<?php echo $filePath; ?>";
-    console.log({filePath})
-    if(filePath) {
-      // trigger modal
-      const introCard = document.querySelector('.intro-card');
-      const introCardContainer = document.querySelector('.intro-card-container');
-      const startModalCloseIcon = document.querySelector('.close-icon');
-
-      introCard.style.display = "flex";
-      introCardContainer.style.background = "rgba(0, 0, 0, 0.2)";
-      introCardContainer.style.zIndex = "1000";      
-    }
-  });
-</script>
 
 <style>
         .overlay {
@@ -420,15 +394,10 @@ if (file_exists($filePath)) {
             &nbsp; Choose Files To Upload
           </label>
         </form>
-        <!-- <label  id="summarize" style="margin: 0 10px;">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-          &nbsp; Generate
-        </label> 
-        
-        <label  id="summarizeTrueFalse">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-          &nbsp; Generate True or False
-        </label> -->
+        <label id="myLabel" onclick="showModal()" >
+          <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          &nbsp; My uploaded files
+        </label>
         <label  id="generateBtn" style="margin: 0 10px;" class="disabled">
         <i class="fa-solid fa-wand-magic-sparkles"></i>
           &nbsp; Generate
@@ -806,7 +775,6 @@ fileInput.addEventListener("change", () => {
         });
     }
 });
-            let messageContainer = document.getElementById("og");
             let loadingOverlay = document.getElementById("loadingOverlay");
 
             // fileInput.addEventListener("change", function() {
@@ -996,9 +964,6 @@ fileInput.addEventListener("change", () => {
           });
           
 
-         
-          
-
           function showLoading() {
                 loadingOverlay.style.display = 'block';
             }
@@ -1176,8 +1141,7 @@ window.jsPDF = window.jspdf.jsPDF;
 
 
 function saveQuizAsPDF(id) {
-  const quizes = <?php echo json_encode($filesList); ?>;
-
+    const quizes = <?php echo json_encode($filesList); ?>;
   const quiz = quizes.find(quiz => quiz.id === id);
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
