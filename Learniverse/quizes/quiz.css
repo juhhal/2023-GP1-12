@@ -278,3 +278,17 @@ input {
   margin-top: 30px;
   font-weight: 600;
 }
+.summary-wrapper label {
+  display: block;
+  position: relative;
+  background-color: #bf97d8;
+  color: #ffffff;
+  font-size: 1.12em;
+  font-weight: 500;
+  text-align: center;
+  width: 25%;
+  padding: 1.12em 0;
+  margin: auto;
+  border-radius: 0.31em;
+  cursor: pointer;
+}

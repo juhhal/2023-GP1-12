@@ -4,7 +4,6 @@ import logging
 import tempfile
 from openai import OpenAI
 import PyPDF2
-import docx
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -12,22 +11,15 @@ def generateQuiz(path: str, quizType: str) -> str:
     text = ''
     try:
         logging.info("Reading text from file.")
-        if path.endswith('.pdf'):
-            with open(path, 'rb') as pdf:
-                reader = PyPDF2.PdfReader(pdf, strict=False)
-                extracted = ''
-                for page in reader.pages:
-                    content = page.extract_text()
-                    if content:
-                        extracted += ' ' + content
-                text = extracted
-        elif path.endswith('.docx'):
-            doc = docx.Document(path)
-            extracted = ' '.join([paragraph.text for paragraph in doc.paragraphs])
+        with open(path, 'rb') as pdf:
+            reader = PyPDF2.PdfReader(pdf, strict=False)
+            extracted = ''
+            for page in reader.pages:
+                content = page.extract_text()
+                if content:
+                    extracted += ' ' + content
             text = extracted
-        else:
-            logging.error("Unsupported file type. Only PDF and DOCX files are supported.")
-            return ''
+
 
         if quizType == "questionAnswers":
             system_prompt = "You are a multiple choice quiz generator designed to output JSON and never return an empty response, write in this format array of questions (for example: questions) with a length of 10,  and includes the following array: question name (question), 3 multiple choices array (answers), correct choice answer (correctAnswer), and a score for the quality of the question from 1 to 10 (score)."
@@ -35,7 +27,7 @@ def generateQuiz(path: str, quizType: str) -> str:
             system_prompt = "Generate a JSON-formatted true or false quiz with the following specifications in one string: The output should be an object containing a key 'questions' with its value being an array of 10 objects. Each object must include: 'question' (string), 'correctAnswer' (a string of either 'true' or 'false' only), 'answers' (an array with two elements: ['true', 'false'] only), and 'score' (an integer from 1 to 10 indicating the question's quality). Ensure questions vary in difficulty and are non-repetitive, with no empty responses."
 
         logging.info("Creating OpenAI client and generating response.",)
-        client = OpenAI(api_key = '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')
+        client = OpenAI(api_key = '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')
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             response_format={"type": "json_object"},

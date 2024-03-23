@@ -294,38 +294,29 @@ error_reporting(E_ERROR | E_PARSE);
 </header>
 <main>
 <div class="intro-card-container">
-      <div class="intro-card">
-                  <h2>Hello 👋</h2>
-                  <p>How would you like to learn?</p>
-                  <a id="summarize" style="margin-top:10px;">
-                    <div>
-                      <h4>✍️ Multiple Choice</h4>
-                      <p>
-                        Strengthen your understanding on every concept by solving
-                        multiple choice questions
-                      </p>
-                    </div>
-                  </a>
-                  <a id="summarizeTrueFalse" style="margin-top:10px;">
-                    <div>
-                      <h4>✍️ True or False</h4>
-                      <p>
-                        Strengthen your understanding on every concept by solving
-                        true or false questions
-                      </p>
-                    </div>
-                  </a>
-                  <a id="summarizeMixed" style="margin-top:10px;">
-                    <div>
-                      <h4>✍️ Mix of both</h4>
-                      <p>
-                        Strengthen your understanding on every concept by solving
-                        a mix of both multiple choice and true or false questions
-                      </p>
-                    </div>
-                  </a>
-                  <img class="close-icon" src="icons/close.svg" alt="" />
-                </div>
+          <div class="intro-card">
+            <h2>Hello 👋</h2>
+            <p>How would you like to learn?</p>
+            <a id="summarize">
+              <div>
+                <h4>✍️ Multiple Choice</h4>
+                <p>
+                  Strengthen your understanding on every concept by solving
+                  multiple choice questions
+                </p>
+              </div>
+            </a>
+            <a id="summarizeTrueFalse">
+              <div>
+                <h4>✍️ True or False</h4>
+                <p>
+                  Strengthen your understanding on every concept by solving
+                  true or false questions
+                </p>
+              </div>
+            </a>
+            <img class="close-icon" src="icons/close.svg" alt="" />
+          </div>
          </div>
   <div id="tools_div">
         <ul class="tool_list">
@@ -385,8 +376,10 @@ error_reporting(E_ERROR | E_PARSE);
         <h1>Generated Quizzes</h1>
         <p>Generate quizzes to test your knowledge.</p>
       </div>
-      <div class="button-container" style="width: 70%;">
+
+        <div class="button-container">
         <div class="summary-wrapper">
+
         <form enctype="multipart/form-data" method="post" action="" id="uploadForm">
           <input type="file" id="file-input" />
           <label id="" for="file-input">
@@ -399,9 +392,9 @@ error_reporting(E_ERROR | E_PARSE);
           &nbsp; My uploaded files
         </label>
         <label  id="generateBtn" style="margin: 0 10px;" class="disabled">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <i class="fa-solid fa-wand-magic-sparkles disabled"></i>
           &nbsp; Generate
-        </label> 
+        </label>
         </div>
         <div id="num-of-files"></div>
         <ul id="files-list"></ul>
@@ -777,48 +770,43 @@ fileInput.addEventListener("change", () => {
 });
             let loadingOverlay = document.getElementById("loadingOverlay");
 
-            // fileInput.addEventListener("change", function() {
-            //     let formData = new FormData();
-            //     formData.append('file', fileInput.files[0]);
-            //     formData.append('readpdf', 'true'); // Include the 'readpdf' parameter
+            fileInput.addEventListener("change", function() {
+    let formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('readpdf', 'true'); // Include the 'readpdf' parameter
 
-            //     showLoading(); // Show loading overlay
+    console.log('FormData:', formData); // Log FormData object
 
-            //     let xhr = new XMLHttpRequest();
-            //     xhr.open('POST', '../summarization/extract.php'); 
-            //     xhr.onreadystatechange = function() {
-            //         if (xhr.readyState === XMLHttpRequest.DONE) {
-            //             hideLoading(); // Hide loading overlay
-            //             if (xhr.status === 200) {
-            //                 // Request was successful, handle response here
-            //                 extractedValue=xhr.responseText;
-            //                 console.log(xhr.responseText);
+    showLoading(); // Show loading overlay
+
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '../summarization/extract.php'); 
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            hideLoading(); // Hide loading overlay
+            if (xhr.status === 200) {
+                // Request was successful, handle response here
+                extractedValue = xhr.responseText;
+                console.log('Response:', xhr.responseText);
+            } else {
+                // Request failed, handle error here
+                console.error('Error:', xhr.statusText);
+            }
+        }
+    };
+    xhr.send(formData);
+});
 
 
-            //             } else {
-            //                 // Request failed, handle error here
-            //                 console.error('Error:', xhr.statusText);
-            //             }
-            //         }
-            //     };
-            //     xhr.send(formData);
-            // });
-
-            $('#summarize').click(async function() {
-              let fileName = fileInput.files[0]?.name;
+            $('#summarize').click(function() {
+              let fileName = fileInput.files[0].name;
               let formData = new FormData();
-              const filePath = "<?php echo $filePath; ?>";
-              const fileName2 = "<?php echo $fileName; ?>";
-              if(filePath) {
-                formData.append('filePath', filePath);
-                formData.append('fileName', fileName2);
-              } else {
-                formData.append('fileUpload', fileInput.files[0]);
-              }
+              formData.append('fileUpload', fileInput.files[0]);
 
                   showLoading(); 
                   console.log("Sending request to extract.php...");
-                  var data = [fileName || fileName2, extractedValue];   
+                  var data = [fileName, extractedValue];   
+                  console.log({data})               
                       $.ajax({
                       url: 'extractQuizes.php',
                       type: 'POST',
@@ -831,117 +819,12 @@ fileInput.addEventListener("change", () => {
                           url: 'postQuiz.php',
                           method: 'POST',
                           data: {
-                            name: fileName || fileName2,
+                            name: fileName,
                             body: response.data
                           },
                           success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
-                            hideLoading();
-                          },
-                          error: function(jqXHR, textStatus, errorThrown) {
-                            console.error("Error:", textStatus, errorThrown);
-                          }
-                        });
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                          hideLoading(); // Hide loading overlay
-                          console.error("Error:", textStatus, errorThrown);
-                          Swal.fire({
-                              title: 'Request Failed',
-                              text: 'There was an error processing your request.',
-                              icon: 'error',
-                              confirmButtonText: 'OK'
-                          });
-                      }
-                  });
-              
-          });
-          $('#summarizeTrueFalse').click(async function() {
-              let fileName = fileInput.files[0]?.name;
-              let formData = new FormData();
-              const filePath = "<?php echo $filePath; ?>";
-              const fileName2 = "<?php echo $fileName; ?>";
-              if(filePath) {
-                formData.append('filePath', filePath);
-                formData.append('fileName', fileName2);
-              } else {
-                formData.append('fileUpload', fileInput.files[0]);
-              }
-              formData.append('quizType', 'trueFalse');
-
-                  showLoading(); 
-                  console.log("Sending request to extract.php...");
-                  var data = [fileName || fileName2, extractedValue];   
-                      $.ajax({
-                      url: 'extractQuizes.php',
-                      type: 'POST',
-                      data: formData, 
-                      processData: false,
-                       contentType: false,
-
-                      success: function(response) {
-                        $.ajax({
-                          url: 'postQuiz.php',
-                          method: 'POST',
-                          data: {
-                            name: fileName || fileName2,
-                            body: response.data
-                          },
-                          success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
-                            hideLoading();
-                          },
-                          error: function(jqXHR, textStatus, errorThrown) {
-                            console.error("Error:", textStatus, errorThrown);
-                          }
-                        });
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                          hideLoading(); // Hide loading overlay
-                          console.error("Error:", textStatus, errorThrown);
-                          Swal.fire({
-                              title: 'Request Failed',
-                              text: 'There was an error processing your request.',
-                              icon: 'error',
-                              confirmButtonText: 'OK'
-                          });
-                      }
-                  });
-              
-          });
-          $('#summarizeMixed').click(async function() {
-              let fileName = fileInput.files[0]?.name;
-              let formData = new FormData();
-              const filePath = "<?php echo $filePath; ?>";
-              const fileName2 = "<?php echo $fileName; ?>";
-              if(filePath) {
-                formData.append('filePath', filePath);
-                formData.append('fileName', fileName2);
-              } else {
-                formData.append('fileUpload', fileInput.files[0]);
-              }
-              formData.append('quizType', 'mixed');
-
-                  showLoading(); 
-                  console.log("Sending request to extract.php...");
-                  var data = [fileName || fileName2, extractedValue];   
-                      $.ajax({
-                      url: 'extractQuizes.php',
-                      type: 'POST',
-                      data: formData, 
-                      processData: false,
-                       contentType: false,
-
-                      success: function(response) {
-                        $.ajax({
-                          url: 'postQuiz.php',
-                          method: 'POST',
-                          data: {
-                            name: fileName || fileName2,
-                            body: response.data
-                          },
-                          success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
+                            console.log(response);
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
                             hideLoading();
                           },
                           error: function(jqXHR, textStatus, errorThrown) {
@@ -963,6 +846,53 @@ fileInput.addEventListener("change", () => {
               
           });
           
+          $('#summarizeTrueFalse').click(function() {
+              let fileName = fileInput.files[0].name;
+              let formData = new FormData();
+              formData.append('fileUpload', fileInput.files[0]);
+              formData.append('quizType', 'trueFalse');
+
+                  showLoading(); 
+                  console.log("Sending request to extract.php...");
+                  var data = [fileName, extractedValue];   
+                      $.ajax({
+                      url: 'extractQuizes.php',
+                      type: 'POST',
+                      data: formData, 
+                      processData: false,
+                       contentType: false,
+
+                      success: function(response) {
+                        $.ajax({
+                          url: 'postQuiz.php',
+                          method: 'POST',
+                          data: {
+                            name: fileName,
+                            body: response.data,
+                          },
+                          success: function(res) {
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
+                            hideLoading();
+                          },
+                          error: function(jqXHR, textStatus, errorThrown) {
+                            console.error("Error:", textStatus, errorThrown);
+                          }
+                        });
+                      },
+                      error: function(jqXHR, textStatus, errorThrown) {
+                          hideLoading(); // Hide loading overlay
+                          console.error("Error:", textStatus, errorThrown);
+                          Swal.fire({
+                              title: 'Request Failed',
+                              text: 'There was an error processing your request.',
+                              icon: 'error',
+                              confirmButtonText: 'OK'
+                          });
+                      }
+                  });
+              
+          });
+
 
           function showLoading() {
                 loadingOverlay.style.display = 'block';
@@ -1142,30 +1072,43 @@ window.jsPDF = window.jspdf.jsPDF;
 
 function saveQuizAsPDF(id) {
     const quizes = <?php echo json_encode($filesList); ?>;
-  const quiz = quizes.find(quiz => quiz.id === id);
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const result = quiz.result;
-  const title = quiz.name;
-  doc.text(title, 10, 10);
-  let y = 20;
+    const quiz = quizes.find(quiz => quiz.id === id);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        lineHeight: 7
+    });
 
-  result.forEach(result => {
-    const question = result.question;
-    const userAnswer = result.userAnswer;
-    const correct = result.correct === 'true' ? 'Correct' : 'Wrong';
-    // const correctAnswer = result.correctAnswer;
-    doc.setFontSize(12);
-    doc.text(`Question: ${question}`, 10, y);
-    doc.setFontSize(12); 
-    doc.text(`Your Answer: ${userAnswer} (${correct})`, 10, y + 10);
-    doc.setFontSize(12); 
-    // doc.text(`Correct Answer: ${correctAnswer}`, 10, y +10);
-    // doc.setFontSize(12); 
-    y += 20;
-  });
-  doc.save(`${title}_quiz.pdf`);
+    const result = quiz.result;
+    const title = quiz.name;
+
+    doc.setFontSize(10); // Set font size to 10
+    doc.text(title, 10, 10);
+
+    let y = 20;
+
+    result.forEach(result => {
+        const question = result.question;
+        const userAnswer = result.userAnswer;
+        const correct = result.correct === 'true' ? 'Correct' : 'Wrong';
+
+        doc.setFontSize(10); // Set font size to 10
+        doc.text(`Question: ${question}`, 10, y);
+        doc.text(`Your Answer: ${userAnswer} (${correct})`, 10, y + 5); // Adjust line spacing by changing y + 5
+        y += 10; // Adjust line spacing by changing y increment
+        doc.text('\n \n'); // Add two new lines
+
+        // Check if content exceeds the page height and add a new page if necessary
+        if (y >= doc.internal.pageSize.height - 10) {
+            doc.addPage();
+            y = 10; // Reset y position for the new page
+        }
+    });
+
+    doc.save(`${title}_quiz.pdf`);
 }
+
 
 tippy('.delete-quiz', {
     content: 'Delete Quiz',

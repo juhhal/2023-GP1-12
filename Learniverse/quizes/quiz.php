@@ -24,7 +24,7 @@
             <h1 class="title">
               <?php echo $title; ?>
             </h1>
-            <a href="/quizes/">
+            <a href="index.php">
               <img class="close-icon" src="icons/close.svg" alt="" />
             </a>
           </div>
@@ -58,7 +58,7 @@
               <div class="answered-questions">
                 <p>1</p>
               </div>
-              <a href="/quizes/">
+              <a href="index.php">
                 <button class="back-btn">Exit quiz</button>
               </a>
             </div>
