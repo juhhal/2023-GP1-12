@@ -6,17 +6,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 $userEmail = $_SESSION['email'];
 $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
 ini_set('display_errors', '0');
-error_reporting(E_ERROR | E_PARSE);
-
-// $filePath = $_GET['file'];
-$filePath = $_GET['file'] ? "../" . $_GET['file'] : null;
-$fileName = $_GET['fileName'];
-if (file_exists($filePath)) {
-
-} elseif ($filePath) {
-  echo 'File does not exist.';
-  exit();
-}
+error_reporting(E_ERROR | E_PARSE); 
 ?>
 
 <html lang="en">
@@ -41,22 +31,6 @@ if (file_exists($filePath)) {
   <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const filePath = "<?php echo $filePath; ?>";
-    console.log({filePath})
-    if(filePath) {
-      // trigger modal
-      const introCard = document.querySelector('.intro-card');
-      const introCardContainer = document.querySelector('.intro-card-container');
-      const startModalCloseIcon = document.querySelector('.close-icon');
-
-      introCard.style.display = "flex";
-      introCardContainer.style.background = "rgba(0, 0, 0, 0.2)";
-      introCardContainer.style.zIndex = "1000";      
-    }
-  });
-</script>
 
 <style>
         .overlay {
@@ -320,38 +294,29 @@ if (file_exists($filePath)) {
 </header>
 <main>
 <div class="intro-card-container">
-      <div class="intro-card">
-                  <h2>Hello 👋</h2>
-                  <p>How would you like to learn?</p>
-                  <a id="summarize" style="margin-top:10px;">
-                    <div>
-                      <h4>✍️ Multiple Choice</h4>
-                      <p>
-                        Strengthen your understanding on every concept by solving
-                        multiple choice questions
-                      </p>
-                    </div>
-                  </a>
-                  <a id="summarizeTrueFalse" style="margin-top:10px;">
-                    <div>
-                      <h4>✍️ True or False</h4>
-                      <p>
-                        Strengthen your understanding on every concept by solving
-                        true or false questions
-                      </p>
-                    </div>
-                  </a>
-                  <a id="summarizeMixed" style="margin-top:10px;">
-                    <div>
-                      <h4>✍️ Mix of both</h4>
-                      <p>
-                        Strengthen your understanding on every concept by solving
-                        a mix of both multiple choice and true or false questions
-                      </p>
-                    </div>
-                  </a>
-                  <img class="close-icon" src="icons/close.svg" alt="" />
-                </div>
+          <div class="intro-card">
+            <h2>Hello 👋</h2>
+            <p>How would you like to learn?</p>
+            <a id="summarize">
+              <div>
+                <h4>✍️ Multiple Choice</h4>
+                <p>
+                  Strengthen your understanding on every concept by solving
+                  multiple choice questions
+                </p>
+              </div>
+            </a>
+            <a id="summarizeTrueFalse">
+              <div>
+                <h4>✍️ True or False</h4>
+                <p>
+                  Strengthen your understanding on every concept by solving
+                  true or false questions
+                </p>
+              </div>
+            </a>
+            <img class="close-icon" src="icons/close.svg" alt="" />
+          </div>
          </div>
   <div id="tools_div">
         <ul class="tool_list">
@@ -411,8 +376,10 @@ if (file_exists($filePath)) {
         <h1>Generated Quizzes</h1>
         <p>Generate quizzes to test your knowledge.</p>
       </div>
-      <div class="button-container" style="width: 70%;">
+
+        <div class="button-container">
         <div class="summary-wrapper">
+
         <form enctype="multipart/form-data" method="post" action="" id="uploadForm">
           <input type="file" id="file-input" />
           <label id="" for="file-input">
@@ -420,19 +387,14 @@ if (file_exists($filePath)) {
             &nbsp; Choose Files To Upload
           </label>
         </form>
-        <!-- <label  id="summarize" style="margin: 0 10px;">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-          &nbsp; Generate
-        </label> 
-        
-        <label  id="summarizeTrueFalse">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-          &nbsp; Generate True or False
-        </label> -->
+        <label id="myLabel" onclick="showModal()" >
+          <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          &nbsp; My uploaded files
+        </label>
         <label  id="generateBtn" style="margin: 0 10px;" class="disabled">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <i class="fa-solid fa-wand-magic-sparkles disabled"></i>
           &nbsp; Generate
-        </label> 
+        </label>
         </div>
         <div id="num-of-files"></div>
         <ul id="files-list"></ul>
@@ -806,51 +768,45 @@ fileInput.addEventListener("change", () => {
         });
     }
 });
-            let messageContainer = document.getElementById("og");
             let loadingOverlay = document.getElementById("loadingOverlay");
 
-            // fileInput.addEventListener("change", function() {
-            //     let formData = new FormData();
-            //     formData.append('file', fileInput.files[0]);
-            //     formData.append('readpdf', 'true'); // Include the 'readpdf' parameter
+            fileInput.addEventListener("change", function() {
+    let formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('readpdf', 'true'); // Include the 'readpdf' parameter
 
-            //     showLoading(); // Show loading overlay
+    console.log('FormData:', formData); // Log FormData object
 
-            //     let xhr = new XMLHttpRequest();
-            //     xhr.open('POST', '../summarization/extract.php'); 
-            //     xhr.onreadystatechange = function() {
-            //         if (xhr.readyState === XMLHttpRequest.DONE) {
-            //             hideLoading(); // Hide loading overlay
-            //             if (xhr.status === 200) {
-            //                 // Request was successful, handle response here
-            //                 extractedValue=xhr.responseText;
-            //                 console.log(xhr.responseText);
+    showLoading(); // Show loading overlay
+
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '../summarization/extract.php'); 
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            hideLoading(); // Hide loading overlay
+            if (xhr.status === 200) {
+                // Request was successful, handle response here
+                extractedValue = xhr.responseText;
+                console.log('Response:', xhr.responseText);
+            } else {
+                // Request failed, handle error here
+                console.error('Error:', xhr.statusText);
+            }
+        }
+    };
+    xhr.send(formData);
+});
 
 
-            //             } else {
-            //                 // Request failed, handle error here
-            //                 console.error('Error:', xhr.statusText);
-            //             }
-            //         }
-            //     };
-            //     xhr.send(formData);
-            // });
-
-            $('#summarize').click(async function() {
-              let fileName = fileInput.files[0]?.name;
+            $('#summarize').click(function() {
+              let fileName = fileInput.files[0].name;
               let formData = new FormData();
-              const filePath = "<?php echo $filePath; ?>";
-              const fileName2 = "<?php echo $fileName; ?>";
-              if(filePath) {
-                formData.append('filePath', filePath);
-                formData.append('fileName', fileName2);
-              } else {
-                formData.append('fileUpload', fileInput.files[0]);
-              }
+              formData.append('fileUpload', fileInput.files[0]);
 
                   showLoading(); 
                   console.log("Sending request to extract.php...");
-                  var data = [fileName || fileName2, extractedValue];   
+                  var data = [fileName, extractedValue];   
+                  console.log({data})               
                       $.ajax({
                       url: 'extractQuizes.php',
                       type: 'POST',
@@ -863,11 +819,12 @@ fileInput.addEventListener("change", () => {
                           url: 'postQuiz.php',
                           method: 'POST',
                           data: {
-                            name: fileName || fileName2,
+                            name: fileName,
                             body: response.data
                           },
                           success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
+                            console.log(response);
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
                             hideLoading();
                           },
                           error: function(jqXHR, textStatus, errorThrown) {
@@ -888,22 +845,16 @@ fileInput.addEventListener("change", () => {
                   });
               
           });
-          $('#summarizeTrueFalse').click(async function() {
-              let fileName = fileInput.files[0]?.name;
+          
+          $('#summarizeTrueFalse').click(function() {
+              let fileName = fileInput.files[0].name;
               let formData = new FormData();
-              const filePath = "<?php echo $filePath; ?>";
-              const fileName2 = "<?php echo $fileName; ?>";
-              if(filePath) {
-                formData.append('filePath', filePath);
-                formData.append('fileName', fileName2);
-              } else {
-                formData.append('fileUpload', fileInput.files[0]);
-              }
+              formData.append('fileUpload', fileInput.files[0]);
               formData.append('quizType', 'trueFalse');
 
                   showLoading(); 
                   console.log("Sending request to extract.php...");
-                  var data = [fileName || fileName2, extractedValue];   
+                  var data = [fileName, extractedValue];   
                       $.ajax({
                       url: 'extractQuizes.php',
                       type: 'POST',
@@ -916,11 +867,11 @@ fileInput.addEventListener("change", () => {
                           url: 'postQuiz.php',
                           method: 'POST',
                           data: {
-                            name: fileName || fileName2,
-                            body: response.data
+                            name: fileName,
+                            body: response.data,
                           },
                           success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
                             hideLoading();
                           },
                           error: function(jqXHR, textStatus, errorThrown) {
@@ -941,63 +892,7 @@ fileInput.addEventListener("change", () => {
                   });
               
           });
-          $('#summarizeMixed').click(async function() {
-              let fileName = fileInput.files[0]?.name;
-              let formData = new FormData();
-              const filePath = "<?php echo $filePath; ?>";
-              const fileName2 = "<?php echo $fileName; ?>";
-              if(filePath) {
-                formData.append('filePath', filePath);
-                formData.append('fileName', fileName2);
-              } else {
-                formData.append('fileUpload', fileInput.files[0]);
-              }
-              formData.append('quizType', 'mixed');
 
-                  showLoading(); 
-                  console.log("Sending request to extract.php...");
-                  var data = [fileName || fileName2, extractedValue];   
-                      $.ajax({
-                      url: 'extractQuizes.php',
-                      type: 'POST',
-                      data: formData, 
-                      processData: false,
-                       contentType: false,
-
-                      success: function(response) {
-                        $.ajax({
-                          url: 'postQuiz.php',
-                          method: 'POST',
-                          data: {
-                            name: fileName || fileName2,
-                            body: response.data
-                          },
-                          success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
-                            hideLoading();
-                          },
-                          error: function(jqXHR, textStatus, errorThrown) {
-                            console.error("Error:", textStatus, errorThrown);
-                          }
-                        });
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                          hideLoading(); // Hide loading overlay
-                          console.error("Error:", textStatus, errorThrown);
-                          Swal.fire({
-                              title: 'Request Failed',
-                              text: 'There was an error processing your request.',
-                              icon: 'error',
-                              confirmButtonText: 'OK'
-                          });
-                      }
-                  });
-              
-          });
-          
-
-         
-          
 
           function showLoading() {
                 loadingOverlay.style.display = 'block';

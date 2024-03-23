@@ -7,9 +7,93 @@ $userEmail = $_SESSION['email'];
 $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
 ini_set('display_errors', '0'); // Turn off error displaying
 error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notices
+$client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+$database = $client->selectDatabase('Learniverse');
+$usersCollection = $database->selectCollection('users');
 
+// Get the email from the session
+$email = $_SESSION['email'];
 
+// Query the database for the user
+$userDocument = $usersCollection->findOne(['email' => $email]);
+
+// If user found, retrieve the _id
+$user_id = null;
+if ($userDocument) {
+    $user_id = $userDocument->_id;
+}
+if (isset($_GET['file'])) {
+  $path = $_GET['file'];
+  $safe_path = '../'.escapeshellarg($path);
+  exec("python3 ../python/extracter.py $safe_path", $output, $return_var);
+
+  // After your exec() call
+  $outputString = implode("\n", $output);
+
+  // Store it as a JavaScript variable within a <script> tag
+  // Make sure to add quotes around the PHP output to ensure it's a valid JavaScript string
+  echo "<script type='text/javascript'>
+          document.addEventListener('DOMContentLoaded', function() {
+              var outputContent = " . json_encode($outputString) . ";
+              document.getElementById('og').value = outputContent;
+          });
+        </script>";
+}
 ?>
+<?php
+
+
+if(isset($_GET['files'])) {
+?>
+<script>
+
+    function showLoading() {
+        loadingOverlay.style.display = 'block';
+    }
+
+    function hideLoading() {
+        loadingOverlay.style.display = 'none';
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let messageContainer = document.getElementById("og");
+        let loadingOverlay = document.getElementById("loadingOverlay");
+
+        // Get the file path from the URL parameter
+        let urlParams = new URLSearchParams(window.location.search);
+        let filePath = urlParams.get('files');
+        history.replaceState(null, null, '/2023-GP1-12-main/Learniverse/summarization/summarization.php');
+        // Check if filePath exists in the URL
+        if(filePath) {
+            showLoading(); // Show loading overlay
+
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', 'extract.php');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); // Set appropriate content type
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    hideLoading(); // Hide loading overlay
+                    if (xhr.status === 200) {
+                        // Request was successful, handle response here
+                        messageContainer.value = xhr.responseText;
+                    } else {
+                        // Request failed, handle error here
+                        console.error('Error:', xhr.statusText);
+                    }
+                }
+            };
+            // Send the file path as a POST parameter
+            xhr.send('files=' + encodeURIComponent(filePath));
+        } else {
+            // If 'files' parameter is missing in the URL, display an error message
+            console.error('Error: Missing files parameter in the URL');
+        }
+    });
+</script>
+<?php
+}
+?>
+
 
 <html lang="en">
 <head>
@@ -19,6 +103,7 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
   <link rel="stylesheet" href="../profile.css">
   <link rel="stylesheet" href="../header-footer.css">
   <link rel="stylesheet" href="../theFiles.css">
+  <link rel="stylesheet" href="index.css">
   <link rel="stylesheet" href="index.css">
   <script src="../jquery.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
@@ -104,7 +189,7 @@ error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notic
         }
       });
 // Assuming you have a file input element with id "file-input" and a button with id "upload-button"
-let fileInput = document.getElementById("file-input");
+  let fileInput = document.getElementById("file-input");
             let messageContainer = document.getElementById("og");
             let loadingOverlay = document.getElementById("loadingOverlay");
 
@@ -183,6 +268,8 @@ let fileInput = document.getElementById("file-input");
                 loadingOverlay.style.display = 'none';
             }
    
+
+
 
       window.addEventListener('scroll', function() {
         var toolsDiv = document.querySelector('#tools_div');
@@ -281,6 +368,7 @@ let fileInput = document.getElementById("file-input");
       document.getElementById("sidebar-tongue").style.marginLeft = '0';
     }
   </script>
+
 </head>
 <body>
   
@@ -368,51 +456,48 @@ let fileInput = document.getElementById("file-input");
     </div>
 </header>
 <main>
-<div id="tools_div">
-<ul class="tool_list">
+  <div id="tools_div">
+        <ul class="tool_list">
         <li class="tool_item">
-          <a href="/workspace.php"> Calendar & To-Do
+          <a href="../workspace.php"> Calendar & To-Do
           </a>
         </li>
         <li class="tool_item">
-          <a href="/theFiles.php"> My Files</a>
+          <a href="../theFiles.php"> My Files</a>
         </li>
         <li class="tool_item">
-        <a href="/quizes/"> Quiz
-          </a>
+          <a href="../quizes/index.php">Quiz</a>
         </li>
         <li class="tool_item">
-        <a href="/flashcard"> Flashcard
-          </a>
-        </li>
+        <a href="../flashcard.php">
+            Flashcards</a>        </li>
         <li class="tool_item">
-        <a href="/summarization/summarization.php"> Summarization
-          </a>
+          <a href="">Summarization</a>
         </li>
-        <li class="tool_item"><a href="/studyplan.php">
-        Study Planner</a>
-                  </li>
-        <li class="tool_item"><a href="/Notes/notes.php">
+        <li class="tool_item"><a href="../studyplan.php">
+          Study Planner</a>
+        </li>
+        <li class="tool_item"><a href="../Notes/notes.php">
             Notes</a>
         </li>
         <li class="tool_item">
-          <a href="/pomodoro.php">
+          <a href="../pomodoro.php">
             Pomodoro</a>
         </li>
-        <li class="tool_item"><a href="/gpa.php">
+        <li class="tool_item"><a href="../gpa.php">
             GPA Calculator</a>
         </li>
-        <li class="tool_item"><a href="/sharedspace.php">
-        Shared spaces</a>
-                 </li>
+        <li class="tool_item">
+          Shared spaces
+        </li>
         <li class="tool_item">
           Meeting Room
         </li>
-        <li class="tool_item"><a href="/community.php">
+        <li class="tool_item"><a href="../community.php">
             Community</a>
         </li>
       </ul>
-    </div>
+        </div>
 
     <div class="container">
       <div class="summarize-heading">
@@ -427,15 +512,37 @@ let fileInput = document.getElementById("file-input");
           <i class="fa-solid fa-arrow-up-from-bracket"></i>
           &nbsp; Choose Files To Upload
         </label>
+        <label id="myLabel" onclick="showModal()" >
+          <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          &nbsp; My uploaded files
+        </label>
         <label  id="summarize">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <i class="fa-solid fa-wand-magic-sparkles disabled"></i>
           &nbsp; Summarize
         </label>
         </div>
-
         <div id="num-of-files"></div>
         <ul id="files-list"></ul>
       </div>
+
+
+      <div id="fileModal" style="display:none;">
+        <div class="modal-container">
+
+          <div id="modalContent">
+            <!-- Directory buttons will be loaded here -->
+            <div id="directoryButtons"></div>
+
+            <!-- File list will be loaded here -->
+            <div id="fileList"></div>
+          </div>
+          <button onclick="hideModal()">Close</button>
+        </div>
+      </div>
+
+
+
+
       <div class="summary-container">
       <div class="summary-wrapper">
         <div class="text-container">
@@ -448,9 +555,59 @@ let fileInput = document.getElementById("file-input");
             <span class="sum">Summarized Text</span>
             <div class="containers">
             <div class="summary-wrapper">
+<!-- HTML -->
+<!-- CSS -->
+<style>
+.summary-wrapper i{
+  position: relative;
+  display: inline-block;
+}
 
-            <i class="fa-solid fa-file-export iconpdf" onclick="exportPDF()"></i>
-            <i class="fas fa-copy iconp" onclick="Copysummary()"></i>
+.summary-wrapper i .tooltiptext {
+  visibility: hidden;
+  width: 80px; /* Adjusted width */
+  height: 15px; /* Adjusted height */
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -40px; /* Adjusted margin-left */
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 10px; /* Adjusted font size */
+  font-family: sans-serif;
+}
+
+.summary-wrapper i .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.summary-wrapper i:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+<i class="fa-solid fa-download iconpdf" onclick="exportPDF()" data-tooltip="Export PDF"> 
+</i>
+<i class="fa fa-bookmark saveicon" onclick="save()" data-tooltip="Save to files"> 
+</i>
+<i class="fas fa-copy iconp" onclick="Copysummary()" data-tooltip="Copy"> 
+</i>
+
+
+
             </div>
           </div>
             <div id="cont" class="summarize-container">
@@ -487,8 +644,7 @@ let fileInput = document.getElementById("file-input");
           return [];
       }
   }
-  
-  
+
 
     ?>
 <style>
@@ -544,7 +700,6 @@ let fileInput = document.getElementById("file-input");
   }
 
   .file-edit {
-    cursor: pointer;
     font-size: 8px ;
     color: white;
     background-color: #ec947e;
@@ -644,67 +799,67 @@ let fileInput = document.getElementById("file-input");
   }
 
   /* Base table styles */
-.table {
-  width: 90%;
-  margin: 0 auto; /* Center table with automatic margins */
-  border-collapse: collapse;
-  border-radius: 10px;
-  border-color: transparent;
-}
-
-/* Header styles with gradient background */
-.table-primary th {
-  background-color: #6c757d; /* Replace with the top gradient color */
-  background-image: linear-gradient(#7c8c97, #6c757d); /* Replace with gradient colors */
-  color: white;
-  text-align: left;
-  padding: 10px;
-  border-bottom: 2px solid #51585e; /* Border color */
-
-}
-
-/* Cell styles */
-.table td {
-  padding: 10px;
-  border-top: 1px solid #c7c7c785;
-}
-
-/* First cell in every row has a larger left padding for aesthetics */
-.table td:first-child {
-  padding-left: 20px;
-}
-
-
-.file-edit .file-delete  {
-  font-size: 8px !important;
-    color: white;
-    background-color: #ec947e;
-    vertical-align: middle;
-    border: 1px solid transparent !important;
-    padding: 0.375rem 0.75rem;
-    line-height: 1.5;
-    border-radius: 0.25rem;
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-}
-
-/* Hover effect for buttons */
-
-
-
-
-/* Responsive table adjustments */
-@media screen and (max-width: 768px) {
   .table {
-    width: 100%;
-    margin: 10px; /* Adjust margins for small screens */
-    box-shadow: none; /* Optional: remove shadow on small screens */
+    width: 90%;
+    margin: 0 auto; /* Center table with automatic margins */
+    border-collapse: collapse;
+    border-radius: 10px;
+    border-color: transparent;
   }
-  
-  /* Adjust padding for small screens */
-  .table td, .table th {
-    padding: 8px;
+
+  /* Header styles with gradient background */
+  .table-primary th {
+    background-color: #6c757d; /* Replace with the top gradient color */
+    background-image: linear-gradient(#7c8c97, #6c757d); /* Replace with gradient colors */
+    color: white;
+    text-align: left;
+    padding: 10px;
+    border-bottom: 2px solid #51585e; /* Border color */
+
   }
-}
+
+  /* Cell styles */
+  .table td {
+    padding: 10px;
+    border-top: 1px solid #c7c7c785;
+  }
+
+  /* First cell in every row has a larger left padding for aesthetics */
+  .table td:first-child {
+    padding-left: 20px;
+  }
+
+
+  .file-edit .file-delete  {
+    font-size: 8px !important;
+      color: white;
+      background-color: #ec947e;
+      vertical-align: middle;
+      border: 1px solid transparent !important;
+      padding: 0.375rem 0.75rem;
+      line-height: 1.5;
+      border-radius: 0.25rem;
+      transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  }
+
+  /* Hover effect for buttons */
+
+
+
+
+  /* Responsive table adjustments */
+  @media screen and (max-width: 768px) {
+    .table {
+      width: 100%;
+      margin: 10px; /* Adjust margins for small screens */
+      box-shadow: none; /* Optional: remove shadow on small screens */
+    }
+    
+    /* Adjust padding for small screens */
+    .table td, .table th {
+      padding: 8px;
+    }
+  }
 
 </style>
 
@@ -725,43 +880,45 @@ let fileInput = document.getElementById("file-input");
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($filesList as $file) { ?>
-                    <tr>
-                        <?php foreach ($file as $key => $value) { ?>
-                            <?php if ($key == '_id' || $key == 'answer') continue; // Skip _id and summary ?>
-                            <td>
-                              <?php 
-                                // Check if the key is 'question' and truncate the value to the first 20 characters
-                                
-                                if ($key == 'question') {
-                                    echo htmlspecialchars(substr($value, 0, 50).'...');
-                                } elseif ($key == 'data_created') {
-                                    // Format the Unix timestamp to a readable date
-                                    echo date('Y-m-d', $value);
-                                    $date = $value;
-                                } else {
-                                    echo htmlspecialchars($value);
-                                }
-                                
-                              ?>
-                            </td>
-                        <?php } ?>
-                        <td>
-                            <?php $id = $file['_id']; ?>
-                            <a href="javascript:void(0)" id="updateFile" >
-                                <button onclick="retrieve(<?php echo $date;?>)" class="file-edit btn">
-                                    <i class="fa fa-eye" aria-hidden="true"></i>
-                                </button>
-                            </a>
-                            <a href="javascript:void(0)" >
-                                <button onclick="deleteSummary(<?php echo $date;?>)" class="file-delete btn">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </a>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
+    <?php foreach ($filesList as $file) { ?>
+      <?php $date = $file['data_created']; // Assuming 'data_created' exists and is a timestamp ?>
+
+        <tr id="<?php echo htmlspecialchars($date); ?>" >
+        <?php $date = date('Y-m-d', $file['data_created']); // Assuming 'data_created' exists and is a timestamp ?>
+
+        <?php foreach ($file as $key => $value) { ?>
+            <?php if ($key == '_id' || $key == 'answer') continue; // Skip _id and summary ?>
+
+            <td>
+                <?php 
+                // Truncate the 'question' value
+                if ($key == 'question') {
+                    echo htmlspecialchars(substr($value, 0, 50).'...');
+                } elseif ($key == 'data_created') {
+                    // Format the Unix timestamp to a readable date
+                    echo htmlspecialchars($date);
+                } else {
+                    echo htmlspecialchars($value);
+                }
+                ?>
+            </td>
+        <?php } ?>
+        <td>
+            <a href="javascript:void(0)">
+                <button onclick="retrieve('<?php echo htmlspecialchars($file['data_created']); ?>')" class="file-edit btn">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                </button>
+            </a>
+            <a href="javascript:void(0)">
+                <button onclick="deleteSummary('<?php echo htmlspecialchars($file['data_created']); ?>')" class="file-delete btn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </a>
+        </td>
+        </tr>
+    <?php } ?>
+</tbody>
+
         </table>
     <?php } ?>
 </div>
@@ -769,7 +926,7 @@ let fileInput = document.getElementById("file-input");
 </main>
     <footer id="footer" style="margin-top: 7%;">
 
-<div id="copyright">Learniverse &copy; 2024</div>
+<div id="copyright">Learniverse &copy; 2023</div>
 </footer>
 
 
@@ -779,6 +936,93 @@ let fileInput = document.getElementById("file-input");
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
 <script>
+// JavaScript
+document.addEventListener("DOMContentLoaded", function() {
+    var tooltips = document.querySelectorAll("[data-tooltip]");
+    tooltips.forEach(function(element) {
+        var tooltipText = element.getAttribute("data-tooltip");
+        var tooltipSpan = document.createElement("span");
+        tooltipSpan.className = "tooltiptext";
+        tooltipSpan.textContent = tooltipText;
+        element.appendChild(tooltipSpan);
+    });
+});
+
+
+function loadDirectories() {
+  fetch('../listDirectories.php')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('directoryButtons').innerHTML = html;
+    })
+    .catch(err => {
+      console.error('Failed to load directories', err);
+    });
+}
+
+function loadFiles(directoryName) {
+  fetch(`../listFiles.php?directory=${directoryName}`)
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('fileList').innerHTML = html;
+    })
+    .catch(err => {
+      console.error('Failed to load files', err);
+    });
+}
+
+
+// Modify the showModal function to call loadDirectories initially
+function showModal() {
+  document.getElementById('fileModal').style.display = 'flex';
+  loadDirectories(); // Load directories first
+  loadFiles('Uploaded Files')
+}
+let loadingOverlay = document.getElementById("loadingOverlay");
+function showLoading() {
+  loadingOverlay.style.display = 'block';
+}
+
+// Function to hide loading overlay
+function hideLoading() {
+  loadingOverlay.style.display = 'none';
+}
+
+function selectFile(fileName) {
+  // Handle file selection
+  console.log(fileName);
+  hideModal();
+  showLoading(); // Show the loading overlay
+
+  // Create FormData object to send the file name to the server
+  const formData = new FormData();
+  formData.append('fileNames', fileName);
+
+  // Send the file name to the server using AJAX
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', 'extract.php', true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) { // Check if request is complete
+      hideLoading(); // Hide the loading overlay once the request is complete
+      if (xhr.status === 200) {
+        // Handle the response from the server here
+        console.log(xhr.responseText);
+        let messageContainer = document.getElementById("og");
+        messageContainer.value = xhr.responseText;
+      } else {
+        // Handle HTTP error (status code other than 200)
+        console.error("Error response", xhr.statusText);
+      }
+    }
+  };
+  xhr.send(formData);
+}
+
+
+function hideModal() {
+  document.getElementById('fileModal').style.display = 'none';
+}
+
 // Include pdfjs-dist library
 
 
@@ -831,37 +1075,195 @@ function Copysummary() {
 
   <script type="text/javascript">
     //export as pdf
-function exportPDF() {
+    function exportPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
-  
+
   // Retrieve the text content of the element
-  const summaryText = document.getElementById("summary").innerText || document.getElementById("summary").textContent;
-  
-  // Add the text content to the PDF
-  doc.text(summaryText, 20, 20); // Adjust the x and y coordinates as needed
-  
-  // Save the PDF
-  doc.save("newFile.pdf");
+  const summaryText = document.getElementById("summary").value;
+  if (!summaryText.trim()) {
+        Swal.fire({
+            title: 'Oops...',
+            text: 'The summary is empty.',
+        });
+        return; // Exit the function if summary is empty
+    }
+  // Use SweetAlert for the filename prompt
+  Swal.fire({
+    title: "Enter filename",
+    input: "text",
+    inputPlaceholder: "Filename (without extension)",
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    cancelButtonText: "Cancel",
+    inputValidator: (value) => {
+      if (!value) {
+        return "Filename is required";
+      }
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Add the text content to the PDF
+      var maxWidth = 250; // Adjust this value as needed
+var textLines = doc.splitTextToSize(summaryText, maxWidth);
+
+var x = 20; // X position
+var y = 20; // Initial Y position
+var pageHeight = doc.internal.pageSize.height; // Get the height of the page
+
+// Set the font size
+var fontSize = 10; // Example font size in points
+doc.setFontSize(fontSize);
+
+// Set line height with a spacing factor of 1.15
+var lineHeight = 7; // Adjusting line spacing to 1.15 times the font size
+
+textLines.forEach(function(line) {
+    if (y > pageHeight - 10) { // Check to see if the line is near the bottom of the page
+        doc.addPage();
+        y = 20; // Reset Y position for the new page
+    }
+    
+    doc.text(line, x, y);
+    y += lineHeight; // Move to the next line
+});     
+      // Save the PDF with the chosen filename
+      doc.save(result.value + ".pdf");
+    }
+  });
 }
+
+function save() {
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF(); // Ensure jsPDF is correctly referenced
+
+    // Retrieve the text content of the element
+    const summaryText = document.getElementById("summary").value;
+    if (!summaryText.trim()) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'The summary is empty. Please add some content before saving.',
+        });
+        return; // Exit the function if summary is empty
+    }
+    // Use SweetAlert for the filename prompt
+    Swal.fire({
+    title: "Enter filename",
+    input: "text",
+    inputPlaceholder: "Filename (without extension)",
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    cancelButtonText: "Cancel",
+    inputValidator: (value) => {
+        if (!value) {
+            return "Filename is required";
+        }
+    },
+}).then((result) => {
+    if (result.isConfirmed) {
+        console.log(result.value);
+
+        // Add the text content to the PDF
+
+
+        var maxWidth = 250; // Adjust this value as needed
+var textLines = doc.splitTextToSize(summaryText, maxWidth);
+
+var x = 20; // X position
+var y = 20; // Initial Y position
+var pageHeight = doc.internal.pageSize.height; // Get the height of the page
+
+// Set the font size
+var fontSize = 10; // Example font size in points
+doc.setFontSize(fontSize);
+
+// Set line height with a spacing factor of 1.15
+var lineHeight = 7; // Adjusting line spacing to 1.15 times the font size
+
+textLines.forEach(function(line) {
+    if (y > pageHeight - 10) { // Check to see if the line is near the bottom of the page
+        doc.addPage();
+        y = 20; // Reset Y position for the new page
+    }
+    
+    doc.text(line, x, y);
+    y += lineHeight; // Move to the next line
+});
+        // Convert the PDF to a Blob
+        const blob = doc.output('blob'); // Get blob directly
+
+        // Create FormData object to send data to the server
+        const formData = new FormData();
+        const fileName = result.value + '.pdf'; // Trim any leading/trailing spaces from the filename
+        formData.append('pdf', blob, fileName);
+
+        // Send the PDF to the server using AJAX
+        const xhr = new XMLHttpRequest();
+        const path = "../save_pdf.php"; // Make sure this is the correct path to your PHP script
+        xhr.open('POST', path, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                console.log(xhr.responseText); // Log server response
+            }
+        };
+        xhr.send(formData);
+    }
+});
+
+}
+
+
+
+
+
 
 function deleteSummary(date) {
     // Make AJAX request to the PHP file
-    $.ajax({
-        url: 'Summary.php', // Replace 'delete.php' with the path to your PHP file
-        method: 'POST',
-        data: { date: date }, // Send the date as data
-        success: function(response) {
-            // Handle the response from the PHP file
-            location.reload();
-            console.log('Delete request successful');
-            // Do something with the response if needed
-        },
-        error: function(xhr, status, error) {
-            // Handle errors
-            console.error('Error sending delete request:', error);
-        }
-    });
+    Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+}).then((result) => {
+    if (result.isConfirmed) {
+        // User confirmed the deletion, proceed with Ajax request
+        $.ajax({
+            url: 'Summary.php', // Replace 'delete.php' with the path to your PHP file
+            method: 'POST',
+            data: { date: date }, // Send the date as data
+            success: function(response) {
+            Swal.fire(
+                'Deleted!',
+                'Your file has been deleted.',
+                'success'
+              ).then((result) => {
+                  if(result.isConfirmed) {
+                      // Assuming `date` is the variable holding the date you've used in your row ID
+                      $("#" + date).remove(); // This removes the row
+                  }
+              });
+              console.log('Delete request successful');
+              // Do something with the response if needed
+            },
+
+            error: function(xhr, status, error) {
+                // Handle errors
+                Swal.fire(
+                    'Error!',
+                    'An error occurred during the deletion.',
+                    'error'
+                );
+                console.error('Error sending delete request:', error);
+            }
+        });
+    }
+});
+
 }
 function retrieve(datad) {
     // Make AJAX request to the PHP file
@@ -910,38 +1312,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-// document.querySelector('#manualForm').addEventListener('submit', (e) => {
-//       e.preventDefault();
-//       //let formdata = new FormData(document.querySelector('#manualForm'));
-//       let subjectName = document.querySelector('#nameSubject');
-//       let question = document.querySelector('#question');
-//       let answer = document.querySelector('#answer');
-//       if (subjectName.value != "" && subjectName.value != null &&
-//         question.value != "" && question.value != null &&
-//         answer.value != "" && answer.value != null) {
-
-//         $.ajax({
-//           url: 'subjectReview.php',
-//           data: {
-//             'action': 'addSubjectReview',
-//             'subjectName': subjectName.value,
-//             'question': question.value,
-//             'answer': answer.value
-//           },
-//           //data: formdata,
-//           method: 'POST',
-      
-//           success: function (res) {
-//             alert(res);
-//             location.reload();
-//           }
-//         });
-
-//       } else {
-//         alert("Insert value for all input!");
-//       }
-
-//     });
     </script>
       <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>

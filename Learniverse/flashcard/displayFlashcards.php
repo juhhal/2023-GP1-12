@@ -256,35 +256,35 @@
     <div id="tools_div">
         <ul class="tool_list">
         <li class="tool_item">
-          <a href="/workspace.php"> Calendar & To-Do
+          <a href="../workspace.php"> Calendar & To-Do
           </a>
         </li>
         <li class="tool_item">
-          <a href="/theFiles.php"> My Files</a>
+          <a href="../theFiles.php"> My Files</a>
         </li>
         <li class="tool_item">
-        <a href="/quizes/"> Quiz
+        <a href="../quizes/"> Quiz
           </a>
         </li>
         <li class="tool_item">
-        <a href="/flashcard"> Flashcard
+        <a href="../flashcard.php"> Flashcard
           </a>
         </li>
         <li class="tool_item">
-        <a href="/summarization/summarization.php"> Summarization
+        <a href="../summarization/summarization.php"> Summarization
           </a>
         </li>
         <li class="tool_item">
           Study Planner
         </li>
-        <li class="tool_item"><a href="/Notes/notes.php">
+        <li class="tool_item"><a href="../Notes/notes.php">
             Notes</a>
         </li>
         <li class="tool_item">
-          <a href="/pomodoro.php">
+          <a href="../pomodoro.php">
             Pomodoro</a>
         </li>
-        <li class="tool_item"><a href="/gpa.php">
+        <li class="tool_item"><a href="../gpa.php">
             GPA Calculator</a>
         </li>
         <li class="tool_item">
@@ -293,7 +293,7 @@
         <li class="tool_item">
           Meeting Room
         </li>
-        <li class="tool_item"><a href="/community.php">
+        <li class="tool_item"><a href="../community.php">
             Community</a>
         </li>
       </ul>
@@ -331,6 +331,11 @@
     </div>
 
    <div class="button">
+   <a  style="margin: 0 10px;" class="disabled" href="../flashcard.php">
+       
+       <i class="fa-solid fa-wand-magic-sparkles"></i>
+         &nbsp; Return to Flashcards
+       </a> 
    <a  style="margin: 0 10px;" class="disabled" href="quiz.php?data=<?php echo urlencode(json_encode($flashcardsData)); ?>&subject=<?php echo $subject; ?>">
        
         <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -402,7 +407,7 @@ editForm.addEventListener('submit', function(event) {
         content: answer,
         answer: question
     };
-
+console.log(data);
     $.ajax({
         url: 'updateFlashcard.php',
         method: 'POST',

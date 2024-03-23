@@ -9,39 +9,41 @@
     // Select the database and collection
     $database = $client->selectDatabase('Learniverse');
     $summariesCollection = $database->selectCollection('summaries');
+    header('Content-Type: application/json'); // Set correct content type for JSON response
+
     if (isset($_POST['date'])) {
-
-        
-        // Extract 'date_created' and 'userId' from POST data and session
-        $dateCreated = (int)$_POST['date']; // Cast to int if it's sent as a string
-        $userId = $_SESSION['email'];
-    
-        // Update criteria to match the document by 'userId'
-        $updateCriteria = [
-            'userId' => $userId
-        ];
-    
-        // Update operation to remove the summary with the specified 'date_created'
-        $updateResult = $summariesCollection->updateOne(
-            $updateCriteria,
-            [
-                '$pull' => [
-                    'summaries' => [
-                        'data_created' => $dateCreated
-                    ]
-                ]
-                    ],         ['multi' => false]
-
-      
-        );
+               // Extract 'date_created' and 'userId' from POST data and session
+               $dateCreated = (int)$_POST['date']; // Cast to int if it's sent as a string
+               $userId = $_SESSION['email'];
+           
+               // Update criteria to match the document by 'userId'
+               $updateCriteria = [
+                   'userId' => $userId
+               ];
+           
+               // Update operation to remove the summary with the specified 'date_created'
+               $updateResult = $summariesCollection->updateOne(
+                   $updateCriteria,
+                   [
+                       '$pull' => [
+                           'summaries' => [
+                               'data_created' => $dateCreated
+                           ]
+                       ]
+                           ],         ['multi' => false]
+       
+             
+               );
     
         // Check if the update operation was successful
-        if ($updateResult->isAcknowledged() && $updateResult->getModifiedCount() > 0) {
+        if ($updateResult->getModifiedCount() > 0) {
+            http_response_code(200); // OK
             echo json_encode(['success' => true, 'message' => 'Summary deleted successfully']);
         } else {
-            echo json_encode(['error' => 'Summary deletion failed or summary not found']);
+            http_response_code(404); // Not Found
+            echo json_encode(['error' => true, 'message' => 'Summary not found or deletion failed']);
         }
-    }
+    } 
     
 
 

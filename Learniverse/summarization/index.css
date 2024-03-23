@@ -220,7 +220,11 @@ input[type="file"] {
 input[type="file"] {
   display: none;
 }
-.button-container label {
+.summary-wrapper {
+  margin-left: 3%;
+  margin-right: 3%;
+}
+.summary-wrapper label {
   display: block;
   position: relative;
   background-color: #bf97d8;
@@ -228,7 +232,7 @@ input[type="file"] {
   font-size: 1.12em;
   font-weight: 500;
   text-align: center;
-  width: 18.75em;
+  width: 27%;
   padding: 1.12em 0;
   margin: auto;
   border-radius: 0.31em;
@@ -255,16 +259,19 @@ ul {
 }
 
 .iconpdf,
-.iconp {
+.iconp,
+.saveicon {
   margin-right: 10px;
 }
 
 .iconpdf {
   margin-left: 150px;
 }
+
 /* Base styles for icons */
 .iconpdf,
-.iconp {
+.iconp,
+.saveicon {
   color: lightgrey; /* Set the default color to light grey */
   cursor: pointer;
   transition: color 0.3s ease; /* Smooth transition for color */
@@ -272,6 +279,159 @@ ul {
 
 /* Hover styles */
 .iconpdf:hover,
-.iconp:hover {
+.iconp:hover,
+.saveicon:hover {
   color: darkgrey; /* Change color to dark grey on hover */
 }
+
+/* file modal */
+/* Modal Background */
+#fileModal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal Container */
+.modal-container {
+  background-color: #fefefe;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  /* Adjust based on your preference */
+  max-height: 80%;
+  overflow-y: auto;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Center-align the items vertically */
+}
+
+/* Directory and File Items */
+.dirItem,
+.fileItem {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  width: 100%;
+  /* Make items full width of their container */
+  box-sizing: border-box;
+  /* Include padding and border in the width */
+}
+
+/* Optionally, if you want the items to be only as wide as their content,
+   you can remove the width property and add the following: */
+.dirItem,
+.fileItem {
+  display: inline-block;
+  /* Allows the item to be as wide as its content */
+  white-space: nowrap;
+  /* Prevents the text from wrapping */
+}
+
+/* Close Button */
+#fileModal button {
+  padding: 10px 20px;
+  background-color: #bf97d8;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+  border-radius: 5px;
+  align-self: flex-end;
+  /* Align the button to the right */
+}
+
+#fileModal button:hover {
+  background-color: #946aae;
+}
+
+#directoryButtons {
+  margin-bottom: 20px;
+}
+
+.dirButton {
+  padding: 10px 20px;
+  margin-right: 10px;
+  /* Space between buttons */
+  background-color: #bf97d8;
+  /* Bootstrap primary color */
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  /* Rounded corners */
+  display: inline-block;
+  /* Display buttons inline */
+}
+
+.dirButton:hover {
+  background-color: #946aae;
+  /* Darker blue on hover */
+}
+
+/* Style the file list items similarly to before */
+#fileList .fileItem {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.table a{
+  text-decoration: none;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    opacity: 0;
+    visibility: hidden;
+    width: 120px;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #000 transparent transparent transparent;
+}
+
+

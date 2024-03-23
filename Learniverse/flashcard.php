@@ -502,6 +502,32 @@ if (isset($_GET['file'])) {
   .selected{
     background-color: #e2e2e2;
   }
+  div:where(.swal2-container) .swal2-input {
+    height: 2.625em;
+    padding: 0 0.75em;
+    margin-left: 0.9em !important;
+    width: 93% !important;
+}
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    position: relative; /* Ensure relative positioning for absolute positioning of footer */
+}
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #f0f0f0; /* Example background color */
+    padding: 10px; /* Example padding */
+}
+/* Adjust the position of Bootstrap tooltips */
+.tooltip {
+    position: fixed !important; /* Override Bootstrap's default positioning */
+    z-index: 9999; /* Ensure the tooltip appears above other content */
+}
+
 </style>
 
 
@@ -654,7 +680,7 @@ if (isset($_GET['file'])) {
                                 <?php 
                                     if ($key == 'subjectName') {
                                         // It's safe to use htmlspecialchars for strings
-                                        echo htmlspecialchars(substr($value, 0, 50).'...');
+                                        echo htmlspecialchars(substr($value, 0, 50));
                                     } elseif ($key == 'data_created') {
                                         // Format the Unix timestamp to a readable date
                                         echo date('Y-m-d', $value);
@@ -728,7 +754,7 @@ if (isset($_GET['file'])) {
             </li>
             <li class="nav-item" role="presentation">
               <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button"
-                role="tab" aria-controls="profile" aria-selected="false">Manualy</button>
+                role="tab" aria-controls="profile" aria-selected="false">Manually</button>
             </li>
           </ul>
 
@@ -789,20 +815,22 @@ if (isset($_GET['file'])) {
                   </div>
 
                   <div class="form-group">
-                    <label class="h2" for="question">Question</label>
-                    <textarea class="form-control" id="question" name="question" rows="3"
-                      placeholder="Your text here"></textarea>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="h2" for="question">Answer</label>
+                    <label class="h2" for="question">Title</label>
                     <textarea class="form-control" id="answer" name="answer" rows="3"
                       placeholder="Your text here"></textarea>
                   </div>
 
+                  <div class="form-group">
+                    <label class="h2" for="question">Card Content</label>
+                    <textarea class="form-control" id="question" name="question" rows="3"
+                      placeholder="Your text here"></textarea>
+                  </div>
+
+
+
                   <div class="form-group text-center" style="margin-top: 16px;">
                     <button type="submit" class="btn btn-cl" name="submit" id="saveButton">Save</button>
-                    <input type="button" class="btn btn-cl" value="Save Card Content" name="submitNext" id="submitNext">
+                    <input type="button" class="btn btn-cl" value="Next Card" name="submitNext" id="submitNext">
                   </div>
 
 
@@ -1163,10 +1191,29 @@ Swal.fire({
     if (result.isConfirmed) {
         console.log(result.value);
 
-        // Add the text content to the PDF
-        var maxWidth = 150; // Adjust this value as needed
-        var textLines = doc.splitTextToSize(paragraph, maxWidth);
-        doc.text(textLines, 20, 20);
+        var maxWidth = 250; // Adjust this value as needed
+var textLines = doc.splitTextToSize(paragraph, maxWidth);
+
+var x = 20; // X position
+var y = 20; // Initial Y position
+var pageHeight = doc.internal.pageSize.height; // Get the height of the page
+
+// Set the font size
+var fontSize = 10; // Example font size in points
+doc.setFontSize(fontSize);
+
+// Set line height with a spacing factor of 1.15
+var lineHeight = 7; // Adjusting line spacing to 1.15 times the font size
+
+textLines.forEach(function(line) {
+    if (y > pageHeight - 10) { // Check to see if the line is near the bottom of the page
+        doc.addPage();
+        y = 20; // Reset Y position for the new page
+    }
+    
+    doc.text(line, x, y);
+    y += lineHeight; // Move to the next line
+});
         // Convert the PDF to a Blob
         const blob = doc.output('blob'); // Get blob directly
 
@@ -1239,9 +1286,29 @@ const { jsPDF } = window.jspdf;
   }).then((result) => {
     if (result.isConfirmed) {
       // Add the text content to the PDF
-      var maxWidth = 150; // Adjust this value as needed
-        var textLines = doc.splitTextToSize(paragraph, maxWidth);
-        doc.text(textLines, 20, 20);      
+      var maxWidth = 250; // Adjust this value as needed
+var textLines = doc.splitTextToSize(paragraph, maxWidth);
+
+var x = 20; // X position
+var y = 20; // Initial Y position
+var pageHeight = doc.internal.pageSize.height; // Get the height of the page
+
+// Set the font size
+var fontSize = 10; // Example font size in points
+doc.setFontSize(fontSize);
+
+// Set line height with a spacing factor of 1.15
+var lineHeight = 7; // Adjusting line spacing to 1.15 times the font size
+
+textLines.forEach(function(line) {
+    if (y > pageHeight - 10) { // Check to see if the line is near the bottom of the page
+        doc.addPage();
+        y = 20; // Reset Y position for the new page
+    }
+    
+    doc.text(line, x, y);
+    y += lineHeight; // Move to the next line
+});   
       // Save the PDF with the chosen filename
       doc.save(result.value + ".pdf");
     }

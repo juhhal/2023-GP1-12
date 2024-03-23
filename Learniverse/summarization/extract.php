@@ -1,8 +1,6 @@
 <?php
 
 session_start();
-
-
 if(isset($_FILES['file'] )){
     $file_name = $_FILES['file']['name'];
     $file_tmp = $_FILES['file']['tmp_name'];
@@ -155,7 +153,7 @@ function insertSummary($userId, $question, $answer, $summaryCollection) {
 
     // Initialize summaries array
     $summariesArray = [];
-
+     $time = time();
     // If the user document exists and has summaries, convert them to a PHP array
     if ($userDoc && isset($userDoc['summaries'])) {
         $summariesArray = iterator_to_array($userDoc['summaries']);
@@ -171,7 +169,7 @@ function insertSummary($userId, $question, $answer, $summaryCollection) {
     $newSummary = [
         'question' => $question,
         'answer' => $answer,
-        'data_created' => time()
+        'data_created' => $time
     ];
     $summariesArray[] = $newSummary;
 
@@ -273,7 +271,7 @@ if (isset($_FILES['fileUpload'])) {
             }
         } else {
             // File upload failed
-            echo "Failed to move uploaded file.";
+            echo "Failed to move uploaded file.". $file_tmp;
         }
     } elseif ($file_type === 'txt') {
         // Check if a file with the same name already exists
@@ -399,11 +397,11 @@ function insertFlashcard($userId, $subjectName, $flashcardData, $flashcardCollec
         $userData = (array) $userDoc;
     }
 
-
+    $time = time();
     // If the subject doesn't exist, create a new entry for it
         $userData['subjects'][] = [
             'subjectName' => $subjectName,
-            'data_created' => time(),
+            'data_created' => $time,
             'flashcards' => []
         ];
         $subjectIndex = count($userData['subjects']) - 1;
@@ -441,7 +439,7 @@ function insertFlashcard($userId, $subjectName, $flashcardData, $flashcardCollec
         ['upsert' => true]
     );
 
-    echo json_encode(array("success" => $flashcardData,));
+    echo json_encode(array("success" => $time,));
 }
 
 
@@ -477,6 +475,296 @@ if ($tempFilePath === false) {
 }
 
 }
+
+
+if (isset($_POST['fileNames'])) {
+    $fileNames = $_POST['fileNames'];
+    require_once __DIR__ . '../../vendor/autoload.php';
+    $client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+    $database = $client->selectDatabase('Learniverse');
+    $usersCollection = $database->selectCollection('users');
+    
+    // Get the email from the session
+    $email = $_SESSION['email'];
+    
+    // Query the database for the user
+    $userDocument = $usersCollection->findOne(['email' => $email]);
+    
+    // If user found, retrieve the _id
+    $user_id = null;
+    if ($userDocument) {
+        $user_id = $userDocument->_id;
+    }
+    
+    $baseDirectory = "../user_files" . $DIRECTORY_SEPARATOR . "{$user_id}" . $DIRECTORY_SEPARATOR;    
+    $upload_directory = "images/"; // Assuming the files are stored here
+
+        // Construct the full path to the file
+        $filePath = $baseDirectory . $fileNames;
+
+        // Check if the file exists
+        if (!file_exists($filePath)) {
+            echo "File does not exist: $filePath";
+            exit(); // Skip to the next file
+        }
+
+        // Determine the file's type
+        $file_type = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        // Define the command based on the file type
+        $python_script_path = "";
+        switch ($file_type) {
+            case 'pdf':
+                $python_script_path = "../python/extracter.py";
+                break;
+            case 'docx':
+                $python_script_path = "../python/docReader.py";
+                break;
+            case 'pptx':
+                $python_script_path = "../python/pptxReader.py";
+                break;
+            case 'txt':
+                // Directly output the content for txt files
+                $myfile = fopen($filePath, "r") or die("Unable to open file!");
+                echo fread($myfile, filesize($filePath));
+                fclose($myfile);
+        }
+
+        if (!empty($python_script_path)) {
+            // Construct the command to execute the Python script
+            $command = "python3 " . escapeshellarg($python_script_path) . " " . escapeshellarg($filePath);
+            
+            // Execute the command and capture output
+            exec($command, $output, $return_code);
+            
+            // Check if the command executed successfully
+            if ($return_code === 0) {
+                // Output the extracted text
+                $extracted_text = implode(" ", $output);
+                echo $extracted_text;
+            } else {
+                // Output an error message
+                echo "Error executing Python script for file: $fileNames";
+            }
+        } else {
+            echo "Unsupported file type for file: $fileName";
+        }
+
+}
+if (isset($_POST['flashcardFile'])) {
+    $fileNames = $_POST['flashcardFile'];
+    $file_name = basename($fileNames);
+    require_once __DIR__ . '../../vendor/autoload.php';
+    $client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+    $database = $client->selectDatabase('Learniverse');
+    $usersCollection = $database->selectCollection('users');
+    
+    // Get the email from the session
+    $email = $_SESSION['email'];
+    
+    // Query the database for the user
+    $userDocument = $usersCollection->findOne(['email' => $email]);
+    
+    // If user found, retrieve the _id
+    $user_id = null;
+    if ($userDocument) {
+        $user_id = $userDocument->_id;
+    }
+    
+    $baseDirectory = "../user_files" . $DIRECTORY_SEPARATOR . "{$user_id}" . $DIRECTORY_SEPARATOR;    
+    $upload_directory = "flashcards/"; // Assuming the files are stored here
+
+        // Construct the full path to the file
+        $filePath = $baseDirectory . $fileNames;
+
+        // Check if the file exists
+        if (!file_exists($filePath)) {
+            echo "File does not exist: $filePath";
+            exit(); // Skip to the next file
+        }
+
+        // Determine the file's type
+        $file_type = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        // Define the command based on the file type
+        $python_script_path = "";
+        switch ($file_type) {
+            case 'pdf':
+                $python_script_path = "../python/extracter.py";
+                break;
+            case 'docx':
+                $python_script_path = "../python/docReader.py";
+                break;
+            case 'pptx':
+                $python_script_path = "../python/pptxReader.py";
+                break;
+            case 'txt':
+                // Directly output the content for txt files
+                $myfile = fopen($filePath, "r") or die("Unable to open file!");
+                echo fread($myfile, filesize($filePath));
+                fclose($myfile);
+        }
+
+        if (!empty($python_script_path)) {
+            // Construct the command to execute the Python script
+            $command = "python3 " . escapeshellarg($python_script_path) . " " . escapeshellarg($filePath);
+            
+            // Execute the command and capture output
+            exec($command, $output, $return_code);
+            
+            // Check if the command executed successfully
+            if ($return_code === 0) {
+                // Output the extracted text
+                $extracted_text = implode(" ", $output);
+            } else {
+                // Output an error message
+                echo "Error executing Python script for file: $fileNames";
+            }
+        } else {
+            echo "Unsupported file type for file: $fileName";
+        }
+
+
+    
+// Include MongoDB PHP library
+require_once __DIR__ . '../../vendor/autoload.php';
+
+// Connect to MongoDB
+$client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+
+
+// Select database and collections
+$database = $client->selectDatabase('Learniverse');
+$flashcardCollection = $database->selectCollection('subjectReview');
+
+// Function to insert a new summary for a user, replacing the oldest one if necessary
+function insertFlashcard($userId, $subjectName, $flashcardData, $flashcardCollection) {
+    // Find the user's document
+    $userDoc = $flashcardCollection->findOne(['userId' => $userId,]);
+
+    // Initialize user data array
+    $userData = [
+        'userId' => $userId,
+        'subjects' => []
+    ];
+
+    // If the user document exists, convert it to a PHP array
+    if ($userDoc) {
+        $userData = (array) $userDoc;
+    }
+
+    $time = time();
+    // If the subject doesn't exist, create a new entry for it
+        $userData['subjects'][] = [
+            'subjectName' => $subjectName,
+            'data_created' => $time,
+            'flashcards' => []
+        ];
+        $subjectIndex = count($userData['subjects']) - 1;
+    
+    foreach ($flashcardData as $cardIndex => $card) {
+
+        // Extract the card number from the key (e.g., 'card1' => '1')
+        $cardNumber = substr($cardIndex, 4);
+
+        // Extract the flashcard content and answer from the nested array
+        $content = $card['content'];
+        $answer = $card['answer'];
+    
+        // Create the new flashcard array
+        $newFlashcard = [
+            'cardNumber' => $cardNumber,
+            'content' => $content,
+            'answer' => $answer,
+        ];
+    
+        // Add the new flashcard to the user data
+        $userData['subjects'][$subjectIndex]['flashcards'][] = $newFlashcard;
+    }
+    
+    
+
+    
+
+    
+
+    // Upsert the user's document with the updated user data
+    $flashcardCollection->replaceOne(
+        ['userId' => $userId],
+        $userData,
+        ['upsert' => true]
+    );
+
+    echo json_encode(array("success" => true, "time" => $time, "subjectName" => $subjectName));
+}
+
+
+// Process the 'extracted_text' as needed
+$tempFilePath = tempnam(sys_get_temp_dir(), 'txt');
+if ($tempFilePath === false) {
+    // Failed to create a temporary file
+    echo "Failed to create temporary file.";
+} else {
+    // Write the contents to the temporary file
+    if (file_put_contents($tempFilePath, $extracted_text) === false) {
+        // Failed to write to the temporary file
+        echo "Failed to write to temporary file.";
+    } else {
+        // Construct the command to call the Python script with the file path as an argument
+        $flashcard_command = "python3 ../python/flashcards.py '" . $tempFilePath . "'";
+        // Execute the command and capture output
+        exec($flashcard_command, $content, $resultsCode);
+        // Check if the command executed successfully
+        if ($resultsCode === 0) {
+            // Read the contents of the temporary file
+            $temp_file_path = trim($content[0]);
+            $flashcard_data = json_decode(file_get_contents($temp_file_path), true);
+            // Call the insertSummary function to store the summary in the database
+            insertFlashcard($_SESSION['email'], $file_name, $flashcard_data, $flashcardCollection);
+        } else {
+            // Output an error message
+            echo "Error executing Python script.";
+        }
+        // Clean up: Delete the temporary file
+        unlink($tempFilePath);
+    }
+}
+
+}
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file']) && isset($_POST['readpdf'])) {
+    // Handle file upload
+    $fileTmpPath = $_FILES['file']['tmp_name'];
+    $fileName = $_FILES['file']['name'];
+    // Process additional data
+    $readPdf = $_POST['readpdf'];
+
+    // Move uploaded file to temporary path
+    $tempPath = sys_get_temp_dir(); // Get system temporary directory
+    $tempFilePath = 'quizzes/';
+    var_dump($tempFilePath.$fileName);
+
+    if (move_uploaded_file($fileTmpPath, $tempFilePath.$fileName)) {
+        // File moved successfully to temporary path
+        // Execute Python script passing the temporary file path as argument
+        $pythonScript = '../python/extracter.py';
+        $output = shell_exec("python3 $pythonScript " . escapeshellarg($tempFilePath));
+        
+        // Optionally, you can handle the output from Python script here
+
+        // Respond with success message or output
+        echo json_encode(['success' => true, 'output' => $output]);
+    } else {
+        // Error moving file
+        echo json_encode(['error' => true, 'message' => 'Error uploading file']);
+    }
+} else {
+    // Invalid request
+    echo json_encode(['error' => true, 'message' => 'Invalid request']);
+}
 ?>
+
+
 
 
