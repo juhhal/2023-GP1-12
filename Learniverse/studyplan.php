@@ -252,6 +252,10 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 
         function hideModal() {
             document.getElementById('fileModal').style.display = 'none';
+            //print chosen files
+            var chosenFiles = document.getElementById('chosenFiles');
+            files = (selectedMats.length > 1) ? "files" : "file";
+            chosenFiles.textContent = "You chose (" + selectedMats.length + ") " + files + " : \n " + selectedMats.toString();
         }
     </script>
 </head>
@@ -413,8 +417,9 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 <form id="new-plan-form" name="new-plan-form" method="post" action="processStudyPlan.php" enctype="multipart/form-data">
                     Plan Name: <input required autocomplete="off" type="text" name="new-plan-name" id="new-plan-name">
                     Plan start: <input required id="start" name="start" type="date"> Plan end: <input id="end" name="end" type="date">
-                    Study Material: <button id="uploadMats" onclick="showModal()">Upload from My Files</button> or <input id="localMats" name="localMats[]" value="Upload from my device" type="file" multiple>
-                    <input id="generatePlan" type="submit" value="Generate">
+                    Study Material: <button id="uploadMats" onclick="showModal()">Choose from My Files</button>
+                    <div id="chosenFiles"></div> You can also: <input id="localMats" name="localMats[]" value="Upload from my device" type="file" multiple>
+                    <button id="generatePlan" type="submit" value="Generate"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate</button>
                 </form>
             </div>
         </div>
@@ -426,7 +431,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                             <span>
                                 <h2>Viewing <span id="studyPlanNameView"></span> Plan</h2>
                             </span>
-                            <span class="top-button"><button id="regenerate">Regenerate</button><button id="save-to-calendar">Save to Calendar</button></span>
+                            <span class="top-button"><button id="regenerate"><i class="fa-solid fa-wand-magic-sparkles"></i> Regenerate</button><button id="save-to-calendar">Save to Calendar</button></span>
                         </div>
                         <!-- Calendar container -->
                         <div id="calendar"></div>
@@ -500,15 +505,17 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 
                 // Append the input element to the form
                 form.appendChild(matsInput);
-
+                var submitButton = document.getElementById("generatePlan")
                 // verifiy start and end
                 if (selectedMats.length > 0 || document.getElementById("localMats").files.length > 0) {
                     // Check if the submit button is clicked
-                    var submitButton = document.getElementById("generatePlan");
                     if (submitButton === document.activeElement) {
                         var startDate = new Date(document.getElementById('start').value);
                         var endDate = new Date(document.getElementById('end').value);
                         var today = new Date();
+                        today.setHours(0);
+                        today.setMinutes(0);
+                        today.setSeconds(0);
                         var startInput = document.getElementById('start');
                         var endInput = document.getElementById('end').min;
 
@@ -539,9 +546,13 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                         if (value != 0) {
                             // Safely submit the form
                             form.submit();
-                            document.getElementsByClassName('viewPlan')[0].click();
                         }
                     }
+                } else if (submitButton === document.activeElement) {
+                    var errorMsg = document.createElement("p");
+                    errorMsg.textContent = "You have to choose at least 1 file.";
+                    errorMsg.style.color = "red";
+                    form.appendChild(errorMsg);
                 }
             });
 
