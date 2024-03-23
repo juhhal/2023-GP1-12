@@ -1530,24 +1530,41 @@ document.querySelector('#saveButton').addEventListener('click', function() {
 
 
 function deleteFlashcard(date) {
-    // Make AJAX request to the PHP file
-    $.ajax({
-        url: 'cardsData.php', // Replace with the path to your PHP file
-        method: 'POST',
-        data: { date: date }, // Send the date as data
-        success: function(response) {
-            // Handle the response from the PHP file
-            location.reload(); // Reload the page to reflect the changes
-            console.log('Delete request successful');
-        },
-        error: function(xhr, status, error) {
-            // Handle errors           
-             location.reload(); // Reload the page to reflect the changes
-
-            console.error('Error sending delete request:', error);
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: 'cardsData.php',
+                method: 'POST',
+                data: { date: date },
+                success: function(response) {
+                    Swal.fire(
+                        'Deleted!',
+                        'Your flashcard has been deleted.',
+                        'success'
+                    );
+                    location.reload(); 
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire(
+                        'Error!',
+                        'An error occurred while deleting your flashcard.',
+                        'error'
+                    );
+                    console.error('Error sending delete request:', error);
+                }
+            });
         }
     });
 }
+
 
 
 
