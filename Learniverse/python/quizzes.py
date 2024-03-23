@@ -42,7 +42,7 @@ def generateQuiz(path: str, quizType: str) -> str:
             
 
         logging.info("Creating OpenAI client and generating response.",)
-        client = OpenAI(api_key = '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')
+        client = OpenAI(api_key = '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')
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             response_format={"type": "json_object"},

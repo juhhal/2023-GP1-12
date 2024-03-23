@@ -1172,36 +1172,63 @@ function deleteQuiz(id) {
         }
     });
 }
-window.jsPDF = window.jspdf.jsPDF;
-
 
 function saveQuizAsPDF(id) {
   const quizes = <?php echo json_encode($filesList); ?>;
-
   const quiz = quizes.find(quiz => quiz.id === id);
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   const result = quiz.result;
   const title = quiz.name;
-  doc.text(title, 10, 10);
-  let y = 20;
+  const pageWidth = doc.internal.pageSize.width;
+  const pageHeight = doc.internal.pageSize.height;
+  const margin = 10;
+  const maxWidth = pageWidth - 2 * margin;
+  let y = 10;
 
-  result.forEach(result => {
+  doc.setFontSize(12); 
+  doc.text(doc.splitTextToSize(title, maxWidth), 10, y);
+  y += 10; 
+  result?.forEach(result => {
     const question = result.question;
     const userAnswer = result.userAnswer;
     const correct = result.correct === 'true' ? 'Correct' : 'Wrong';
-    // const correctAnswer = result.correctAnswer;
-    doc.setFontSize(12);
-    doc.text(`Question: ${question}`, 10, y);
-    doc.setFontSize(12); 
-    doc.text(`Your Answer: ${userAnswer} (${correct})`, 10, y + 10);
-    doc.setFontSize(12); 
-    // doc.text(`Correct Answer: ${correctAnswer}`, 10, y +10);
-    // doc.setFontSize(12); 
-    y += 20;
+    const correctAnswer = result.correctAnswer;
+
+    function checkAndAddPage() {
+      if (y > pageHeight - 20) { 
+        doc.addPage();
+        y = 10; 
+      }
+    }
+
+    checkAndAddPage();
+    let questionLines = doc.splitTextToSize(`Question: ${question}`, maxWidth);
+    questionLines.forEach(line => {
+      doc.text(line, 10, y);
+      y += 10;
+    });
+
+    checkAndAddPage();
+    let answerLines = doc.splitTextToSize(`Your Answer: ${userAnswer} (${correct})`, maxWidth);
+    answerLines.forEach(line => {
+      doc.text(line, 10, y);
+      y += 10;
+    });
+
+    checkAndAddPage();
+    let correctAnswerLines = doc.splitTextToSize(`Correct Answer: ${correctAnswer}`, maxWidth);
+    correctAnswerLines.forEach(line => {
+      doc.text(line, 10, y);
+      y += 10;
+    });
+
+    y += 10; 
   });
+
   doc.save(`${title}_quiz.pdf`);
 }
+
 
 tippy('.delete-quiz', {
     content: 'Delete Quiz',
