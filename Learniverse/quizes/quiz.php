@@ -440,15 +440,13 @@ resultBtn.addEventListener("click",async () => {
     }
   });
 
-  const unansweredQuestionCount = questionStatus.filter(
-    (question) => question.status === 'unanswered'
-  ).length;
   const correctAnswerCount = questionStatus.filter(
     (question) => question.status === 'correct'
   ).length;
   const wrongAnswerCount = questionStatus.filter(
     (question) => question.status === 'incorrect'
   ).length;
+  const unansweredQuestionCount = questions.length -  (correctAnswerCount + wrongAnswerCount);
 
   wrongResult.textContent = wrongAnswerCount;
   correctResult.textContent = correctAnswerCount;
@@ -463,7 +461,7 @@ resultBtn.addEventListener("click",async () => {
     resultText.textContent =
       "Every challenge is a step towards improvement... You've got this!";
   }
-  remainingResult.textContent = remainingAnswers;
+  remainingResult.textContent = unansweredQuestionCount;
   modal.style.background = "rgba(0, 0, 0, 0.2)";
   modal.style.zIndex = "1000";
   container.style.zIndex = "-1000";
