@@ -283,6 +283,14 @@ function restoreAnswerState() {
     questionCount[currentQuestion].style.backgroundColor = "#bf97d8";
   }
 
+  if (currentQuestion < questions.length - 1 && currentQuestionStatus.status !== 'unanswered') {
+    nextBtn.style.display = "block";
+  }
+
+  if (currentQuestion === questions.length - 1 && remainingAnswers === 0) {
+    resultBtn.style.display = "block";
+  }
+
 }
 
 
@@ -290,6 +298,10 @@ function displayQuestions() {
   if (currentQuestion >= questions.length) {
     return;
   }
+
+  const currentStatus = questionStatus[currentQuestion].status;
+  skip.style.display = currentStatus === 'unanswered' ? "block" : "none";
+
 
   const correctAnswer = questions[currentQuestion].correctAnswer;
   const falseAnswers = questions[currentQuestion].answers.filter(
@@ -301,7 +313,6 @@ function displayQuestions() {
   answerContainers.forEach((label, index) => {
     label.innerText = shuffledAnswers[index];
 
-    // if the answer is empty or undefined hide the answer container
     if (shuffledAnswers[index] === "" || shuffledAnswers[index] === undefined) {
       label.style.display = "none";
     } else {
@@ -326,7 +337,7 @@ answerContainers.forEach((answerContainer, index) => {
 });
 
 skip.addEventListener("click", () => {
-  if (currentQuestion < questions.length) {
+  if (currentQuestion < questions.length && questionStatus[currentQuestion].status === 'unanswered') {
     questionStatus[currentQuestion].status = 'skipped';
     questionCount[currentQuestion].style.backgroundColor = "#6766661F";
 
@@ -342,21 +353,22 @@ skip.addEventListener("click", () => {
     answerSelected = false;
     answeredQuestions.textContent = currentQuestion + 1;
 
+    resultBtn.style.display = "none";
+
     if (currentQuestion < questions.length) {
       displayQuestions();
-      skip.style.display = "block"; // Show skip if not on last question
+      skip.style.display = "block";
       nextBtn.style.display = "none";
     } else {
-      skip.style.display = "none"; // Hide skip if on last question
+      skip.style.display = "none";
       nextBtn.style.display = "none";
     }
-    handleResultBtn(); // Decide if it's time to show the result button
+    handleResultBtn(); 
   }
 });
 
 
 function handleResultBtn() {
-  // This will now purely check if it's time to display the result button without changing its state here
   if (currentQuestion >= questions.length - 1) {
     resultBtn.style.display = "block";
     skip.style.display = "none";
@@ -380,6 +392,8 @@ nextBtn.addEventListener("click", () => {
     skip.style.display = "block";
     answeredQuestions.textContent = currentQuestion + 1;
     displayQuestions();
+
+    resultBtn.style.display = "none";
   } else {
     currentQuestion = 0;
     skip.style.display = "none";
@@ -390,6 +404,7 @@ nextBtn.addEventListener("click", () => {
 
   questionHistory.push(currentQuestion);
   handleBackBtnVisibility();
+  restoreAnswerState();
 });
 
 backBtn.addEventListener('click', () => {
@@ -399,6 +414,12 @@ backBtn.addEventListener('click', () => {
   displayQuestions();
   restoreAnswerState();
   nextBtn.style.display = "block";
+
+  if(currentQuestion === questions.length - 1) {
+    resultBtn.style.display = "block";
+  } else {
+    resultBtn.style.display = "none";
+  }
 });
 
 
