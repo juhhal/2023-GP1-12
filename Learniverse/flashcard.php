@@ -784,25 +784,7 @@ footer {
                         <div id="fileList"></div> <!-- Placeholder for file list -->
 
                     </div>
-            <!-- <div class="tab-pane fade " id="file" role="tabpanel" aria-labelledby="file-tab">
 
-              <form enctype="multipart/form-data" method="post" action="" id="uploadForm"
-                style="padding: 24px; margin-bottom: 48px;">
-
-                  <div class="form-group">
-                    <label for="fileSelect">Select from your uploaded files</label>
-
-                  </div>
-                  <div class="form-group text-center">
-                    <button type="submit" class="btn btn-cl">Submit</button>
-                  </div>
-
-              </form>
-
-            </div> -->
-            <!-- <label id="myLabel" onclick="showModal()" >
-                   <button> My uploaded files </button>
-                  </label> -->
             <!--MANUAL--->
             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 
@@ -860,36 +842,7 @@ footer {
 
 
   <script>
-//     function loadDirectories() {
-//   fetch('listDirectories.php')
-//     .then(response => response.text())
-//     .then(html => {
-//       document.getElementById('directoryButtons').innerHTML = html;
-//     })
-//     .catch(err => {
-//       console.error('Failed to load directories', err);
-//     });
-// }
 
-// function loadFiles(directoryName) {
-//   fetch(`listFiles.php?directory=${directoryName}`)
-//     .then(response => response.text())
-//     .then(html => {
-//       document.getElementById('fileList').innerHTML = html;
-//     })
-//     .catch(err => {
-//       console.error('Failed to load files', err);
-//     });
-// }
-
-
-// // Modify the showModal function to call loadDirectories initially
-// function showModal() {
-//   document.getElementById('modal-body').style.display = 'none';
-//   document.getElementById('fileModal').style.display = 'flex';
-//   loadDirectories(); // Load directories first
-//   loadFiles('Uploaded Files')
-// }
 // Activate Bootstrap tooltips
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
@@ -1527,8 +1480,6 @@ document.querySelector('#saveButton').addEventListener('click', function() {
 });
 
 
-
-
 function deleteFlashcard(date) {
     Swal.fire({
         title: 'Are you sure?',
@@ -1553,21 +1504,13 @@ function deleteFlashcard(date) {
                     location.reload(); 
                 },
                 error: function(xhr, status, error) {
-                    Swal.fire(
-                        'Error!',
-                        'An error occurred while deleting your flashcard.',
-                        'error'
-                    );
-                    console.error('Error sending delete request:', error);
-                }
-            });
+            // Handle errors           
+             location.reload(); // Reload the page to reflect the changes
+
+            console.error('Error sending delete request:', error);
         }
     });
 }
-
-
-
-
 
 document.addEventListener("DOMContentLoaded", function() {
     var tables = document.querySelectorAll('.table');

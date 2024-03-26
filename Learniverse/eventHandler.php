@@ -135,7 +135,6 @@ if ($jsonObj->request_type == 'addEvent') {
                         ]
                     ]
                 );
-            }
             $run = $manager->executeBulkWrite("Learniverse.studyPlan", $bulk);
             $output = [
                 'status' => 1

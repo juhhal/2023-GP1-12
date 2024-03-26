@@ -283,14 +283,6 @@ function restoreAnswerState() {
     questionCount[currentQuestion].style.backgroundColor = "#bf97d8";
   }
 
-  if (currentQuestion < questions.length - 1 && currentQuestionStatus.status !== 'unanswered') {
-    nextBtn.style.display = "block";
-  }
-
-  if (currentQuestion === questions.length - 1 && remainingAnswers === 0) {
-    resultBtn.style.display = "block";
-  }
-
 }
 
 
@@ -298,10 +290,6 @@ function displayQuestions() {
   if (currentQuestion >= questions.length) {
     return;
   }
-
-  const currentStatus = questionStatus[currentQuestion].status;
-  skip.style.display = currentStatus === 'unanswered' ? "block" : "none";
-
 
   const correctAnswer = questions[currentQuestion].correctAnswer;
   const falseAnswers = questions[currentQuestion].answers.filter(
@@ -353,8 +341,6 @@ skip.addEventListener("click", () => {
     answerSelected = false;
     answeredQuestions.textContent = currentQuestion + 1;
 
-    resultBtn.style.display = "none";
-
     if (currentQuestion < questions.length) {
       displayQuestions();
       skip.style.display = "block";
@@ -392,8 +378,6 @@ nextBtn.addEventListener("click", () => {
     skip.style.display = "block";
     answeredQuestions.textContent = currentQuestion + 1;
     displayQuestions();
-
-    resultBtn.style.display = "none";
   } else {
     currentQuestion = 0;
     skip.style.display = "none";
@@ -404,7 +388,6 @@ nextBtn.addEventListener("click", () => {
 
   questionHistory.push(currentQuestion);
   handleBackBtnVisibility();
-  restoreAnswerState();
 });
 
 backBtn.addEventListener('click', () => {
@@ -414,12 +397,6 @@ backBtn.addEventListener('click', () => {
   displayQuestions();
   restoreAnswerState();
   nextBtn.style.display = "block";
-
-  if(currentQuestion === questions.length - 1) {
-    resultBtn.style.display = "block";
-  } else {
-    resultBtn.style.display = "none";
-  }
 });
 
 
@@ -446,7 +423,6 @@ resultBtn.addEventListener("click",async () => {
   const wrongAnswerCount = questionStatus.filter(
     (question) => question.status === 'incorrect'
   ).length;
-  const unansweredQuestionCount = questions.length -  (correctAnswerCount + wrongAnswerCount);
 
   wrongResult.textContent = wrongAnswerCount;
   correctResult.textContent = correctAnswerCount;

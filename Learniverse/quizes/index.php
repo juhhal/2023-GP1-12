@@ -776,7 +776,6 @@ let fileInput = document.getElementById("file-input");
 let fileList = document.getElementById("files-list");
 let numOfFiles = document.getElementById("num-of-files");
 let extractedValue; 
-let fileName;
 fileInput.addEventListener("change", () => {
     fileList.innerHTML = "";
     numOfFiles.textContent = "";
@@ -805,8 +804,6 @@ fileInput.addEventListener("change", () => {
         });
     }
 });
-            let messageContainer = document.getElementById("og");
-            let loadingOverlay = document.getElementById("loadingOverlay");
 
             // fileInput.addEventListener("change", function() {
             //     let formData = new FormData();
@@ -995,8 +992,6 @@ fileInput.addEventListener("change", () => {
           });
           
 
-         
-          
 
           function showLoading() {
                 loadingOverlay.style.display = 'block';
@@ -1008,17 +1003,7 @@ fileInput.addEventListener("change", () => {
             }
 
 
-function Copysummary() {
-  // Get the text field
-  var copyText = document.getElementById("summary");
 
-  // Select the text field
-  copyText.select();
-  copyText.setSelectionRange(0, 99999); // For mobile devices
-
-  // Copy the text inside the text field
-  navigator.clipboard.writeText(copyText.value);
-  }
 </script>
 
   <script type="text/javascript">
