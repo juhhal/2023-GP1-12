@@ -6,18 +6,78 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 $userEmail = $_SESSION['email'];
 $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
 ini_set('display_errors', '0');
-error_reporting(E_ERROR | E_PARSE);
+error_reporting(E_ERROR | E_PARSE); 
 
-// $filePath = $_GET['file'];
-$filePath = $_GET['file'] ? "../" . $_GET['file'] : null;
-$fileName = $_GET['fileName'];
-if (file_exists($filePath)) {
+$client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+$database = $client->selectDatabase('Learniverse');
+$usersCollection = $database->selectCollection('users');
 
-} elseif ($filePath) {
-  echo 'File does not exist.';
-  exit();
+// Get the email from the session
+$email = $_SESSION['email'];
+
+// Query the database for the user
+$userDocument = $usersCollection->findOne(['email' => $email]);
+
+// If user found, retrieve the _id
+$user_id = null;
+if ($userDocument) {
+    $user_id = $userDocument->_id;
+}
+$path = '../user_files' . $DIRECTORY_SEPARATOR . $user_id . $DIRECTORY_SEPARATOR;
+
+
+// Step 1: Retrieve the path from the URL parameters
+if (isset($_GET['file'])) {
+    $encodedPath = $_GET['file'];
+    // Step 2: Decode the URL-encoded path
+    $decodedPath = "../".urldecode($encodedPath);
+    $fileName = basename($decodedPath);
+    // Step 3: Execute the Python script with the decoded path
+    $pythonScript = '../python/extracter.py'; // Adjust the path to your Python script
+    $command = "python3 " . escapeshellarg($pythonScript) . " " . escapeshellarg($decodedPath);
+    
+    // Execute the command and capture output
+    exec($command, $output, $returnCode);
+    
+    // Check if the command executed successfully
+    if ($returnCode === 0) {
+        // Output the result from the Python script
+        $extracted_text = implode(" ", $output);
+
+    // Echo out JavaScript code to remove the 'disabled' class from the element with ID 'generateBtn'
+
+    // Echo out JavaScript code to remove the 'disabled' class and set styles
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.classList.remove('disabled');
+    
+            const introCard = document.querySelector('.intro-card');
+            const introCardContainer = document.querySelector('.intro-card-container');
+                        if (introCardContainer) {
+              introCard.style.display = 'flex';
+              introCardContainer.style.background = 'rgba(0, 0, 0, 0.2)';
+              introCardContainer.style.zIndex =' 1000';
+            }
+            extractedValue = '" . addslashes($extracted_text) . "';
+            fileName = '" . $fileName . "';
+            filepath = '" . $decodedPath . "';
+            console.log(filepath, fileName, extractedValue);
+        });
+
+
+    </script>";
+
+    
+
+
+    } else {
+        // Output an error message
+        echo "Error executing Python script.";
+    }
 }
 ?>
+
 
 <html lang="en">
 <head>
@@ -40,22 +100,13 @@ if (file_exists($filePath)) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const filePath = "<?php echo $filePath; ?>";
-    if(filePath) {
-      // trigger modal
-      const introCard = document.querySelector('.intro-card');
-      const introCardContainer = document.querySelector('.intro-card-container');
-      const startModalCloseIcon = document.querySelector('.close-icon');
+<!-- SweetAlert2 JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-      introCard.style.display = "flex";
-      introCardContainer.style.background = "rgba(0, 0, 0, 0.2)";
-      introCardContainer.style.zIndex = "1000";      
-    }
-  });
-</script>
+
 
 <style>
         .overlay {
@@ -319,28 +370,28 @@ if (file_exists($filePath)) {
 </header>
 <main>
 <div class="intro-card-container">
-      <div class="intro-card">
-                  <h2>Hello 👋</h2>
-                  <p>How would you like to learn?</p>
-                  <a id="summarize" style="margin-top:10px;">
-                    <div>
-                      <h4>✍️ Multiple Choice</h4>
-                      <p>
-                        Strengthen your understanding on every concept by solving
-                        multiple choice questions
-                      </p>
-                    </div>
-                  </a>
-                  <a id="summarizeTrueFalse" style="margin-top:10px;">
-                    <div>
-                      <h4>✍️ True or False</h4>
-                      <p>
-                        Strengthen your understanding on every concept by solving
-                        true or false questions
-                      </p>
-                    </div>
-                  </a>
-                  <a id="summarizeMixed" style="margin-top:10px;">
+          <div class="intro-card">
+            <h2>Hello 👋</h2>
+            <p>How would you like to learn?</p>
+            <a id="summarize">
+              <div>
+                <h4>✍️ Multiple Choice</h4>
+                <p>
+                  Strengthen your understanding on every concept by solving
+                  multiple choice questions
+                </p>
+              </div>
+            </a>
+            <a id="summarizeTrueFalse">
+              <div>
+                <h4>✍️ True or False</h4>
+                <p>
+                  Strengthen your understanding on every concept by solving
+                  true or false questions
+                </p>
+              </div>
+            </a>
+            <a id="summarizeMixed" style="margin-top:10px;">
                     <div>
                       <h4>✍️ Mix of both</h4>
                       <p>
@@ -349,55 +400,54 @@ if (file_exists($filePath)) {
                       </p>
                     </div>
                   </a>
-                  <img class="close-icon" src="icons/close.svg" alt="" />
-                </div>
+            <img class="close-icon" src="icons/close.svg" alt="" />
+          </div>
          </div>
   <div id="tools_div">
-        <ul class="tool_list">
+  <ul class="tool_list">
         <li class="tool_item">
-          <a href="/workspace.php"> Calendar & To-Do
+          <a href="../workspace.php"> Calendar & To-Do
           </a>
         </li>
         <li class="tool_item">
-          <a href="/theFiles.php"> My Files</a>
+          <a href="../theFiles.php"> My Files</a>
         </li>
         <li class="tool_item">
-        <a href="/quizes/"> Quiz
-          </a>
+          <a href="../quizes/index.php">Quiz</a>
         </li>
         <li class="tool_item">
-        <a href="/flashcard"> Flashcard
-          </a>
-        </li>
+        <a href="../flashcard.php">
+            Flashcards</a>        </li>
         <li class="tool_item">
-        <a href="/summarization/summarization.php"> Summarization
-          </a>
+          <a href="../summarization/summarization.php">Summarization</a>
         </li>
-        <li class="tool_item"><a href="/studyplan.php">
-        Study Planner</a>
-                  </li>
-        <li class="tool_item"><a href="/Notes/notes.php">
+        <li class="tool_item"><a href="../studyplan.php">
+          Study Planner</a>
+        </li>
+        <li class="tool_item"><a href="../Notes/notes.php">
             Notes</a>
         </li>
         <li class="tool_item">
-          <a href="/pomodoro.php">
+          <a href="../pomodoro.php">
             Pomodoro</a>
         </li>
-        <li class="tool_item"><a href="/gpa.php">
+        <li class="tool_item"><a href="../gpa.php">
             GPA Calculator</a>
         </li>
-        <li class="tool_item"><a href="/sharedspace.php">
-        Shared spaces</a>
-                 </li>
+        <li class="tool_item">
+          Shared spaces
+        </li>
         <li class="tool_item">
           Meeting Room
         </li>
-        <li class="tool_item"><a href="/community.php">
+        <li class="tool_item"><a href="../community.php">
             Community</a>
         </li>
       </ul>
         </div>
-
+        <div class="overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
         <div class="questions-modal-container">
         <div class="questions-modal">
           <h2>Quiz</h2>
@@ -410,8 +460,10 @@ if (file_exists($filePath)) {
         <h1>Generated Quizzes</h1>
         <p>Generate quizzes to test your knowledge.</p>
       </div>
-      <div class="button-container" style="width: 70%;">
+
+        <div class="button-container">
         <div class="summary-wrapper">
+
         <form enctype="multipart/form-data" method="post" action="" id="uploadForm">
           <input type="file" id="file-input" />
           <label id="" for="file-input">
@@ -419,19 +471,14 @@ if (file_exists($filePath)) {
             &nbsp; Choose Files To Upload
           </label>
         </form>
-        <!-- <label  id="summarize" style="margin: 0 10px;">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-          &nbsp; Generate
-        </label> 
-        
-        <label  id="summarizeTrueFalse">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-          &nbsp; Generate True or False
-        </label> -->
+        <label id="myLabel" onclick="showModal()" >
+          <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          &nbsp; My uploaded files
+        </label>
         <label  id="generateBtn" style="margin: 0 10px;" class="disabled">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <i class="fa-solid fa-wand-magic-sparkles disabled"></i>
           &nbsp; Generate
-        </label> 
+        </label>
         </div>
         <div id="num-of-files"></div>
         <ul id="files-list"></ul>
@@ -731,7 +778,7 @@ if (file_exists($filePath)) {
                                 <i class="fas fa-download" aria-hidden="true"></i>
                         </button>
 
-                        <button class="file-edit btn save-quiz" onclick="saveQuizAsPDF('<?php echo $file['id']; ?>')">
+                        <button class="file-edit btn save-quiz" onclick="savetoFiles('<?php echo $file['id']; ?>')">
                         <i class="fa fa-bookmark" aria-hidden="true"></i>
                         </button>
 
@@ -749,7 +796,19 @@ if (file_exists($filePath)) {
 <?php } ?>
 
 </div>
+<div id="fileModal" style="display:none;">
+        <div class="modal-container">
 
+          <div id="modalContent">
+            <!-- Directory buttons will be loaded here -->
+            <div id="directoryButtons"></div>
+
+            <!-- File list will be loaded here -->
+            <div id="fileList"></div>
+          </div>
+          <button onclick="hideModal()">Close</button>
+        </div>
+      </div>
 </main>
     <footer id="footer" style="margin-top: 7%; margin-top:0%;">
 
@@ -763,6 +822,82 @@ if (file_exists($filePath)) {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
 <script>
+  function loadDirectories() {
+  fetch('../listDirectories.php')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('directoryButtons').innerHTML = html;
+    })
+    .catch(err => {
+      console.error('Failed to load directories', err);
+    });
+}
+
+function loadFiles(directoryName) {
+  fetch(`../listFiles.php?directory=${directoryName}`)
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('fileList').innerHTML = html;
+    })
+    .catch(err => {
+      console.error('Failed to load files', err);
+    });
+}
+  function showModal() {
+  document.getElementById('fileModal').style.display = 'flex';
+  loadDirectories(); // Load directories first
+  loadFiles('Uploaded Files')
+}
+let loadingOverlay = document.getElementById("loadingOverlay");
+function showLoading() {
+  loadingOverlay.style.display = 'block';
+}
+
+// Function to hide loading overlay
+function hideLoading() {
+  loadingOverlay.style.display = 'none';
+}
+let filepath ='';
+let fileName ='';
+function selectFile(fileNames) {
+  // Handle file selection
+  generateBtn.classList.remove("disabled");
+  filepath = fileNames; 
+  fileName = fileNames.split('/').pop(); // 'file.txt'
+
+  console.log(fileName);
+  hideModal();
+  showLoading(); // Show the loading overlay
+
+  // Create FormData object to send the file name to the server
+  const formData = new FormData();
+  formData.append('fileNaming', filepath);
+
+  // Send the file name to the server using AJAX
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '../summarization/extract.php', true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) { // Check if request is complete
+      hideLoading(); // Hide the loading overlay once the request is complete
+      if (xhr.status === 200) {
+        // Handle the response from the server here
+        console.log(xhr.responseText);
+        extractedValue = xhr.responseText;
+        filepath = "<?php echo $path ?>" + filepath;
+
+      } else {
+        // Handle HTTP error (status code other than 200)
+        console.error("Error response", xhr.statusText);
+      }
+    }
+  };
+  xhr.send(formData);
+}
+
+
+function hideModal() {
+  document.getElementById('fileModal').style.display = 'none';
+}
 // Include pdfjs-dist library
 
 const generateBtn = document.querySelector("#generateBtn");
@@ -805,48 +940,58 @@ fileInput.addEventListener("change", () => {
     }
 });
 
-            // fileInput.addEventListener("change", function() {
-            //     let formData = new FormData();
-            //     formData.append('file', fileInput.files[0]);
-            //     formData.append('readpdf', 'true'); // Include the 'readpdf' parameter
+    fileInput = document.getElementById("file-input");
 
-            //     showLoading(); // Show loading overlay
+            fileInput.addEventListener("change", function() {
+                let formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('readpdf', 'true'); // Include the 'readpdf' parameter
+                console.log(fileInput.files[0]);
+                console.log(formData);
 
-            //     let xhr = new XMLHttpRequest();
-            //     xhr.open('POST', '../summarization/extract.php'); 
-            //     xhr.onreadystatechange = function() {
-            //         if (xhr.readyState === XMLHttpRequest.DONE) {
-            //             hideLoading(); // Hide loading overlay
-            //             if (xhr.status === 200) {
-            //                 // Request was successful, handle response here
-            //                 extractedValue=xhr.responseText;
-            //                 console.log(xhr.responseText);
+                showLoading(); // Show loading overlay
+
+                let xhr = new XMLHttpRequest();
+                xhr.open('POST', '../summarization/extract.php'); 
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        hideLoading(); // Hide loading overlay
+                        if (xhr.status === 200) {
+                            // Request was successful, handle response here
+                           extractedValue = xhr.responseText;
+
+                        } else {
+                            // Request failed, handle error here
+                            console.error('Error:', xhr.statusText);
+                        }
+                    }
+                };
+                xhr.send(formData);
+            });
 
 
-            //             } else {
-            //                 // Request failed, handle error here
-            //                 console.error('Error:', xhr.statusText);
-            //             }
-            //         }
-            //     };
-            //     xhr.send(formData);
-            // });
 
-            $('#summarize').click(async function() {
-              let fileName = fileInput.files[0]?.name;
+
+            $('#summarize').click(function() {
               let formData = new FormData();
-              const filePath = "<?php echo $filePath; ?>";
-              const fileName2 = "<?php echo $fileName; ?>";
-              if(filePath) {
-                formData.append('filePath', filePath);
-                formData.append('fileName', fileName2);
-              } else {
-                formData.append('fileUpload', fileInput.files[0]);
-              }
+
+    if (fileInput && fileInput.files.length > 0) {
+        fileName = fileInput.files[0].name;
+        formData.append('fileUpload', fileInput.files[0]);
+    }
+    else {
+        // Replace 'filePath' with the variable storing the file path, if available
+        // Example: let filePath = 'example/path/file.txt';
+        formData.append('filePath', filepath);
+        // Assuming you're setting 'fileName' here if 'filePath' is provided
+    }
+   
+
 
                   showLoading(); 
                   console.log("Sending request to extract.php...");
-                  var data = [fileName || fileName2, extractedValue];   
+                  var data = [fileName, extractedValue];   
+                  console.log({data})               
                       $.ajax({
                       url: 'extractQuizes.php',
                       type: 'POST',
@@ -859,117 +1004,12 @@ fileInput.addEventListener("change", () => {
                           url: 'postQuiz.php',
                           method: 'POST',
                           data: {
-                            name: fileName || fileName2,
+                            name: fileName,
                             body: response.data
                           },
                           success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
-                            hideLoading();
-                          },
-                          error: function(jqXHR, textStatus, errorThrown) {
-                            console.error("Error:", textStatus, errorThrown);
-                          }
-                        });
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                          hideLoading(); // Hide loading overlay
-                          console.error("Error:", textStatus, errorThrown);
-                          Swal.fire({
-                              title: 'Request Failed',
-                              text: 'There was an error processing your request.',
-                              icon: 'error',
-                              confirmButtonText: 'OK'
-                          });
-                      }
-                  });
-              
-          });
-          $('#summarizeTrueFalse').click(async function() {
-              let fileName = fileInput.files[0]?.name;
-              let formData = new FormData();
-              const filePath = "<?php echo $filePath; ?>";
-              const fileName2 = "<?php echo $fileName; ?>";
-              if(filePath) {
-                formData.append('filePath', filePath);
-                formData.append('fileName', fileName2);
-              } else {
-                formData.append('fileUpload', fileInput.files[0]);
-              }
-              formData.append('quizType', 'trueFalse');
-
-                  showLoading(); 
-                  console.log("Sending request to extract.php...");
-                  var data = [fileName || fileName2, extractedValue];   
-                      $.ajax({
-                      url: 'extractQuizes.php',
-                      type: 'POST',
-                      data: formData, 
-                      processData: false,
-                       contentType: false,
-
-                      success: function(response) {
-                        $.ajax({
-                          url: 'postQuiz.php',
-                          method: 'POST',
-                          data: {
-                            name: fileName || fileName2,
-                            body: response.data
-                          },
-                          success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
-                            hideLoading();
-                          },
-                          error: function(jqXHR, textStatus, errorThrown) {
-                            console.error("Error:", textStatus, errorThrown);
-                          }
-                        });
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                          hideLoading(); // Hide loading overlay
-                          console.error("Error:", textStatus, errorThrown);
-                          Swal.fire({
-                              title: 'Request Failed',
-                              text: 'There was an error processing your request.',
-                              icon: 'error',
-                              confirmButtonText: 'OK'
-                          });
-                      }
-                  });
-              
-          });
-          $('#summarizeMixed').click(async function() {
-              let fileName = fileInput.files[0]?.name;
-              let formData = new FormData();
-              const filePath = "<?php echo $filePath; ?>";
-              const fileName2 = "<?php echo $fileName; ?>";
-              if(filePath) {
-                formData.append('filePath', filePath);
-                formData.append('fileName', fileName2);
-              } else {
-                formData.append('fileUpload', fileInput.files[0]);
-              }
-              formData.append('quizType', 'mixed');
-
-                  showLoading(); 
-                  console.log("Sending request to extract.php...");
-                  var data = [fileName || fileName2, extractedValue];   
-                      $.ajax({
-                      url: 'extractQuizes.php',
-                      type: 'POST',
-                      data: formData, 
-                      processData: false,
-                       contentType: false,
-
-                      success: function(response) {
-                        $.ajax({
-                          url: 'postQuiz.php',
-                          method: 'POST',
-                          data: {
-                            name: fileName || fileName2,
-                            body: response.data
-                          },
-                          success: function(res) {
-                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + (fileName || fileName2) + '&id=' + res.quizId;
+                            console.log(response);
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
                             hideLoading();
                           },
                           error: function(jqXHR, textStatus, errorThrown) {
@@ -991,6 +1031,118 @@ fileInput.addEventListener("change", () => {
               
           });
           
+          $('#summarizeTrueFalse').click(function() {
+              let formData = new FormData();
+
+    if (fileInput && fileInput.files.length > 0) {
+        fileName = fileInput.files[0].name;
+        formData.append('fileUpload', fileInput.files[0]);
+    }
+    else {
+        // Replace 'filePath' with the variable storing the file path, if available
+        // Example: let filePath = 'example/path/file.txt';
+        formData.append('filePath', filepath);
+        // Assuming you're setting 'fileName' here if 'filePath' is provided
+    }
+              formData.append('quizType', 'trueFalse');
+
+                  showLoading(); 
+                  console.log("Sending request to extract.php...");
+                  var data = [fileName, extractedValue];   
+                      $.ajax({
+                      url: 'extractQuizes.php',
+                      type: 'POST',
+                      data: formData, 
+                      processData: false,
+                       contentType: false,
+
+                      success: function(response) {
+                        $.ajax({
+                          url: 'postQuiz.php',
+                          method: 'POST',
+                          data: {
+                            name: fileName,
+                            body: response.data,
+                          },
+                          success: function(res) {
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
+                            hideLoading();
+                          },
+                          error: function(jqXHR, textStatus, errorThrown) {
+                            console.error("Error:", textStatus, errorThrown);
+                          }
+                        });
+                      },
+                      error: function(jqXHR, textStatus, errorThrown) {
+                          hideLoading(); // Hide loading overlay
+                          console.error("Error:", textStatus, errorThrown);
+                          Swal.fire({
+                              title: 'Request Failed',
+                              text: 'There was an error processing your request.',
+                              icon: 'error',
+                              confirmButtonText: 'OK'
+                          });
+                      }
+                  });
+              
+          });
+
+          $('#summarizeMixed').click(function() {
+              let formData = new FormData();
+        console.log(filepath, fileName, extractedValue);
+    if (fileInput && fileInput.files.length > 0) {
+        fileName = fileInput.files[0].name;
+        formData.append('fileUpload', fileInput.files[0]);
+    }
+    else {
+        // Replace 'filePath' with the variable storing the file path, if available
+        // Example: let filePath = 'example/path/file.txt';
+        formData.append('filePath', filepath);
+        // Assuming you're setting 'fileName' here if 'filePath' is provided
+    }
+              formData.append('quizType', 'mixed');
+
+                  showLoading(); 
+                  console.log("Sending request to extract.php...");
+                  var data = [fileName, extractedValue];   
+                      $.ajax({
+                      url: 'extractQuizes.php',
+                      type: 'POST',
+                      data: formData, 
+                      processData: false,
+                       contentType: false,
+
+                      success: function(response) {
+                        $.ajax({
+                          url: 'postQuiz.php',
+                          method: 'POST',
+                          data: {
+                            name: fileName,
+                            body: response.data,
+                          },
+                          success: function(res) {
+                            window.location.href = 'quiz.php?data=' + encodeURIComponent(JSON.stringify(response.data)) + '&title=' + fileName + '&id=' + res.quizId;
+                            hideLoading();
+                          },
+                          error: function(jqXHR, textStatus, errorThrown) {
+                            console.error("Error:", textStatus, errorThrown);
+                          }
+                        });
+                      },
+                      error: function(jqXHR, textStatus, errorThrown) {
+                          hideLoading(); // Hide loading overlay
+                          console.error("Error:", textStatus, errorThrown);
+                          Swal.fire({
+                              title: 'Request Failed',
+                              text: 'There was an error processing your request.',
+                              icon: 'error',
+                              confirmButtonText: 'OK'
+                          });
+                      }
+                  });
+              
+          });
+
 
 
           function showLoading() {
@@ -1096,6 +1248,7 @@ viewResultButtons.forEach(button => {
         question.innerHTML = `
             <h5>Question: ${result.question}</h5>
             <p>Your Answer: ${result.userAnswer} ${result.correct === 'true' ? '<span class="correct">Correct</span>' : '<span class="wrong">Wrong</span>'}</p>
+            ${result.correct === 'false' ? `<p>Correct answer: ${result.correctAnswer}</p>` : ''}
         `;
         modal.appendChild(question);
     });
@@ -1156,62 +1309,154 @@ function deleteQuiz(id) {
         }
     });
 }
+window.jsPDF = window.jspdf.jsPDF;
 
 function saveQuizAsPDF(id) {
-  const quizes = <?php echo json_encode($filesList); ?>;
-  const quiz = quizes.find(quiz => quiz.id === id);
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const result = quiz.result;
-  const title = quiz.name;
-  const pageWidth = doc.internal.pageSize.width;
-  const pageHeight = doc.internal.pageSize.height;
-  const margin = 10;
-  const maxWidth = pageWidth - 2 * margin;
-  let y = 10;
+    const quizes = <?php echo json_encode($filesList); ?>;
+    const quiz = quizes.find(quiz => quiz.id === id);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        lineHeight: 7
+    });
 
-  doc.setFontSize(12); 
-  doc.text(doc.splitTextToSize(title, maxWidth), 10, y);
-  y += 10; 
-  result?.forEach(result => {
-    const question = result.question;
-    const userAnswer = result.userAnswer;
-    const correct = result.correct === 'true' ? 'Correct' : 'Wrong';
-    const correctAnswer = result.correctAnswer;
+    const result = quiz.result;
+    const title = quiz.name;
 
-    function checkAndAddPage() {
-      if (y > pageHeight - 20) { 
+    doc.setFontSize(10); // Set font size to 10
+    doc.text(title, 10, 10);
+
+    let y = 20;
+    let allText = ''; // Variable to store all the text
+
+    result.forEach(result => {
+        const question = result.question;
+        const userAnswer = result.userAnswer;
+        const correct = result.correct === 'true' ? 'Correct' : 'Wrong';
+        const correctAnswer = result.correctAnswer;
+
+        // Concatenate all text into the allText variable
+        allText += `Question: ${question}\n`;
+        if (userAnswer !== '') 
+        allText += `Your Answer: ${userAnswer} (${correct})\n`;
+        allText += `Correct Answer: ${correctAnswer}\n\n`; // Add extra new line between entries
+
+        var maxWidth = 250; // Adjust this value as needed
+var textLines = doc.splitTextToSize(allText, maxWidth);
+
+var x = 20; // X position
+var y = 20; // Initial Y position
+var pageHeight = doc.internal.pageSize.height; // Get the height of the page
+
+// Set the font size
+var fontSize = 10; // Example font size in points
+doc.setFontSize(fontSize);
+
+// Set line height with a spacing factor of 1.15
+var lineHeight = 7; // Adjusting line spacing to 1.15 times the font size
+
+textLines.forEach(function(line) {
+    if (y > pageHeight - 10) { // Check to see if the line is near the bottom of the page
         doc.addPage();
-        y = 10; 
-      }
+        y = 20; // Reset Y position for the new page
     }
+    
+    doc.text(line, x, y);
+    y += lineHeight; // Move to the next line
+});
 
-    checkAndAddPage();
-    let questionLines = doc.splitTextToSize(`Question: ${question}`, maxWidth);
-    questionLines.forEach(line => {
-      doc.text(line, 10, y);
-      y += 10;
-    });
+});
+doc.save(`${title}_quiz.pdf`);
 
-    checkAndAddPage();
-    let answerLines = doc.splitTextToSize(`Your Answer: ${userAnswer} (${correct})`, maxWidth);
-    answerLines.forEach(line => {
-      doc.text(line, 10, y);
-      y += 10;
-    });
-
-    checkAndAddPage();
-    let correctAnswerLines = doc.splitTextToSize(`Correct Answer: ${correctAnswer}`, maxWidth);
-    correctAnswerLines.forEach(line => {
-      doc.text(line, 10, y);
-      y += 10;
-    });
-
-    y += 10; 
-  });
-
-  doc.save(`${title}_quiz.pdf`);
 }
+
+function savetoFiles(id) {
+    const quizes = <?php echo json_encode($filesList); ?>;
+    const quiz = quizes.find(quiz => quiz.id === id);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        lineHeight: 7
+    });
+
+    const result = quiz.result;
+    const title = quiz.name;
+
+    doc.setFontSize(10); // Set font size to 10
+    doc.text(title, 10, 10);
+
+    let y = 20;
+    let allText = ''; // Variable to store all the text
+
+    result.forEach(result => {
+        const question = result.question;
+        const userAnswer = result.userAnswer;
+        const correct = result.correct === 'true' ? 'Correct' : 'Wrong';
+        const correctAnswer = result.correctAnswer;
+
+        // Concatenate all text into the allText variable
+        allText += `Question: ${question}\n`;
+
+        allText += `Correct Answer: ${correctAnswer}\n`; // Add extra new line between entries
+        if (userAnswer !== '') 
+        allText += `Your Answer: ${userAnswer} (${correct})\n\n`;
+
+        var maxWidth = 250; // Adjust this value as needed
+var textLines = doc.splitTextToSize(allText, maxWidth);
+
+var x = 20; // X position
+var y = 20; // Initial Y position
+var pageHeight = doc.internal.pageSize.height; // Get the height of the page
+
+// Set the font size
+var fontSize = 10; // Example font size in points
+doc.setFontSize(fontSize);
+
+// Set line height with a spacing factor of 1.15
+var lineHeight = 7; // Adjusting line spacing to 1.15 times the font size
+
+textLines.forEach(function(line) {
+    if (y > pageHeight - 10) { // Check to see if the line is near the bottom of the page
+        doc.addPage();
+        y = 20; // Reset Y position for the new page
+    }
+    
+    doc.text(line, x, y);
+    y += lineHeight; // Move to the next line
+});
+
+
+    // doc.save(`${title}_quiz.pdf`);
+});
+        // Convert the PDF to a Blob
+        const blob = doc.output('blob'); // Get blob directly
+
+        // Create FormData object to send data to the server
+        const formData = new FormData();
+        const fileNames = title + '.pdf'; // Trim any leading/trailing spaces from the filename
+        formData.append('pdf', blob, fileNames);
+
+        // Send the PDF to the server using AJAX
+        const xhr = new XMLHttpRequest();
+        const path = "save_quiz.php"; // Make sure this is the correct path to your PHP script
+        xhr.open('POST', path, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+              Swal.fire({
+    title: 'file saved successfully!',
+    icon: 'success',
+});
+           }
+        };
+        xhr.send(formData);
+}
+
+
+
+
+
 
 
 tippy('.delete-quiz', {

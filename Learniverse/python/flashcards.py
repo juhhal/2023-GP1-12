@@ -14,12 +14,12 @@ def summarize(path: str) -> str:
             text = file.read()
 
         logging.info("Creating OpenAI client and generating response.")
-        client = OpenAI(api_key = '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')
+        client = OpenAI(api_key = '')
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": "You are a 10 Flashcards summarizer designed to output JSON and never return empty response, write in this format (flashcards) that includes flashcard number (for example: card1), description of important concepts or definitions (content)[Do not include the answer in the content], name of the concept or term (answer)[Do not include the answer in the content]."},
+                {"role": "system", "content": "You are a 10 Flashcards summarizer designed to output JSON and never return empty response, write in this format (flashcards) that includes flashcard number (for example: card1), description of important concepts or definitions (content)[Do not include the answer in the content], (answer: name of the concept or term)[Do not include the answer in the content]."},
                 {"role": "user", "content": text}
             ]
         )

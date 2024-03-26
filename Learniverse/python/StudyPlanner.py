@@ -15,16 +15,22 @@ def generate(tempFilePath: str, start: str, end: str, previousEvents: str) -> st
         previousEvents = json.loads(previousEvents)
         
         logging.info(f"Creating OpenAI client and generating response with {start} to {end} including {previousEvents} and {text}.")
-        client = OpenAI(api_key = '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')
+        client = OpenAI(api_key = '')
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             response_format={"type": "json_object"},
-            messages=[
-                { 
-                 "role": "system", 
-                 "content": f"As a study planner, your task is to create a study plan by distributing the main topics without changing their order, considering my calendar events for the dates {start} to {end}. The calendar events are as follows: ({previousEvents}), days with events should have less work. provide the response in JSON format following this structure only: (study_plan(date, title , description (explain the main topics shortly) )). each day have only one study plan."},
-                {"role": "user", "content": text}
+            messages= [
+                {
+                    "role": "system",
+                    "content": f"As a study planner, your task is to create a study plan by dividing all the main topics from the user content without changing their order, every new lecture has (warning new lecture) flag, considering my calendar events for the dates: from {start} to {end}. Please ensure that the study plan takes into account the existing calendar events but does not include them in the response:{previousEvents}. count how many events are for each day and Distribute the topics in a way that days with higher events count have less work, and each day must have only one study plan do not leave empty days. Provide the response in JSON format following this structure: 'study_plan(date, title, description)' where 'date' represents the study date, 'title' is the title of the study plan, and 'description' one sentence that explains the main topics for that day."
+                },
+                {
+                    "role": "user",
+                    "content": text
+                }
             ]
+            
+
         )
 
         logging.info("Writing response to temporary file." + response.choices[0].message.content)

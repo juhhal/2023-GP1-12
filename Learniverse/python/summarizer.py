@@ -16,12 +16,12 @@ def summarize(path: str) -> str:
             text = file.read()
 
         logging.info("Creating OpenAI client and generating response.")
-        client = OpenAI(api_key = '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')
+        client = OpenAI(api_key = '')
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": "You are a summarizer designed to output JSON with all the summary written inside this key (summary) and never return an empty response."},
+                {"role": "system", "content": "You are a summarizer designed to output JSON with all the summary in one paragraph written inside this key (summary) and never return an empty response."},
                 {"role": "user", "content": text}
             ]
         )

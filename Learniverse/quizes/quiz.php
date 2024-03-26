@@ -301,6 +301,7 @@ function displayQuestions() {
   answerContainers.forEach((label, index) => {
     label.innerText = shuffledAnswers[index];
 
+    // if the answer is empty or undefined hide the answer container
     if (shuffledAnswers[index] === "" || shuffledAnswers[index] === undefined) {
       label.style.display = "none";
     } else {
@@ -325,7 +326,7 @@ answerContainers.forEach((answerContainer, index) => {
 });
 
 skip.addEventListener("click", () => {
-  if (currentQuestion < questions.length && questionStatus[currentQuestion].status === 'unanswered') {
+  if (currentQuestion < questions.length) {
     questionStatus[currentQuestion].status = 'skipped';
     questionCount[currentQuestion].style.backgroundColor = "#6766661F";
 
@@ -343,18 +344,19 @@ skip.addEventListener("click", () => {
 
     if (currentQuestion < questions.length) {
       displayQuestions();
-      skip.style.display = "block";
+      skip.style.display = "block"; // Show skip if not on last question
       nextBtn.style.display = "none";
     } else {
-      skip.style.display = "none";
+      skip.style.display = "none"; // Hide skip if on last question
       nextBtn.style.display = "none";
     }
-    handleResultBtn(); 
+    handleResultBtn(); // Decide if it's time to show the result button
   }
 });
 
 
 function handleResultBtn() {
+  // This will now purely check if it's time to display the result button without changing its state here
   if (currentQuestion >= questions.length - 1) {
     resultBtn.style.display = "block";
     skip.style.display = "none";
@@ -417,6 +419,9 @@ resultBtn.addEventListener("click",async () => {
     }
   });
 
+  const unansweredQuestionCount = questionStatus.filter(
+    (question) => question.status === 'unanswered'
+  ).length;
   const correctAnswerCount = questionStatus.filter(
     (question) => question.status === 'correct'
   ).length;
@@ -437,7 +442,7 @@ resultBtn.addEventListener("click",async () => {
     resultText.textContent =
       "Every challenge is a step towards improvement... You've got this!";
   }
-  remainingResult.textContent = unansweredQuestionCount;
+  remainingResult.textContent = remainingAnswers;
   modal.style.background = "rgba(0, 0, 0, 0.2)";
   modal.style.zIndex = "1000";
   container.style.zIndex = "-1000";

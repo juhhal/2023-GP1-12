@@ -225,6 +225,71 @@ if (isset($_GET['file'])) {
 ?>
 <style>
 
+#tools_div {
+  background-color: #bf97d8;
+  width: 12%;
+  padding: 2% 0.5% 0;
+  float: left;
+  margin-left: -13.9%;
+  transition: 0.2s;
+  box-shadow: 0px 1px 2px 1px rgba(58, 60, 67, 0.15);
+  position: fixed;
+  z-index: 100;
+  height: 99vh;
+}
+
+.tool_list {
+  display: inline-block;
+  padding-inline-start: 0;
+}
+
+.tool_item {
+  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+    "sans-serif";
+  font-size: 1.1rem !important;
+  list-style-type: none;
+  padding: 9%;
+  margin-bottom: 5%;
+  white-space: nowrap;
+  text-indent: 1rem;
+  font-size: 0.9rem;
+  text-align: left;
+  color: #000e23;
+  width: 124%;
+  transition: color 0.3s, background-color 0.3s;
+  border-radius: 5%;
+}
+
+.tool_item:hover {
+  cursor: pointer;
+  transition-duration: 0.3s;
+  color: #faf7ff !important;
+  background-color: rgba(212, 179, 233, 0.933);
+}
+
+.tool_item:hover a {
+  cursor: pointer;
+  transition-duration: 0.3s;
+  color: #faf7ff !important;
+  background-color: rgba(212, 179, 233, 0.933);
+}
+
+.tool_item a {
+  text-decoration: none;
+  color: #000e23;
+}
+
+.tool_item img {
+  width: 15%;
+  float: left;
+  margin-left: 2%;
+}
+
+#file-upload-button{
+  background-color: #bf97d8;
+    color: white;
+    border: 1px solid #bf97d8;
+}
 
   .btn-cl {
     background-color: #bf97d8;
@@ -508,20 +573,30 @@ if (isset($_GET['file'])) {
     margin-left: 0.9em !important;
     width: 93% !important;
 }
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    position: relative; /* Ensure relative positioning for absolute positioning of footer */
+div:where(.swal2-container){
+  margin-bottom: 30%;
 }
-footer {
-    position: absolute;
+body, html {
+    height: 100%; /* Ensure full height */
+    margin: 0; /* Reset default margin */
+}
+
+#footer {
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
     bottom: 0;
     width: 100%;
     background-color: #f0f0f0; /* Example background color */
     padding: 10px; /* Example padding */
+    z-index: 1;
 }
+
+/* Adjust main content styling */
+main {
+    min-height: calc(100vh - 120px); /* Adjust based on header and footer size */
+    /* other styles */
+}
+
 /* Adjust the position of Bootstrap tooltips */
 .tooltip {
     position: fixed !important; /* Override Bootstrap's default positioning */
@@ -532,17 +607,18 @@ footer {
 
 
 <body>
-  <header>
+<header class="head" style="font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS',
+      'sans-serif' !important; ">
     <div class="header-container">
-      <div class="flex-parent">
+      <div class="flex-parent" style="color: black;">
         <div class="header_logo">
-          <img src="LOGO.png">
-          <div>Learniverse</div>
+          <img src="LOGO.png" style="width: 20% !important; display: block; margin: 12% 12% 5% 12%;">
+          <div class="proj_name" style="font-size: 1.75rem !important; font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS',
+      'sans-serif' !important;">Learniverse</div>
         </div>
         <div class="header_nav">
           <nav id="navbar" class="nav__wrap collapse navbar-collapse">
-            <ul class="nav__menu"
-              style="font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', 'sans-serif' !important; ">
+            <ul class="nav__menu">
               <li>
                 <a href="index.php">Home</a>
               </li>
@@ -550,27 +626,41 @@ footer {
                 <a href="community.php">Community</a>
               </li>
               <li class="active">
-                <a href="workspace.php">My Workspace</a>
+                <a href="Workspace.php">My Workspace</a>
               </li>
-            </ul>
+            </ul> <!-- end menu -->
           </nav>
         </div>
-        <div class="overlay" id="loadingOverlay">
-        <div class="spinner"></div>
         <?php
-                $connection = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+        require 'jwt.php';
+        require_once __DIR__ . '/vendor/autoload.php';
 
-                // Select the database and collection
-                $database = $connection->Learniverse;
-                $Usercollection = $database->users;
-        
-                $data = array(
-                  "email" => $_SESSION['email']
-                );
-        
-                $fetch = $Usercollection->findOne($data);?> 
-    </div>
-    <div class="dropdown">
+        // Create a MongoDB client
+        $connection = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+
+        // Select the database and collection
+        $database = $connection->Learniverse;
+        $Usercollection = $database->users;
+
+        $data = array(
+          "email" => $_SESSION['email']
+        );
+
+        $fetch = $Usercollection->findOne($data);
+        //$googleID = $fetch->google_user_id;
+
+        $headers = array(
+          'alg' => 'HS256',
+          'typ' => 'JWT'
+        );
+        $payload = array(
+          'email' => $fetch['email'],
+          'exp' => (time() + 36000)
+        );
+
+        $jwttoken = generate_jwt($headers, $payload);
+        ?>
+        <div class="dropdown">
           <button class="dropdown-button">
             <i class="fas fa-user" id='Puser-icon'> </i>
             <?php echo $fetch['firstname']; ?></button>
@@ -578,7 +668,7 @@ footer {
             <li class='editName center'>
               <i id='editIcon' class='fas fa-user-edit' onclick='Rename()'></i>
               <span id='Pname'><?php echo $fetch['firstname'] . " " .  $fetch['lastname']; ?></span>
-              <form id='rename-form' class='rename-form' method='POST' action='../updateName.php?q=thefiles.php' onsubmit="return validateForm(event)">
+              <form id='rename-form' class='rename-form' method='POST' action='updateName.php?q=thefiles.php' onsubmit="return validateForm(event)">
                 <input type='text' id='PRename' name='Rename' required value='<?php echo $fetch['firstname'] . " " .  $fetch['lastname']; ?>'><br>
                 <span id='rename-error' style='color: red;'></span><br>
                 <button type='submit'>Save</button> <button type='reset' onclick='cancelRename();'>Cancel</button>
@@ -587,14 +677,10 @@ footer {
             <li class='center'>Username: <?php echo $fetch['username']; ?></li>
             <li class='center'><?php echo $fetch['email']; ?></li>
             <hr>
-
-            <?php //if ($googleID === null) {
-            echo "<li><a href='../reset.php?q=thefiles.php'><i class='far fa-edit'></i> Change password</a></li>";
-            ?>
-
-            <li><a href='#'><i class='far fa-question-circle'></i> Help </a></li>
+            <li><a href='reset.php?q=pomodoro.php'><i class='far fa-edit'></i> Change password</a></li>
+            <li><a href='#'><i class='far fa-question-circle'></i> Help</a></li>
             <hr>
-            <li id="logout"><a href='../logout.php'><i class='fas fa-sign-out-alt'></i> Sign out </a></li>
+            <li id="logout"><a href='logout.php'><i class='fas fa-sign-out-alt'></i> Sign out</a></li>
           </ul>
         </div>
       </div>
@@ -1087,7 +1173,7 @@ document.addEventListener('click', function(event) {
       document.getElementsByClassName("workarea")[0].style.transition = '1s';
       document.getElementsByClassName("workarea")[0].style.marginLeft = "10%";
       document.getElementById("tools_div").style.marginLeft = '0';
-      document.getElementById("sidebar-tongue").style.marginLeft = '13.5%';
+      document.getElementById("sidebar-tongue").style.marginLeft = '12%';
       document.getElementById("sidebar-tongue").textContent = "<";
       document.getElementById("sidebar-tongue").style.boxShadow = "none";
     }
@@ -1481,29 +1567,17 @@ document.querySelector('#saveButton').addEventListener('click', function() {
 
 
 function deleteFlashcard(date) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: 'cardsData.php',
-                method: 'POST',
-                data: { date: date },
-                success: function(response) {
-                    Swal.fire(
-                        'Deleted!',
-                        'Your flashcard has been deleted.',
-                        'success'
-                    );
-                    location.reload(); 
-                },
-                error: function(xhr, status, error) {
+    // Make AJAX request to the PHP file
+    $.ajax({
+        url: 'cardsData.php', // Replace with the path to your PHP file
+        method: 'POST',
+        data: { date: date }, // Send the date as data
+        success: function(response) {
+            // Handle the response from the PHP file
+            location.reload(); // Reload the page to reflect the changes
+            console.log('Delete request successful');
+        },
+        error: function(xhr, status, error) {
             // Handle errors           
              location.reload(); // Reload the page to reflect the changes
 

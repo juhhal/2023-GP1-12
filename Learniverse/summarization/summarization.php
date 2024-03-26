@@ -37,7 +37,9 @@ if (isset($_GET['file'])) {
               var outputContent = " . json_encode($outputString) . ";
               document.getElementById('og').value = outputContent;
           });
+          window.history.replaceState({}, document.title, window.location.pathname);
         </script>";
+        
 }
 ?>
 <?php

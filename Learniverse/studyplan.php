@@ -31,6 +31,44 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
     <!-- Include FullCalendar JS & CSS library -->
     <link href="js/fullcalendar/lib/main.css" rel="stylesheet" />
     <script src="js/fullcalendar/lib/main.js"></script>
+    <!-- style loading bar -->
+    <style>
+        /* Style for the loading overlay */
+        #loadingOverlay {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: none;
+            /* Hide by default */
+        }
+
+        .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
     <script>
         var calendar = null;
     </script>
@@ -255,7 +293,12 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
             //print chosen files
             var chosenFiles = document.getElementById('chosenFiles');
             files = (selectedMats.length > 1) ? "files" : "file";
-            chosenFiles.textContent = "You chose (" + selectedMats.length + ") " + files + " : \n " + selectedMats.toString();
+// Assuming selectedMats is an array of file paths
+var fileNames = selectedMats.map(function(path) {
+    return path.split('/').pop(); // Extract the file name from the path
+});
+
+chosenFiles.textContent = "You chose (" + selectedMats.length + ") files: \n" + fileNames.join(', ');
         }
     </script>
 </head>
@@ -361,8 +404,8 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 </li>
                 <li class="tool_item"><a href="sharedspace.php">
                         Shared spaces</a></li>
-                <li class="tool_item">
-                    Meeting Room
+                <li class="tool_item"><a href="meetingroom.php">
+                        Meeting Room</a>
                 </li>
                 <li class="tool_item"><a href="community.php">
                         Community</a>
@@ -453,252 +496,225 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 <button onclick="hideModal();">Close</button>
             </div>
         </div>
-        <script>
-            // edit the plan name
-            $('.plan-name').on('click', '.editPlanName', function() {
-                var td = $(this).closest('.plan-name');
-                var input = td.find('input');
+        <div class="overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <script>
+                // edit the plan name
+                $('.plan-name').on('click', '.editPlanName', function() {
+                    var td = $(this).closest('.plan-name');
+                    var input = td.find('input');
 
-                if (input.prop('readonly')) {
-                    input.prop('readonly', false).focus();
-                    $(this).removeClass('fa-pen').addClass('fa-save');
-                } else {
-                    var newName = input.val();
-                    var pid = td.parent().attr('id');
+                    if (input.prop('readonly')) {
+                        input.prop('readonly', false).focus();
+                        $(this).removeClass('fa-pen').addClass('fa-save');
+                    } else {
+                        var newName = input.val();
+                        var pid = td.parent().attr('id');
 
-                    if ($(this).hasClass('fa-save')) {
-                        $.ajax({
-                            url: 'processStudyPlan.php',
-                            method: 'post',
-                            data: {
-                                editPlanName: 1,
-                                planID: pid,
-                                newName: newName
-                            },
-                            success: function(response) {
-                                // Handle the response from the server
-                                console.log(response);
+                        if ($(this).hasClass('fa-save')) {
+                            $.ajax({
+                                url: 'processStudyPlan.php',
+                                method: 'post',
+                                data: {
+                                    editPlanName: 1,
+                                    planID: pid,
+                                    newName: newName
+                                },
+                                success: function(response) {
+                                    // Handle the response from the server
+                                    console.log(response);
 
-                                // After editing is done, make the input read-only again and change the icon back to the edit icon
-                                input.prop('readonly', true);
-                                $(this).removeClass('fa-save').addClass('fa-pen');
-                            },
-                            error: function(xhr, status, error) {
-                                // Handle the error case
-                                console.log(error);
-                            }
-                        });
-                    }
-                }
-            });
-            // Retrieve the form element
-            var form = document.getElementById("new-plan-form");
-
-            // Add an event listener to the form's submit event
-            form.addEventListener("submit", function(event) {
-                // Create an input element to hold the selectedMats data
-                event.preventDefault();
-                var matsInput = document.createElement("input");
-                matsInput.type = "hidden";
-                matsInput.name = "myFilesMats";
-                matsInput.value = JSON.stringify(selectedMats);
-
-                // Append the input element to the form
-                form.appendChild(matsInput);
-                var submitButton = document.getElementById("generatePlan")
-                // verifiy start and end
-                if (selectedMats.length > 0 || document.getElementById("localMats").files.length > 0) {
-                    // Check if the submit button is clicked
-                    if (submitButton === document.activeElement) {
-                        var startDate = new Date(document.getElementById('start').value);
-                        var endDate = new Date(document.getElementById('end').value);
-                        var today = new Date();
-                        today.setHours(0);
-                        today.setMinutes(0);
-                        today.setSeconds(0);
-                        var startInput = document.getElementById('start');
-                        var endInput = document.getElementById('end').min;
-
-                        value = 1;
-                        if (startDate >= endDate) {
-                            value = 0;
-                            var errorMsg = document.createElement("p");
-                            errorMsg.textContent = "Start date must be before the end date.";
-                            errorMsg.style.color = "red";
-                            startInput.parentNode.insertBefore(errorMsg, startInput.nextSibling);
-                        }
-
-                        if (startDate < today) {
-                            value = 0;
-                            var errorMsg = document.createElement("p");
-                            errorMsg.textContent = "Start date cannot be in the past.";
-                            errorMsg.style.color = "red";
-                            startInput.parentNode.insertBefore(errorMsg, startInput.nextSibling);
-                        }
-
-                        if (endDate < today) {
-                            value = 0;
-                            var errorMsg = document.createElement("p");
-                            errorMsg.textContent = "End date cannot be in the past.";
-                            errorMsg.style.color = "red";
-                            endInput.parentNode.insertBefore(errorMsg, endInput.nextSibling);
-                        }
-                        if (value != 0) {
-                            // Safely submit the form
-                            form.submit();
+                                    // After editing is done, make the input read-only again and change the icon back to the edit icon
+                                    input.prop('readonly', true);
+                                    $(this).removeClass('fa-save').addClass('fa-pen');
+                                },
+                                error: function(xhr, status, error) {
+                                    // Handle the error case
+                                    console.log(error);
+                                }
+                            });
                         }
                     }
-                } else if (submitButton === document.activeElement) {
-                    var errorMsg = document.createElement("p");
-                    errorMsg.textContent = "You have to choose at least 1 file.";
-                    errorMsg.style.color = "red";
-                    form.appendChild(errorMsg);
-                }
-            });
-
-
-            var overlayNewPlan = document.getElementById('newPlanOverlay');
-            var newPlanBTN = document.getElementById('newStudyPlan');
-            var overlayDisplay = document.getElementById('display');
-            var allPlans = document.getElementById('allPlans');
-            var planRows = document.getElementsByClassName('planRow');
-            $(document).ready(function() {
-                newPlanBTN.addEventListener('click', function() {
-                    overlayNewPlan.style.display = 'flex';
-                    selectedMats = [];
                 });
+                // Retrieve the form element
+                var form = document.getElementById("new-plan-form");
 
-                overlayNewPlan.addEventListener('click', function(event) {
-                    if (event.target === overlayNewPlan) {
-                        overlayNewPlan.style.display = 'none';
+                // Add an event listener to the form's submit event
+                form.addEventListener("submit", function(event) {
+                    // Create an input element to hold the selectedMats data
+                    event.preventDefault();
+                    var matsInput = document.createElement("input");
+                    matsInput.type = "hidden";
+                    matsInput.name = "myFilesMats";
+                    matsInput.value = JSON.stringify(selectedMats);
+
+                    // Append the input element to the form
+                    form.appendChild(matsInput);
+                    var submitButton = document.getElementById("generatePlan")
+                    // verifiy start and end
+                    if (selectedMats.length > 0 || document.getElementById("localMats").files.length > 0) {
+                        // Check if the submit button is clicked
+                        if (submitButton === document.activeElement) {
+                            var startDate = new Date(document.getElementById('start').value);
+                            var endDate = new Date(document.getElementById('end').value);
+                            var today = new Date();
+                            today.setHours(0);
+                            today.setMinutes(0);
+                            today.setSeconds(0);
+                            var startInput = document.getElementById('start');
+                            var endInput = document.getElementById('end').min;
+
+                            value = 1;
+                            if (startDate >= endDate) {
+                                value = 0;
+                                var errorMsg = document.createElement("p");
+                                errorMsg.textContent = "Start date must be before the end date.";
+                                errorMsg.style.color = "red";
+                                startInput.parentNode.insertBefore(errorMsg, startInput.nextSibling);
+                            }
+
+                            if (startDate < today) {
+                                value = 0;
+                                var errorMsg = document.createElement("p");
+                                errorMsg.textContent = "Start date cannot be in the past.";
+                                errorMsg.style.color = "red";
+                                startInput.parentNode.insertBefore(errorMsg, startInput.nextSibling);
+                            }
+
+                            if (endDate < today) {
+                                value = 0;
+                                var errorMsg = document.createElement("p");
+                                errorMsg.textContent = "End date cannot be in the past.";
+                                errorMsg.style.color = "red";
+                                endInput.parentNode.insertBefore(errorMsg, endInput.nextSibling);
+                            }
+                            if (value != 0) {
+                                // Safely submit the form
+                                $('#loadingOverlay').show();
+                                form.submit();
+                                $('#loadingOverlay').hide();
+                            }
+                        }
+                    } else if (submitButton === document.activeElement) {
+                        var errorMsg = document.createElement("p");
+                        errorMsg.textContent = "You have to choose at least 1 file.";
+                        errorMsg.style.color = "red";
+                        form.appendChild(errorMsg);
                     }
                 });
 
-                overlayDisplay.addEventListener('click', function(event) {
-                    if (event.target === overlayDisplay) {
-                        overlayDisplay.style.display = 'none';
-                    }
+
+                var overlayNewPlan = document.getElementById('newPlanOverlay');
+                var newPlanBTN = document.getElementById('newStudyPlan');
+                var overlayDisplay = document.getElementById('display');
+                var allPlans = document.getElementById('allPlans');
+                var planRows = document.getElementsByClassName('planRow');
+                $(document).ready(function() {
+                    newPlanBTN.addEventListener('click', function() {
+                        overlayNewPlan.style.display = 'flex';
+                        selectedMats = [];
+                    });
+
+                    overlayNewPlan.addEventListener('click', function(event) {
+                        if (event.target === overlayNewPlan) {
+                            overlayNewPlan.style.display = 'none';
+                        }
+                    });
+
+                    overlayDisplay.addEventListener('click', function(event) {
+                        if (event.target === overlayDisplay) {
+                            overlayDisplay.style.display = 'none';
+                        }
+                    });
                 });
-            });
 
-            function display(plan) {
-                planID = plan;
-                overlayDisplay.style.display = 'flex';
-                var savePlanBTN = document.getElementById("save-to-calendar");
-                var regeneratePlanBTN = document.getElementById("regenerate");
+                function display(plan) {
+                    planID = plan;
+                    overlayDisplay.style.display = 'flex';
+                    var savePlanBTN = document.getElementById("save-to-calendar");
+                    var regeneratePlanBTN = document.getElementById("regenerate");
 
 
-                // plan calendar
-                var calendarEl = document.getElementById('calendar');
+                    // plan calendar
+                    var calendarEl = document.getElementById('calendar');
 
-                calendar = new FullCalendar.Calendar(calendarEl, {
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                    },
-                    views: {
-                        dayGridMonth: { // name of view
-                            titleFormat: {
-                                year: 'numeric',
-                                month: 'long',
+                    calendar = new FullCalendar.Calendar(calendarEl, {
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        },
+                        views: {
+                            dayGridMonth: { // name of view
+                                titleFormat: {
+                                    year: 'numeric',
+                                    month: 'long',
+                                }
+                                // other view-specific options here
                             }
-                            // other view-specific options here
-                        }
-                    },
-                    initialView: 'dayGridMonth',
-                    editable: true,
-                    height: 650,
-                    events: 'fetchEvents.php?planID=' + planID,
+                        },
+                        initialView: 'dayGridMonth',
+                        editable: true,
+                        height: 650,
+                        events: 'fetchEvents.php?planID=' + planID,
 
-                    selectable: true,
-                    select: async function(start, end, allDay) {
-                        const {
-                            value: formValues
-                        } = await Swal.fire({
-                            title: 'Add Event',
-                            confirmButtonText: 'Submit',
-                            showCloseButton: true,
-                            showCancelButton: true,
-                            html: '<input id="swalEvtTitle" class="swal2-input" placeholder="Enter title">' +
-                                '<textarea id="swalEvtDesc" class="swal2-input" placeholder="Enter description"></textarea>' +
-                                '<div class="rem">Email Reminder &nbsp;<label class="switch"><input id="swalEvtReminder" type="checkbox" value="reminder"><span class="slider round"></span></label></div>',
-                            focusConfirm: false,
-                            preConfirm: () => {
-                                return [
-                                    document.getElementById('swalEvtTitle').value,
-                                    document.getElementById('swalEvtDesc').value,
-                                    document.getElementById('swalEvtReminder').checked
+                        selectable: true,
+                        select: async function(start, end, allDay) {
+                            const {
+                                value: formValues
+                            } = await Swal.fire({
+                                title: 'Add Event',
+                                confirmButtonText: 'Submit',
+                                showCloseButton: true,
+                                showCancelButton: true,
+                                html: '<input id="swalEvtTitle" class="swal2-input" placeholder="Enter title">' +
+                                    '<textarea id="swalEvtDesc" class="swal2-input" placeholder="Enter description"></textarea>' +
+                                    '<div class="rem">Email Reminder &nbsp;<label class="switch"><input id="swalEvtReminder" type="checkbox" value="reminder"><span class="slider round"></span></label></div>',
+                                focusConfirm: false,
+                                preConfirm: () => {
+                                    return [
+                                        document.getElementById('swalEvtTitle').value,
+                                        document.getElementById('swalEvtDesc').value,
+                                        document.getElementById('swalEvtReminder').checked
 
-                                ]
-                            }
-                        });
+                                    ]
+                                }
+                            });
 
-                        if (formValues) {
-                            // Add event
-                            fetch("eventHandler.php", {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    },
-                                    body: JSON.stringify({
-                                        request_type: 'addEvent',
-                                        start: start.startStr,
-                                        end: start.endStr,
-                                        event_data: formValues,
-                                        planID: planID
-                                    }),
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.status == 1) {
-                                        Swal.fire('Event added successfully!', '', 'success');
-                                    } else {
-                                        Swal.fire(data.error, '', 'error');
-                                    }
-
-                                    // Refetch events from all sources and rerender
-                                    calendar.refetchEvents();
-                                })
-                                .catch(console.error);
-                        }
-                    },
-
-                    eventClick: function(info) {
-                        info.jsEvent.preventDefault();
-
-                        // change the border color
-                        info.el.style.borderColor = 'white';
-
-                        Swal.fire({
-                            title: info.event.title,
-                            //text: info.event.extendedProps.description,
-                            icon: 'info',
-                            html: '<p>' + info.event.extendedProps.description + '</p>',
-                            showCloseButton: true,
-                            showCancelButton: false,
-                            showDenyButton: true,
-                            cancelButtonText: 'Close',
-                            confirmButtonText: 'Delete',
-                            denyButtonText: 'Edit',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Delete event
+                            if (formValues) {
+                                // Add event
                                 fetch("eventHandler.php", {
                                         method: "POST",
                                         headers: {
                                             "Content-Type": "application/json"
                                         },
                                         body: JSON.stringify({
-                                            request_type: 'deleteEvent',
-                                            event_id: info.event.id,
+                                            request_type: 'addEvent',
+                                            start: start.startStr,
+                                            end: start.endStr,
+                                            event_data: formValues,
                                             planID: planID
                                         }),
                                     })
                                     .then(response => response.json())
                                     .then(data => {
                                         if (data.status == 1) {
-                                            Swal.fire('Event deleted successfully!', '', 'success');
+                                            Swal.fire('Event added successfully!', '', 'success');
+                                            $.ajax({
+                                                url: 'processStudyPlan.php',
+                                                method: 'post',
+                                                data: {
+                                                    changeSaved: 1,
+                                                    saved: false,
+                                                    planID: planID
+                                                },
+                                                success: function(response) {
+                                                    console.log(response);
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    console.error('Error updating plan saved status');
+                                                }
+                                            });
                                         } else {
                                             Swal.fire(data.error, '', 'error');
                                         }
@@ -707,179 +723,261 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                                         calendar.refetchEvents();
                                     })
                                     .catch(console.error);
-                            } else if (result.isDenied) {
-                                // Edit and update event
-                                Swal.fire({
-                                    title: 'Edit Event',
-                                    html: '<input id="swalEvtTitle_edit" class="swal2-input" placeholder="Enter title" value="' + info.event.title + '">' +
-                                        '<textarea id="swalEvtDesc_edit" class="swal2-input" placeholder="Enter description">' + info.event.extendedProps.description + '</textarea>' +
-                                        '<div class="rem">Email Reminder &nbsp;<label class="switch"><input id="swalEvtRem_edit" type="checkbox" ' + (info.event.extendedProps.reminder === true ? 'checked' : '') + '><span class="slider round"></span></label></div>',
-                                    focusConfirm: false,
-                                    confirmButtonText: 'Submit',
-                                    preConfirm: () => {
-                                        return [
-                                            document.getElementById('swalEvtTitle_edit').value,
-                                            document.getElementById('swalEvtDesc_edit').value,
-                                            document.getElementById('swalEvtRem_edit').checked
-
-                                        ]
-                                    }
-                                }).then((result) => {
-                                    if (result.value) {
-                                        // Edit event
-                                        fetch("eventHandler.php", {
-                                                method: "POST",
-                                                headers: {
-                                                    "Content-Type": "application/json"
-                                                },
-                                                body: JSON.stringify({
-                                                    request_type: 'editEvent',
-                                                    start: info.event.startStr,
-                                                    end: info.event.endStr,
-                                                    event_id: info.event.id,
-                                                    event_data: result.value,
-                                                    color: info.event.backgroundColor,
-                                                    planID: planID
-                                                })
-                                            })
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                if (data.status == 1) {
-                                                    Swal.fire('Event updated successfully!', '', 'success');
-                                                } else {
-                                                    Swal.fire(data.error, '', 'error');
-                                                }
-
-                                                // Refetch events from all sources and rerender
-                                                calendar.refetchEvents();
-                                            })
-                                            .catch(console.error);
-                                    }
-                                });
-                            } else {
-                                Swal.close();
                             }
-                        });
-                    }
-                });
-
-                calendar.render();
-
-                savePlanBTN.addEventListener("click", function() {
-                    savePlanBTN.disabled = true;
-                    $.ajax({
-                        url: 'processStudyPlan.php',
-                        method: 'post',
-                        data: {
-                            planID: planID,
-                            savePlanCalendar: true
                         },
-                        success: function(response) {
-                            console.log(response);
+
+                        eventClick: function(info) {
+                            info.jsEvent.preventDefault();
+
+                            // change the border color
+                            info.el.style.borderColor = 'white';
+
                             Swal.fire({
-                                title: 'Plan Calendar Saved',
-                                text: 'Study Plan has been saved successfully.',
-                                icon: 'success',
-                                showConfirmButton: false,
-                                timer: 2500,
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error saving plan calendar');
-                        }
-                    });
-                });
-
-                regeneratePlanBTN.addEventListener("click", function() {
-                    $.ajax({
-                        url: 'processStudyPlan.php',
-                        method: 'post',
-                        data: {
-                            planID: planID,
-                            regeneratePlan: true
-                        },
-                        success: function(response) {
-                            console.log(response);
-                            calendar.refetchEvents();
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error regenerating plan calendar');
-                        }
-                    });
-                });
-            }
-
-            document.addEventListener('DOMContentLoaded', function() {
-                var deleteButtons = document.getElementsByClassName('deletePlan');
-                var viewButtons = document.getElementsByClassName('viewPlan');
-                var startInput = document.getElementById('start');
-                var endInput = document.getElementById('end');
-
-                // Set the minimum value to the current date inputs
-                startInput.min = new Date().toISOString().split('T')[0];;
-                endInput.min = new Date().toISOString().split('T')[0];;
-
-                // Add event listener to delete buttons
-                Array.from(deleteButtons).forEach(function(button) {
-                    button.addEventListener('click', function() {
-                        Swal.fire({
-                            title: 'Heads Up!',
-                            text: 'Are you sure you want to delete this plan?',
-                            icon: 'warning',
-                            confirmButtonText: 'Yes',
-                            showCancelButton: true,
-                            cancelButtonText: 'No',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                var trId = button.closest('tr').id;
-                                // Perform delete action using trId
-                                console.log('Deleting plan with ID: ' + trId);
-                                // Data to send
-                                var data = {
-                                    planID: trId,
-                                    deletePlan: true
-                                };
-
-                                $.ajax({
-                                    url: 'processStudyPlan.php',
-                                    type: 'POST',
-                                    data: data,
-                                    success: function(response) {
-                                        if (response) {
-                                            console.log(response);
-                                            button.closest('tr').remove();
-                                            if (planRows.length == 0) {
-                                                var tbody = document.querySelector("#allPlans tbody");
-                                                tbody.innerHTML += "<tr><td colspan='3'>No Plans Have Been Created Yet.</td></tr>";
+                                title: info.event.title,
+                                //text: info.event.extendedProps.description,
+                                icon: 'info',
+                                html: '<p>' + info.event.extendedProps.description + '</p>',
+                                showCloseButton: true,
+                                showCancelButton: false,
+                                showDenyButton: true,
+                                cancelButtonText: 'Close',
+                                confirmButtonText: 'Delete',
+                                denyButtonText: 'Edit',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Delete event
+                                    fetch("eventHandler.php", {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type": "application/json"
+                                            },
+                                            body: JSON.stringify({
+                                                request_type: 'deleteEvent',
+                                                event_id: info.event.id,
+                                                planID: planID
+                                            }),
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.status == 1) {
+                                                Swal.fire('Event deleted successfully!', '', 'success');
+                                                $.ajax({
+                                                    url: 'processStudyPlan.php',
+                                                    method: 'post',
+                                                    data: {
+                                                        changeSaved: 1,
+                                                        saved: false,
+                                                        planID: planID
+                                                    },
+                                                    success: function(response) {
+                                                        console.log(response);
+                                                    },
+                                                    error: function(xhr, status, error) {
+                                                        console.error('Error updating plan saved status');
+                                                    }
+                                                });
+                                            } else {
+                                                Swal.fire(data.error, '', 'error');
                                             }
-                                        } else console.error('Error deleting plan');
 
-                                    },
-                                    error: function(xhr, status, error) {
-                                        console.error('Error deleting plan');
-                                    }
+                                            // Refetch events from all sources and rerender
+                                            calendar.refetchEvents();
+                                        })
+                                        .catch(console.error);
+                                } else if (result.isDenied) {
+                                    // Edit and update event
+                                    Swal.fire({
+                                        title: 'Edit Event',
+                                        html: '<input id="swalEvtTitle_edit" class="swal2-input" placeholder="Enter title" value="' + info.event.title + '">' +
+                                            '<textarea id="swalEvtDesc_edit" class="swal2-input" placeholder="Enter description">' + info.event.extendedProps.description + '</textarea>' +
+                                            '<div class="rem">Email Reminder &nbsp;<label class="switch"><input id="swalEvtRem_edit" type="checkbox" ' + (info.event.extendedProps.reminder === true ? 'checked' : '') + '><span class="slider round"></span></label></div>',
+                                        focusConfirm: false,
+                                        confirmButtonText: 'Submit',
+                                        preConfirm: () => {
+                                            return [
+                                                document.getElementById('swalEvtTitle_edit').value,
+                                                document.getElementById('swalEvtDesc_edit').value,
+                                                document.getElementById('swalEvtRem_edit').checked
+
+                                            ]
+                                        }
+                                    }).then((result) => {
+                                        if (result.value) {
+                                            // Edit event
+                                            fetch("eventHandler.php", {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Content-Type": "application/json"
+                                                    },
+                                                    body: JSON.stringify({
+                                                        request_type: 'editEvent',
+                                                        start: info.event.startStr,
+                                                        end: info.event.endStr,
+                                                        event_id: info.event.id,
+                                                        event_data: result.value,
+                                                        color: info.event.backgroundColor,
+                                                        planID: planID
+                                                    })
+                                                })
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                    if (data.status == 1) {
+                                                        Swal.fire('Event updated successfully!', '', 'success');
+                                                        $.ajax({
+                                                            url: 'processStudyPlan.php',
+                                                            method: 'post',
+                                                            data: {
+                                                                changeSaved: 1,
+                                                                saved: false,
+                                                                planID: planID
+                                                            },
+                                                            success: function(response) {
+                                                                console.log(response);
+                                                            },
+                                                            error: function(xhr, status, error) {
+                                                                console.error('Error updating plan saved status');
+                                                            }
+                                                        });
+                                                    } else {
+                                                        Swal.fire(data.error, '', 'error');
+                                                    }
+
+                                                    // Refetch events from all sources and rerender
+                                                    calendar.refetchEvents();
+                                                })
+                                                .catch(console.error);
+                                        }
+                                    });
+                                } else {
+                                    Swal.close();
+                                }
+                            });
+                        }
+                    });
+
+                    calendar.render();
+
+                    savePlanBTN.addEventListener("click", function() {
+                        $('#loadingOverlay').show();
+                        savePlanBTN.disabled = true;
+                        $.ajax({
+                            url: 'processStudyPlan.php',
+                            method: 'post',
+                            data: {
+                                planID: planID,
+                                savePlanCalendar: true
+                            },
+                            success: function(response) {
+                                console.log(response);
+                                $('#loadingOverlay').hide();
+                                Swal.fire({
+                                    title: 'Plan Calendar Saved',
+                                    text: 'Study Plan has been saved successfully.',
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 2500,
                                 });
+                            },
+                            error: function(xhr, status, error) {
+                                $('#loadingOverlay').hide();
+                                console.error('Error saving plan calendar');
                             }
                         });
+                    });
 
+                    regeneratePlanBTN.addEventListener("click", function() {
+                        $('#loadingOverlay').show();
+                        $.ajax({
+                            url: 'processStudyPlan.php',
+                            method: 'post',
+                            data: {
+                                planID: planID,
+                                regeneratePlan: true
+                            },
+                            success: function(response) {
+                                console.log(response);
+                                calendar.refetchEvents();
+                                $('#loadingOverlay').hide();
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error regenerating plan calendar');
+                                $('#loadingOverlay').hide();
+                            }
+                        });
+                    });
+                }
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    var deleteButtons = document.getElementsByClassName('deletePlan');
+                    var viewButtons = document.getElementsByClassName('viewPlan');
+                    var startInput = document.getElementById('start');
+                    var endInput = document.getElementById('end');
+
+                    // Set the minimum value to the current date inputs
+                    startInput.min = new Date().toISOString().split('T')[0];;
+                    endInput.min = new Date().toISOString().split('T')[0];;
+
+                    // Add event listener to delete buttons
+                    Array.from(deleteButtons).forEach(function(button) {
+                        button.addEventListener('click', function() {
+                            Swal.fire({
+                                title: 'Heads Up!',
+                                text: 'Are you sure you want to delete this plan?',
+                                icon: 'warning',
+                                confirmButtonText: 'Yes',
+                                showCancelButton: true,
+                                cancelButtonText: 'No',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    var trId = button.closest('tr').id;
+                                    // Perform delete action using trId
+                                    console.log('Deleting plan with ID: ' + trId);
+                                    // Data to send
+                                    var data = {
+                                        planID: trId,
+                                        deletePlan: true
+                                    };
+
+                                    $.ajax({
+                                        url: 'processStudyPlan.php',
+                                        type: 'POST',
+                                        data: data,
+                                        success: function(response) {
+                                            if (response) {
+                                                console.log(response);
+                                                button.closest('tr').remove();
+                                                if (planRows.length == 0) {
+                                                    var tbody = document.querySelector("#allPlans tbody");
+                                                    tbody.innerHTML += "<tr><td colspan='3'>No Plans Have Been Created Yet.</td></tr>";
+                                                }
+                                            } else console.error('Error deleting plan');
+
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error('Error deleting plan');
+                                        }
+                                    });
+                                }
+                            });
+
+                        });
+                    });
+
+                    // Add event listener to view buttons
+                    Array.from(viewButtons).forEach(function(button) {
+                        button.addEventListener('click', function() {
+                            var tr = button.closest('tr');
+                            var trId = tr.id;
+                            // Perform view action using trId
+                            planID = trId;
+                            planName = tr.getElementsByTagName("input")[0].value;
+                            document.getElementById("studyPlanNameView").textContent = planName;
+                            display(planID);
+                            console.log('Viewing plan with ID: ' + trId);
+                        });
                     });
                 });
-
-                // Add event listener to view buttons
-                Array.from(viewButtons).forEach(function(button) {
-                    button.addEventListener('click', function() {
-                        var tr = button.closest('tr');
-                        var trId = tr.id;
-                        // Perform view action using trId
-                        planID = trId;
-                        planName = tr.getElementsByTagName("input")[0].value;
-                        document.getElementById("studyPlanNameView").textContent = planName;
-                        display(planID);
-                        console.log('Viewing plan with ID: ' + trId);
-                    });
-                });
-            });
-        </script>
+            </script>
     </main>
     <footer style="margin-top:30%" id="footer" style="margin-top: 7%;">
 

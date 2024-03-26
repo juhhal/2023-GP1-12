@@ -269,10 +269,7 @@ if (isset($_FILES['fileUpload'])) {
                 // Output an error message
                 echo "Error executing Python script.";
             }
-        } else {
-            // File upload failed
-            echo "Failed to move uploaded file.". $file_tmp;
-        }
+        } 
     } elseif ($file_type === 'txt') {
         // Check if a file with the same name already exists
         $existing_file_path = $upload_directory . $file_name;
@@ -551,6 +548,7 @@ if (isset($_POST['fileNames'])) {
         }
 
 }
+
 if (isset($_POST['flashcardFile'])) {
     $fileNames = $_POST['flashcardFile'];
     $file_name = basename($fileNames);
@@ -733,35 +731,117 @@ if ($tempFilePath === false) {
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file']) && isset($_POST['readpdf'])) {
-    // Handle file upload
-    $fileTmpPath = $_FILES['file']['tmp_name'];
-    $fileName = $_FILES['file']['name'];
-    // Process additional data
-    $readPdf = $_POST['readpdf'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['filing'])) {
+    $file_name = $_FILES['filing']['name'];
+    $file_tmp = $_FILES['filing']['tmp_name'];
 
-    // Move uploaded file to temporary path
-    $tempPath = sys_get_temp_dir(); // Get system temporary directory
-    $tempFilePath = 'quizzes/';
-    var_dump($tempFilePath.$fileName);
-
-    if (move_uploaded_file($fileTmpPath, $tempFilePath.$fileName)) {
-        // File moved successfully to temporary path
-        // Execute Python script passing the temporary file path as argument
-        $pythonScript = '../python/extracter.py';
-        $output = shell_exec("python3 $pythonScript " . escapeshellarg($tempFilePath));
-        
-        // Optionally, you can handle the output from Python script here
-
-        // Respond with success message or output
-        echo json_encode(['success' => true, 'output' => $output]);
-    } else {
-        // Error moving file
-        echo json_encode(['error' => true, 'message' => 'Error uploading file']);
+    // Ensure that the 'images' directory exists before moving the file
+    $upload_directory = "quizzes/";
+    if (!file_exists($upload_directory)) {
+        mkdir($upload_directory, 0777, true); // Create directory if it doesn't exist
     }
-} else {
-    // Invalid request
-    echo json_encode(['error' => true, 'message' => 'Invalid request']);
+
+    $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+    
+        // Move the uploaded file to the 'images' directory
+        if (move_uploaded_file($file_tmp, $upload_directory . $file_name)) {
+            // Assuming the path to the Python script is correct
+            $python_script_path = "../python/extracter.py";
+            
+            // Construct the command to execute the Python script
+            $command = "python3 " . escapeshellarg($python_script_path) . " " . escapeshellarg($upload_directory . $file_name);
+            
+            // Execute the command and capture output
+            exec($command, $output, $return_code);
+            
+            // Check if the command executed successfully
+            if ($return_code === 0) {
+                // Output the extracted text
+                $extracted_text = implode(" ", $output);
+                echo $extracted_text;
+            } else {
+                // Output an error message
+                echo "Error executing Python script.";
+            }
+        } else {
+            // File upload failed
+            echo "Failed to move uploaded file.";
+        }
+}
+
+if (isset($_POST['fileNaming'])) {
+    $fileNames = $_POST['fileNaming'];
+    require_once __DIR__ . '../../vendor/autoload.php';
+    $client = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+    $database = $client->selectDatabase('Learniverse');
+    $usersCollection = $database->selectCollection('users');
+    
+    // Get the email from the session
+    $email = $_SESSION['email'];
+    
+    // Query the database for the user
+    $userDocument = $usersCollection->findOne(['email' => $email]);
+    
+    // If user found, retrieve the _id
+    $user_id = null;
+    if ($userDocument) {
+        $user_id = $userDocument->_id;
+    }
+    
+    $baseDirectory = "../user_files" . $DIRECTORY_SEPARATOR . "{$user_id}" . $DIRECTORY_SEPARATOR;    
+    $upload_directory = "quizzes/"; // Assuming the files are stored here
+
+        // Construct the full path to the file
+        $filePath = $baseDirectory . $fileNames;
+
+        // Check if the file exists
+        if (!file_exists($filePath)) {
+            echo "File does not exist: $filePath";
+            exit(); // Skip to the next file
+        }
+
+        // Determine the file's type
+        $file_type = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        // Define the command based on the file type
+        $python_script_path = "";
+        switch ($file_type) {
+            case 'pdf':
+                $python_script_path = "../python/extracter.py";
+                break;
+            case 'docx':
+                $python_script_path = "../python/docReader.py";
+                break;
+            case 'pptx':
+                $python_script_path = "../python/pptxReader.py";
+                break;
+            case 'txt':
+                // Directly output the content for txt files
+                $myfile = fopen($filePath, "r") or die("Unable to open file!");
+                echo fread($myfile, filesize($filePath));
+                fclose($myfile);
+        }
+
+        if (!empty($python_script_path)) {
+            // Construct the command to execute the Python script
+            $command = "python3 " . escapeshellarg($python_script_path) . " " . escapeshellarg($filePath);
+            
+            // Execute the command and capture output
+            exec($command, $output, $return_code);
+            
+            // Check if the command executed successfully
+            if ($return_code === 0) {
+                // Output the extracted text
+                $extracted_text = implode(" ", $output);
+                echo $extracted_text;
+            } else {
+                // Output an error message
+                echo "Error executing Python script for file: $fileNames";
+            }
+        } else {
+            echo "Unsupported file type for file: $fileName";
+        }
+
 }
 ?>
 

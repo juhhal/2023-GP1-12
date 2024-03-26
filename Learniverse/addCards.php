@@ -59,7 +59,7 @@ $flashcardData = $array['questions'];
     
         // Create the new flashcard array
         $newFlashcard = [
-            'cardNumber' => $cardNumber,
+            'cardNumber' => (string)$cardNumber,
             'content' => $content,
             'answer' => $answer,
         ];
