@@ -377,7 +377,7 @@ function getFilesByUserId($userId, $FileCollection) {
         <li class="tool_item"><a href="/sharedspace.php">
         Shared spaces</a>
                  </li>
-        <li class="tool_item">
+        <li class="tool_item"><a href="/meetingroom.php">
           Meeting Room
         </li>
         <li class="tool_item"><a href="/community.php">
