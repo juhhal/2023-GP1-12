@@ -634,7 +634,7 @@ usort($todo, 'compareDueDate');
     </header>
     <main>
         <div id="tools_div">
-            <ul class="tool_list">
+        <ul class="tool_list">
                 <li class="tool_item">
                     <a href="workspace.php"> Calendar & To-Do
                     </a>
@@ -666,8 +666,8 @@ usort($todo, 'compareDueDate');
                 </li>
                 <li class="tool_item"><a href="sharedspace.php">
                         Shared spaces</a></li>
-                <li class="tool_item">
-                    Meeting Room
+                <li class="tool_item"><a href="meetingroom.php">
+                        Meeting Room</a>
                 </li>
                 <li class="tool_item"><a href="community.php">
                         Community</a>

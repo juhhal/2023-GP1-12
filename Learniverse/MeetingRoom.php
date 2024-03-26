@@ -20,11 +20,12 @@ require 'session.php'; ?>
   <!-- PROFILE STYLESHEET -->
   <link rel="stylesheet" href="profile.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  </script>
+
+  <!-- <script src="endpoint.js" type='text/javascript'></script> -->
+
   <!-- SHOUQ SECTION: -->
   <script type='text/javascript'>
     $(document).ready(function() {
-      document.getElementById("JoinMeeting").style.display = "none";
       var dropdownButton = document.querySelector('.dropdown-button');
       var dropdownMenu = document.querySelector('.Pdropdown-menu');
       dropdownButton.addEventListener('click', function() {
@@ -252,128 +253,206 @@ require 'session.php'; ?>
 
   <main>
     <div id="tools_div">
-      <ul class="tool_list">
-        <li class="tool_item">
-          <a href="workspace.php"> Calendar & To-Do
-          </a>
-        </li>
-        <li class="tool_item">
-          <a href="theFiles.php?q=My Files"> My Files</a>
-        </li>
-        <li class="tool_item">
-          Quiz
-        </li>
-        <li class="tool_item">
-          Flashcard
-        </li>
-        <li class="tool_item">
-          Summarization
-        </li>
-        <li class="tool_item">
-          Study Planner
-        </li>
-        <li class="tool_item"><a href="Notes/notes.php">
-            Notes</a>
-        </li>
-        <li class="tool_item">
-          <a href="pomodoro.php">
-            Pomodoro</a>
-        </li>
-        <li class="tool_item"><a href="gpa.php">
-            GPA Calculator</a>
-        </li>
-        <li class="tool_item"><a href="sharedspace.php">
-            Shared spaces</a></li>
-        <li class="tool_item">
-          Meeting Room
-        </li>
-        <li class="tool_item"><a href="community.php">
-            Community</a>
-        </li>
-      </ul>
+    <ul class="tool_list">
+                <li class="tool_item">
+                    <a href="workspace.php"> Calendar & To-Do
+                    </a>
+                </li>
+                <li class="tool_item">
+                    <a href="theFiles.php"> My Files</a>
+                </li>
+                <li class="tool_item">
+                    <a href="quizes/index.php"> Quizzes</a>
+                </li>
+                <li class="tool_item">
+                    <a href="flashcard.php"> Flashcards</a>
+                </li>
+                <li class="tool_item">
+                    <a href="summarization/summarization.php"> Summarization</a>
+                </li>
+                <li class="tool_item">
+                    <a href="studyplan.php"> Study Plan</a>
+                </li>
+                <li class="tool_item"><a href="Notes/notes.php">
+                        Notes</a>
+                </li>
+                <li class="tool_item">
+                    <a href="pomodoro.php">
+                        Pomodoro</a>
+                </li>
+                <li class="tool_item"><a href="gpa.php">
+                        GPA Calculator</a>
+                </li>
+                <li class="tool_item"><a href="sharedspace.php">
+                        Shared spaces</a></li>
+                <li class="tool_item"><a href="meetingroom.php">
+                        Meeting Room</a>
+                </li>
+                <li class="tool_item"><a href="community.php">
+                        Community</a>
+                </li>
+            </ul>
     </div>
     <div class="workarea">
       <div class="workarea_item">
         <div class="top-shelf">
-          <h1>Meeting Room</h1>
+          <h1>My Meeting Rooms</h1>
+          <div id="StartMeeting">
+            <button id="startMeetingBtn" value="create">Start/Join Public Meeting Room</button>
+          </div>
         </div>
-        <script>
-          function showStartInput() {
-            document.getElementById("StartMeeting").style.display = "block";
-            document.getElementById("JoinMeeting").style.display = "none";
-          }
+        <div class="overlay">
+          <div class="modal">
+            <h2 id="overlayTitle">New Meeting Room</h2>
+            <div id="newMeetingForm">
+              <label>Meeting Name</label> <input required id="meetingName" name="meetingName" type="text" placeholder="Enter the meeting name" autocomplete="off">
+              <button class="formSubmitBTN">Create</button>
+            </div>
+            <h3>OR</h3>
+            <div id="joinMeetingForm">
+              <label>Join a Meeting By Link</label> <input required id="meetingLink" name="meetingLink" type="text" placeholder="Enter the meeting Link">
+              <button onclick="joinMeeting()" class="formSubmitBTN">Join</button>
+            </div>
+            <p class="errorMessage" style="color:red"></p>
+          </div>
+        </div>
+        <div class="allMeetings">
+          <!-- <div id="runningMeetings">
+            <h2>Active Rooms</h2>
+            <div class="cont">
+              <div class="spaceColor" style="background-color: navy;"></div>
+              <div class='spaceDiv'><i class='fa-solid fa-video'></i> <span>Project X</span>
+                <div title="attendees" id="attendees"><i class="fas fa-user"> </i> 3</div>
+              </div>
 
-          function showUrlInput() {
-            document.getElementById("StartMeeting").style.display = "none";
-            document.getElementById("JoinMeeting").style.display = "block";
-          }
+            </div>
+          </div> -->
+          <div id="spaces">
+            <h2>Shared Spaces Rooms</h2>
+            <div id="spaceRooms">
+              <?php
+              $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
+              //get sapces where the active user is an admin of
+              $filter = ['admin' => $_SESSION['email']];
+              // MongoDB query
+              $query = new MongoDB\Driver\Query($filter);
+              // MongoDB collection name
+              $collectionName = "Learniverse.sharedSpace";
+              // Execute the query
+              $spaces = $manager->executeQuery($collectionName, $query);
+              $space = [];
+              foreach ($spaces as $s) {
+                $space[] = $s;
+              }
+              $spaces = json_decode(json_encode($space), true);
+              if (count($spaces) != 0) {
+              ?>
+                <div id="adminSpaces">
+                  <span class="spacesTitle">Owned Spaces</span>
+                <?php
+                foreach ($spaces as $space) {
+                  if($space['name']==="Digital Forensics Team")
+                  echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.open(\"spacemeeting.php?room=" . $space['hostUrl'] . "&space=" . $space['name'] . "%27s&host=true&invite=".$space['roomUrl']."\")' class='spaceDiv' title='" . $space['name'] . "'><i class='fa-solid fa-video'></i> <span>" . $space['name'] . "</span><span class='active'>Active <i class='fa-solid fa-podcast'></i></span></span></div></div>";
+                else echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.open(\"spacemeeting.php?room=" . $space['hostUrl'] . "&space=" . $space['name'] . "%27s&host=true&invite=".$space['roomUrl']."\")' class='spaceDiv' title='" . $space['name'] . "'><i class='fa-solid fa-video'></i> <span>" . $space['name'] . "</span><span class='inactive'>Inactive</span></span></div></div>";
 
-          function joinMeeting() {
-            var roomUrl = document.getElementById("url").value;
-            document.getElementById("meetingIframe").src = roomUrl;
-            document.getElementById("iframeContainer").style.display = "block";
-          }
-          $(document).ready(function() {
-
-            $('#CreateRomm').submit(function(e) {
-              // Prevent form submission
-              e.preventDefault();
-
-              // Get the form data
-              var startMeetingBtn = $('#startMeetingBtn').val();
-
-              // Send AJAX request to the server
-              $.ajax({
-                url: 'createRoom.php',
-                type: 'POST',
-                data: {
-                  startMeetingBtn: startMeetingBtn
-                },
-                dataType: 'json',
-                success: function(response) {
-                  if (response.message === "success") {
-                    document.getElementById("meetingLink").href = response.roomUrl;
-                    document.getElementById("meetingLink").style.display = "block";
-
-                    document.getElementById("meetingIframe").src = response.hostRoomUrl + " allow='camera; microphone; fullscreen; speaker; display-capture; compute-pressure'";
-                    document.getElementById("meetingIframe").style.display = "block";
-                  } else {
-                    document.getElementById("Status").innerHTML = "Status code:" + response.error.code;
-                    document.getElementById("Status").style.display = "block";
-                  }
                 }
-              });
-            });
-          });
-        </script>
-        <div id="radioOption">
-          <input type="radio" id="startRadio" name="inputType" checked="checked" onchange="showStartInput()"> <label for="radio">Create New Room</label>
-          <input type="radio" id="urlRadio" name="inputType" onchange="showUrlInput()"> <label for="radio">Paste Room URL</label>
-        </div>
-        <div id="StartMeeting">
-          <form id="CreateRomm" action="createRoom.php">
-            <button id="startMeetingBtn" value="create">Create Room</button>
-          </form>
-        </div>
-        <div id="JoinMeeting">
-          <label for="url">Room URL:</label>
-          <input type="text" id="url" name="url">
-          <button id="JoinMeetingBtn" onclick="joinMeeting()">Join Room</button>
-        </div>
-        <div id="linkContainer">
-          <p id="Status" style="display: none;"></p>
-          <a id="meetingLink" href="" target="_blank" style="display: none;">Room URL</a>
-        </div>
-        <div id="iframeContainer">
-          <iframe id="meetingIframe" src="" frameborder="0"></iframe>
+              } ?>
+                </div>
+                <div id="otherSpaces">
+                  <?php
+                  //get spaces where active user is a member of
+                  $filterMember = ['members.email' => $_SESSION['email']];
+                  $queryMember = new MongoDB\Driver\Query($filterMember);
+                  $spaces = $manager->executeQuery($collectionName, $queryMember);
+                  $space = [];
+                  foreach ($spaces as $s) {
+                    $space[] = $s;
+                  }
+                  $spaces = json_decode(json_encode($space), true);
+                  if (count($spaces) != 0) {
+                  ?>
+                    <span class="spacesTitle">Joined Spaces</span>
+
+                  <?php
+                    foreach ($spaces as $space) {
+                      $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
+                      $adminCursor = $manager->executeQuery('Learniverse.users', $query);
+                      $admin = $adminCursor->toArray()[0];
+                      echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.open(\"spacemeeting.php?room=" . $space['roomUrl'] . "&space=" . $space['name'] . "%27s&host=false\")' class='spaceDiv' title='" . $space['name'] . "'><i class='fa-solid fa-video'></i> <span>" . $space['name'] . "</span><span class='inactive'>Inactive</span></span></div></div>";
+                    }
+                  }
+                  ?>
+                </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
+    <script>
+      overlay = document.getElementsByClassName("overlay")[0];
+
+      function joinMeeting() {
+        var roomUrl = document.getElementById("meetingLink").value;
+        window.open("spacemeeting.php?room=" + roomUrl + "&host=false&space=External");
+        overlay.style.display = "none";
+      }
+
+      $('#startMeetingBtn').on('click', function(e) {
+        overlay.style.display = "flex";
+        overlay.addEventListener('click', function(event) {
+          if (event.target === overlay) {
+            overlay.style.display = "none";
+          }
+        });
+
+        var meetingName = document.getElementById('meetingName');
+        var meetingLink = document.getElementById('meetingLink');
+
+        meetingName.addEventListener('input', function() {
+          meetingLink.value = "";
+          $("#joinMeetingForm button").hide();
+          $("#newMeetingForm button").show()
+        });
+
+        meetingLink.addEventListener('input', function() {
+          meetingName.value = "";
+          $("#newMeetingForm button").hide()
+          $("#joinMeetingForm button").show();
+        });
+
+
+      });
+
+      // Get the form data
+      var startMeetingBtn = $('#startMeetingBtn').val();
+      $("#newMeetingForm button").on('click', function() {
+        // Send AJAX request to the server
+        $.ajax({
+          url: 'createRoom.php',
+          type: 'POST',
+          data: {
+            startMeetingBtn: startMeetingBtn
+          },
+          dataType: 'json',
+          success: function(response) {
+            if (response.message === "success") {
+              // document.getElementById("meetingLink").href = response.roomUrl;
+              // document.getElementById("meetingLink").style.display = "block";
+              window.open("spacemeeting.php?room=" + response.hostRoomUrl + "&host=true&space=" + meetingName.value + "'s&invite=" + response.roomUrl);
+              overlay.style.display = "none";
+            } else {
+              document.getElementById("Status").innerHTML = "Status code:" + response.error.code;
+              document.getElementById("Status").style.display = "block";
+            }
+          }
+        });
+      });
+    </script>
   </main>
   <footer id="footer" style="margin-top: 7%;">
 
-    <div id="copyright">Learniverse &copy; 2023</div>
+    <div id="copyright">Learniverse &copy; 2024</div>
   </footer>
 
   <div role="button" id="sidebar-tongue" style="margin-left: 0;">

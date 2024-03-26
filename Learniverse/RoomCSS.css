@@ -110,25 +110,27 @@ html {
 
 .top-shelf {
     display: flex;
+    justify-content: space-between;
+    align-items: baseline;
 }
 
 .radio {
     margin-bottom: 10px;
     font-weight: bold;
-  }
-  
-  
-  #StartMeeting,
-  #JoinMeeting {
+}
+
+
+#StartMeeting,
+#JoinMeeting {
     display: block;
     margin-bottom: 10px;
-  }
- 
-  
-  #startMeetingBtn, #JoinMeetingBtn {
+}
+
+#startMeetingBtn,
+#JoinMeetingBtn {
     padding: 10px 20px;
     background-color: #fdae9b;
-    color: #fff;
+    color: #000e23;
     border-radius: 10px;
     border: none;
     /* Remove borders */
@@ -138,24 +140,197 @@ html {
     transition: background-color 0.3s, box-shadow 0.3s;
     /* Smooth transition for hover effects */
     cursor: pointer;
-  }
-  
-  #url {
+}
+
+#startMeetingBtn:hover {
+    cursor: pointer;
+    background-color: #ec947e;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+#url {
     width: 50%;
     padding: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
-  }
-  
-  #radioOption {
-    margin-bottom: 1.75%;
-  }
+}
 
-  iframe {
+#radioOption {
+    margin-bottom: 1.75%;
+}
+
+iframe {
     width: 100%;
     height: 700px;
-  }
+}
 
-  #linkContainer{
+#linkContainer {
     margin-bottom: 1.5%;
-  }
+}
+
+/* overlay and form */
+form {
+    display: flex;
+    align-items: baseline;
+    justify-content: baseline;
+}
+
+form input {
+    line-height: 1.2rem;
+    margin-left: 2%;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.251);
+    /* Adjust the opacity as desired */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+.modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 40%;
+}
+
+.modal button {
+    margin-left: 5%;
+    display: none;
+}
+
+.modal label {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.formSubmitBTN {
+    margin-left: auto;
+    margin-right: 2%;
+    margin-top: 3%;
+    width: 5rem;
+    background-color: #bf97d8;
+    padding: 0.5rem 1rem;
+    height: fit-content;
+    border-radius: 10px;
+    border: none;
+    /* Remove borders */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for hover effects */
+}
+
+.formSubmitBTN:hover {
+    cursor: pointer;
+    background-color: #9d7bb1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+/* space meeting */
+.cont {
+    display: flex;
+    padding: 0;
+}
+
+.spaceDiv {
+    width: 18rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f2ebff;
+    padding: 6% 2%;
+    margin-bottom: 6%;
+    margin-right: 6%;
+    border-radius: 0px 5px 5px 0px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: filter 0.3s, box-shadow 0.3s;
+    font-family: '-apple-system', system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.spaceDiv:hover {
+    filter: brightness(0.9);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+    cursor: pointer;
+}
+
+.spaceDiv i {
+    width: 20%;
+    font-size: 1.5rem;
+    color: #bf97d8;
+}
+
+.spaceColor {
+    float: left;
+    width: 2%;
+    border-radius: 5px 0px 0px 5px;
+    margin-bottom: 6%;
+}
+
+.allMeetings {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5%;
+}
+
+#runningMeetings div.spaceDiv {
+    width: 80%;
+    font-size: 1.5rem;
+}
+
+#runningMeetings div.spaceDiv i {
+    font-size: 2rem;
+}
+
+
+#spaces {
+    width: 90%;
+}
+
+#spaceRooms {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 90%;
+}
+
+#attendees {
+    display: block;
+}
+
+#runningMeetings #attendees i {
+    margin-right: 10%;
+    font-size: 1.3rem;
+}
+
+#adminSpaces {
+    /* display: flex; */
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.spaceDiv span.active {
+    color: green;
+    text-align: left;
+    font-size: 0.8rem;
+    /* margin-left: 5%; */
+}
+
+.spaceDiv span.active i{
+    font-size: 0.8rem;
+    color: green;
+}
+
+.spaceDiv span.inactive {
+    color: grey;
+    text-align: left;
+    font-size: 0.8rem;
+    /* margin-left: 5%; */
+}

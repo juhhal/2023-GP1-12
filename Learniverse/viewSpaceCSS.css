@@ -172,7 +172,7 @@ html {
 .chat {
   border-bottom: 1px solid rgb(210, 208, 208);
   border-radius: 10px;
-  background-color: #fbf6fe;
+  background-color: #f4efff;
   padding: 10px;
   max-width: 300px;
   margin-bottom: 10px;
@@ -214,6 +214,8 @@ html {
   transition: background-color 0.3s, box-shadow 0.3s;
   height: 25px;
   width: 70px;
+  cursor: pointer;
+
 }
 
 #addMessage {
@@ -881,6 +883,7 @@ html {
   margin-top: 8%;
   padding: 8px;
   box-sizing: border-box;
+  font-size: 0.8rem;
 }
 
 .log {
@@ -922,6 +925,16 @@ html {
   border-color: #ddd;
 }
 
+.deletefile-log {
+  background-color: #fbd9b3;
+  border-color: #ddd;
+}
+
+.upload-log {
+  background-color: #bbceeb;
+  border-color: #ddd;
+}
+
 .day-label {
   font-weight: bold;
   margin-top: 15px;
@@ -930,17 +943,14 @@ html {
 /* Overview section*/
 
 /* FILES TAB*/
-#allfiles {
+.showFiles {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
   margin-top: 10%;
 }
 
-#allfiles .box {
-  width: 70px;
+.showFiles .box {
   /* Adjust the width as desired */
-  height: 80px;
   /* Adjust the height as desired */
   background: rgb(255, 255, 255);
   border-radius: 10px;
@@ -951,14 +961,14 @@ html {
   overflow: hidden;
 }
 
-#allfiles .box iframe {
+.showFiles .box iframe {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
-#allfiles .box::before {
+.showFiles .box::before {
   content: "";
   height: 40px;
   width: 100%;
@@ -969,7 +979,7 @@ html {
   position: absolute;
 }
 
-#allfiles .box::after {
+/* .showFiles .box::after {
   content: "";
   height: 100%;
   width: 40px;
@@ -978,15 +988,14 @@ html {
   top: 0;
   z-index: 10;
   right: 0;
-}
+} */
 
 iframe::-webkit-scrollbar {
   display: none;
   overflow: hidden;
 }
 
-#allfiles .box .collection {
-  position: absolute;
+.showFiles .box .collection {
   top: 0;
   height: 100%;
   width: 100%;
@@ -994,35 +1003,44 @@ iframe::-webkit-scrollbar {
   z-index: 10;
 }
 
-#allfiles .box:hover {
+.showFiles .box:hover {
   cursor: pointer;
   border: 2px solid #fdaf9b68;
 }
 
-#allfiles span .icon {
+/* 
+.showFiles span .icon {
   height: 4vh;
   border-radius: 5px;
   mix-blend-mode: color-burn;
 }
 
-#allfiles span .icon:nth-of-type(1) {
+.showFiles span .icon:nth-of-type(1) {
   position: absolute;
   bottom: 10px;
   left: 10px;
   z-index: 100000;
 }
 
-#allfiles span .icon:nth-of-type(2) {
+.showFiles span .icon:nth-of-type(2) {
   transform: rotateZ(90deg);
   position: absolute;
-  left: 87%;
   bottom: auto;
   z-index: 100000;
 }
 
-#allfiles span .icon:hover {
+.showFiles span .icon:hover {
   cursor: pointer;
   filter: brightness(0.7);
+} */
+
+.deleteic {
+  margin-left: 12%;
+  color: #ec947e;
+}
+
+.saveFile {
+  color: #bf97d8;
 }
 
 .file {
@@ -1070,8 +1088,216 @@ a.file {
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-.formSubmitBT:hover {
+.formSubmitBTN,
+#uploadfile {
+  float: right;
+}
+
+.formSubmitBTN:hover,
+#uploadfile:hover {
   cursor: pointer;
   background-color: #ec947e;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+#startMeetingBTN {
+  padding: 1rem 1rem;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fdae9b;
+  border-radius: 10px;
+  border: none;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Soft shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#startMeetingBTN:hover {
+  cursor: pointer;
+  background-color: #ec947e;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+/* file modal */
+/* Modal Background */
+#fileModal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal Container */
+.modal-container {
+  background-color: #fefefe;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  /* Adjust based on your preference */
+  max-height: 80%;
+  overflow-y: auto;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Center-align the items vertically */
+}
+
+/* Directory and File Items */
+.dirItem,
+.fileItem {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  width: 100%;
+  /* Make items full width of their container */
+  box-sizing: border-box;
+  /* Include padding and border in the width */
+}
+
+/* Optionally, if you want the items to be only as wide as their content,
+   you can remove the width property and add the following: */
+.dirItem,
+.fileItem {
+  display: inline-block;
+  /* Allows the item to be as wide as its content */
+  white-space: nowrap;
+  /* Prevents the text from wrapping */
+}
+
+
+/* Close Button */
+#fileModal button {
+  padding: 10px 20px;
+  background-color: #bf97d8;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+  border-radius: 5px;
+  align-self: flex-end;
+  /* Align the button to the right */
+}
+
+#fileModal button:hover {
+  background-color: #946aae;
+}
+
+#directoryButtons {
+  margin-bottom: 20px;
+}
+
+.dirButton {
+  padding: 10px 20px;
+  margin-right: 10px;
+  /* Space between buttons */
+  background-color: #bf97d8;
+  /* Bootstrap primary color */
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  /* Rounded corners */
+  display: inline-block;
+  /* Display buttons inline */
+}
+
+.dirButton:hover {
+  background-color: #946aae;
+  /* Darker blue on hover */
+}
+
+/* Style the file list items similarly to before */
+#fileList .fileItem {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#fileList .selectedFileDiv {
+  background-color: #bebebe;
+}
+
+#showFiles {
+  margin-top: 5%;
+}
+
+.fileInfoDiv {
+  display: flex;
+}
+
+.fileButtons {
+  margin-left: auto;
+  width: 20%;
+}
+
+#uploadMats {
+  display: flex;
+  background-color: #bf97d8;
+  padding: 0.4rem 0.7rem 0.4rem 0.5rem;
+  width: fit-content;
+  margin-left: 1.5rem;
+  margin-top: 4%;
+  height: fit-content;
+  border-radius: 10px;
+  border: none;
+  /* Remove borders */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Soft shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s;
+  /* Smooth transition for hover effects */
+}
+
+#uploadMats:hover {
+  cursor: pointer;
+  background-color: #946aae;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+
+}
+
+#uploadfile {
+  padding: 0.5rem 1rem;
+  background-color: #fdae9b;
+  border-radius: 10px;
+  border: none;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Soft shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#newFile {
+  display: flex;
+  background-color: #bf97d8;
+  padding: 0.4rem 0.7rem 0.4rem 0.5rem;
+  width: fit-content;
+  height: fit-content;
+  border-radius: 10px;
+  border: none;
+  /* Remove borders */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Soft shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s;
+  /* Smooth transition for hover effects */
+}
+
+.justify {
+  display: flex;
+  justify-content: space-between;
+  justify-items: baseline;
 }

@@ -47,7 +47,6 @@ if (isset($_POST['new-plan-name'])) {
     // Check if local files were uploaded
     if (isset($_FILES['localMats'])) {
         $fileCount = count($_FILES['localMats']['name']);
-        echo "<br>";
 
         // Process each uploaded file
         for ($i = 0; $i < $fileCount; $i++) {
@@ -218,7 +217,7 @@ if (isset($_POST['new-plan-name'])) {
         $incrementedID = intval($id) + 1;
 
 
-        $event = ['id' => $id, 'title' => "STUDY: " . $title, 'description' => "Plan: $name. $description", 'reminder' => false, 'start' => $startevent, 'end' => $endevent, 'color' => $color, 'planID' => $planID];
+        $event = ['id' => $id, 'title' =>  $title, 'description' => "Plan: $name. $description", 'reminder' => false, 'start' => $startevent, 'end' => $endevent, 'color' => $color, 'planID' => $planID];
         $id++;
         //
         $studyPlanEvent->update(
@@ -319,6 +318,19 @@ if (isset($_POST['new-plan-name'])) {
         exit;
     }
 
+    //empty users calendar from old plan events
+    $removeOldEvents = new MongoDB\Driver\BulkWrite;
+    $criteria = ['user_id' => $_SESSION['email'], 'List.planID' => $planID];
+    $update = ['$pull' => ['List' => ['planID' => $planID]]];
+
+    $removeOldEvents->update(
+        $criteria,
+        $update,
+        ['multi' => true] // Set the 'multi' option to update multiple documents
+    );
+    $result = $manager->executeBulkWrite("Learniverse.calendar", $removeOldEvents);
+
+
     // retrieve plan calendar events to copy them
     // Define the query filter
     $filter = ['user_id' => $planID];
@@ -358,7 +370,7 @@ if (isset($_POST['new-plan-name'])) {
         // Check if $event has a planID property
         if (!isset($event->planID)) {
             // $event does not have a planID property, so add it
-            $event->title = "STUDY: " . $event->title;
+            $event->title = $event->title;
             $event->planID = $planID;
             $event->color =  $p->color;
         }
@@ -405,6 +417,18 @@ if (isset($_POST['new-plan-name'])) {
         ['$set' => ['List' => [[]], 'counter' => 1]]
     );
     $result = $manager->executeBulkWrite("Learniverse.calendar", $bulk);
+
+    //empty users calendar from old plan events
+    $removeOldEvents = new MongoDB\Driver\BulkWrite;
+    $criteria = ['user_id' => $_SESSION['email'], 'List.planID' => $planID];
+    $update = ['$pull' => ['List' => ['planID' => $planID]]];
+
+    $removeOldEvents->update(
+        $criteria,
+        $update,
+        ['multi' => true] // Set the 'multi' option to update multiple documents
+    );
+    $result = $manager->executeBulkWrite("Learniverse.calendar", $removeOldEvents);
 
     // get the plan's start and end to generate new one
     $query = new MongoDB\Driver\Query(['planID' => $planID]);
@@ -477,11 +501,16 @@ if (isset($_POST['new-plan-name'])) {
         $updateStudyPlan->update(
             $filter,
             ['$set' => [
-                'studyPlan' => $studyObjects, 'color' => $color
+                'study_plan' => $studyObjects, 'color' => $color, 'saved' => false
             ]]
         );
         $manager->executeBulkWrite("Learniverse.studyPlan", $updateStudyPlan);
 
+        $query = new MongoDB\Driver\Query(array('user_id' => $planID));
+        $cursor = $manager->executeQuery('Learniverse.calendar', $query);
+        $result_array = $cursor->toArray();
+        $result_json = json_decode(json_encode($result_array), true);
+        $id = $result_json[0]['counter'];
         // Printing the study objects
         foreach ($studyObjects as $studyObject) {
             $title = $studyObject->title;
@@ -491,11 +520,7 @@ if (isset($_POST['new-plan-name'])) {
             $end =  $studyObject->endDate;
             echo "///////////////////////////////////////////////" . $title;
             // retrieve calendar id to generate distinctive ids for events in the loop
-            $query = new MongoDB\Driver\Query(array('user_id' => $planID));
-            $cursor = $manager->executeQuery('Learniverse.calendar', $query);
-            $result_array = $cursor->toArray();
-            $result_json = json_decode(json_encode($result_array), true);
-            $id = $result_json[0]['counter'];
+
 
             $incrementedID = intval($id) + 1;
 
@@ -526,6 +551,26 @@ if (isset($_POST['new-plan-name'])) {
     } else {
         echo "Python script did not return any output.";
     }
+} elseif (isset($_POST['changeSaved'])) {
+    $planID = $_POST['planID'];
+    $saved = $_POST['saved'];
+
+    if ($saved === "false")
+        $saved = false;
+    else $saved = true;
+
+
+    $updateSaved = new MongoDB\Driver\BulkWrite;
+    $filter = ['planID' => $planID];
+    $updateSaved->update(
+        $filter,
+        ['$set' => ['saved' => $saved]]
+    );
+
+    $result = $manager->executeBulkWrite('Learniverse.studyPlan', $updateSaved);
+    if ($result->getModifiedCount() > 0) {
+        echo "plan saved status changed";
+    } else echo "plan saved status failed to update";
 }
 
-header("Location:studyplan.php");
+// header("Location:studyplan.php");

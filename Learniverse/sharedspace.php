@@ -259,7 +259,7 @@ require 'session.php'; ?>
 
     <main>
         <div id="tools_div">
-            <ul class="tool_list">
+        <ul class="tool_list">
                 <li class="tool_item">
                     <a href="workspace.php"> Calendar & To-Do
                     </a>
@@ -291,8 +291,8 @@ require 'session.php'; ?>
                 </li>
                 <li class="tool_item"><a href="sharedspace.php">
                         Shared spaces</a></li>
-                <li class="tool_item">
-                    Meeting Room
+                <li class="tool_item"><a href="meetingroom.php">
+                        Meeting Room</a>
                 </li>
                 <li class="tool_item"><a href="community.php">
                         Community</a>
@@ -304,7 +304,7 @@ require 'session.php'; ?>
             <div class="workarea_item">
                 <div class="top-shelf">
                     <h1>Shared Spaces</h1>
-                    <button id="newSpaceBTN" onclick="showForm()">New Space</button>
+                    <button id="newSpaceBTN" onclick="showForm()">New/Join Space</button>
                 </div>
                 <div id="spaces">
                     <div id="noSpaceMSG"><img src="images/rocket-clouds.png">

@@ -305,16 +305,16 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                     <a href="theFiles.php"> My Files</a>
                 </li>
                 <li class="tool_item">
-                <a href="quizes/index.php"> Quizzes</a>
+                    <a href="quizes/index.php"> Quizzes</a>
                 </li>
                 <li class="tool_item">
-                <a href="flashcard.php"> Flashcards</a>
+                    <a href="flashcard.php"> Flashcards</a>
                 </li>
                 <li class="tool_item">
-                <a href="summarization/summarization.php"> Summarization</a>
+                    <a href="summarization/summarization.php"> Summarization</a>
                 </li>
                 <li class="tool_item">
-                <a href="studyplan.php"> Study Plan</a>
+                    <a href="studyplan.php"> Study Plan</a>
                 </li>
                 <li class="tool_item"><a href="Notes/notes.php">
                         Notes</a>
@@ -328,8 +328,8 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                 </li>
                 <li class="tool_item"><a href="sharedspace.php">
                         Shared spaces</a></li>
-                <li class="tool_item">
-                    Meeting Room
+                <li class="tool_item"><a href="meetingroom.php">
+                        Meeting Room</a>
                 </li>
                 <li class="tool_item"><a href="community.php">
                         Community</a>
