@@ -259,7 +259,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
                 <a href="../index.php">Home</a>
               </li>
               <li>
-                <a href="#">Community</a>
+                <a href="../community.php">Community</a>
               </li>
               <li class="active">
                 <a href="../workspace.php">My Workspace</a>

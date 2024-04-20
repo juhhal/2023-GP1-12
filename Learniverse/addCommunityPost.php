@@ -229,7 +229,7 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
                                 <a href="community.php">Community</a>
                             </li>
                             <li>
-                                <a href="Workspace.php">My Workspace</a>
+                                <a href="workspace.php">My Workspace</a>
                             </li>
                         </ul> <!-- end menu -->
                     </nav>

@@ -282,13 +282,13 @@ function getFilesByUserId($userId, $FileCollection) {
             <ul class="nav__menu"
               style="font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', 'sans-serif' !important; ">
               <li>
-                <a href="index.php">Home</a>
+                <a href="/index.php">Home</a>
               </li>
               <li>
-                <a href="community.php">Community</a>
+                <a href="/community.php">Community</a>
               </li>
               <li class="active">
-                <a href="workspace.php">My Workspace</a>
+                <a href="/workspace.php">My Workspace</a>
               </li>
             </ul>
           </nav>

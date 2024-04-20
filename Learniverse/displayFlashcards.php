@@ -201,7 +201,7 @@
                                 <a href="community.php">Community</a>
                             </li>
                             <li class="active">
-                                <a href="Workspace.php">My Workspace</a>
+                                <a href="workspace.php">My Workspace</a>
                             </li>
                         </ul> <!-- end menu -->
                     </nav>

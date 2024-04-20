@@ -388,7 +388,7 @@ if(isset($_GET['files'])) {
                 <a href="../index.php">Home</a>
               </li>
               <li>
-                <a href="#">Community</a>
+                <a href="../community.php">Community</a>
               </li>
               <li class="active">
                 <a href="../workspace.php">My Workspace</a>

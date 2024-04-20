@@ -302,7 +302,7 @@ if (isset($_GET['file'])) {
                 <a href="../index.php">Home</a>
               </li>
               <li>
-                <a href="#">Community</a>
+                <a href="../community.php">Community</a>
               </li>
               <li class="active">
                 <a href="../workspace.php">My Workspace</a>
@@ -437,8 +437,8 @@ if (isset($_GET['file'])) {
         <li class="tool_item"><a href="../sharedspace.php">
           Shared spaces</a>
         </li>
-        <li class="tool_item">
-          Meeting Room
+        <li class="tool_item"><a href="../meetingroom.php">
+          Meeting Room</a>
         </li>
         <li class="tool_item"><a href="../community.php">
             Community</a>

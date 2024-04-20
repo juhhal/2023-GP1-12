@@ -196,13 +196,13 @@
                     <nav id="navbar" class="nav__wrap collapse navbar-collapse">
                         <ul class="nav__menu">
                             <li>
-                                <a href="index.php">Home</a>
+                                <a href="../index.php">Home</a>
                             </li>
                             <li>
-                                <a href="community.php">Community</a>
+                                <a href="../community.php">Community</a>
                             </li>
                             <li class="active">
-                                <a href="Workspace.php">My Workspace</a>
+                                <a href="../workspace.php">My Workspace</a>
                             </li>
                         </ul> <!-- end menu -->
                     </nav>

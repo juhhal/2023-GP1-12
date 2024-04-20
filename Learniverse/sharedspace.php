@@ -9,7 +9,7 @@ require 'session.php'; ?>
     <meta charset="UTF-8">
     <title>Shared Space</title>
     <link rel="stylesheet" href="header-footer.css">
-    <link rel="stylesheet" href="sharedspacecss.css">
+    <link rel="stylesheet" href="sharedspaceCSS.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
@@ -207,7 +207,7 @@ require 'session.php'; ?>
                                 <a href="community.php">Community</a>
                             </li>
                             <li class="active">
-                                <a href="Workspace.php">My Workspace</a>
+                                <a href="workspace.php">My Workspace</a>
                             </li>
                         </ul> <!-- end menu -->
                     </nav>

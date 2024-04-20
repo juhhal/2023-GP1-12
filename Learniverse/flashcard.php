@@ -626,7 +626,7 @@ main {
                 <a href="community.php">Community</a>
               </li>
               <li class="active">
-                <a href="Workspace.php">My Workspace</a>
+                <a href="workspace.php">My Workspace</a>
               </li>
             </ul> <!-- end menu -->
           </nav>
@@ -721,8 +721,8 @@ main {
                 </li>
                 <li class="tool_item"><a href="sharedspace.php">
                         Shared spaces</a></li>
-                <li class="tool_item">
-                    Meeting Room
+                <li class="tool_item"><a href="meetingroom.php">
+                    Meeting Room</a>
                 </li>
                 <li class="tool_item"><a href="community.php">
                         Community</a>
