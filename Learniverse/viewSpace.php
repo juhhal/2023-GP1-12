@@ -1724,7 +1724,7 @@ $admin = $result->toArray()[0];
                     ?>
                     <script>
                         $('#startMeetingBTN').on('click', function() {
-                            window.open("spaceMeeting.php?room=<?php echo ($space->admin === $_SESSION['email']) ? $space->hostUrl : $space->roomUrl; ?>&space=<?php echo $space->name . "'s" ?>&spaceID=<?php echo $space->spaceID ?>&host=<?php echo ($space->admin === $_SESSION['email']) ? 'true' . "&invite=$space->roomUrl" : 'false'; ?>");
+                            window.open("spacemeeting.php?room=<?php echo ($space->admin === $_SESSION['email']) ? $space->hostUrl : $space->roomUrl; ?>&space=<?php echo $space->name . "'s" ?>&spaceID=<?php echo $space->spaceID ?>&host=<?php echo ($space->admin === $_SESSION['email']) ? 'true' . "&invite=$space->roomUrl" : 'false'; ?>");
                         });
 
                         function updateMemberCount() {

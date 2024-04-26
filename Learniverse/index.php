@@ -3,6 +3,7 @@ session_start();
 error_reporting(0);
 require 'jwt.php';
 require_once __DIR__ . '/vendor/autoload.php';
+require "customerSupport.php";
 
 // Create a MongoDB client
 $connection = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
