@@ -1,4 +1,5 @@
 <?php session_start();
+require 'customerSupport.php';
 
 $guest_account = null;
 //check if user is a guest to hide the profile menu
@@ -372,7 +373,7 @@ if ($matchedDocument) {
                         <li class='center'><?php echo $fetch['email']; ?></li>
                         <hr>
                         <li><a href="reset.php?q=viewPost.php?postID=<?php echo $_GET['postID']; ?>"><i class='far fa-edit'></i> Change password</a></li>
-                        <li><a href='#'><i class='far fa-question-circle'></i> Help </a></li>
+                        <li onclick="customerSupport()"><a href='#'><i class='far fa-question-circle'></i> Customer Support</a></li>
                         <hr>
                         <li><a href='logout.php'><i class='fas fa-sign-out-alt'></i> Sign out</a></li>
                     </ul>
