@@ -330,7 +330,7 @@ function getFilesByUserId($userId, $FileCollection) {
             echo "<li><a href='../reset.php?q=thefiles.php'><i class='far fa-edit'></i> Change password</a></li>";
             ?>
 
-            <li><a href='#'><i class='far fa-question-circle'></i> Help </a></li>
+<li onclick="customerSupport()"><a href='#'><i class='far fa-question-circle'></i> Customer Support</a></li>
             <hr>
             <li id="logout"><a href='../logout.php'><i class='fas fa-sign-out-alt'></i> Sign out </a></li>
           </ul>
