@@ -14,18 +14,21 @@
     }
 
     #CSoverlay-content {
+        color:black;
         background-color: white;
         padding: 1px 20px 20px;
         border-radius: 5px;
         max-width: 60%;
+        max-height: 80%;
         text-align: center;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
 
     #cs-head {
         margin-left: auto;
         margin-right: auto;
         width: 100%;
-        height: 30%;
+        /* height: 30%; */
         /* border: solid red ; */
     }
 
@@ -33,17 +36,21 @@
         margin-left: auto;
         margin-right: auto;
         width: 100%;
-        height: 30%;
+        /* height: 30%; */
     }
 
     #cs-head img {
         width: 100%;
-        height: 5%;
+        /* height: 5%; */
     }
 
     #cs-bottom img {
         width: 100%;
-        height: 3%;
+        /* height: 3%; */
+    }
+
+    #complaint-form {
+        display: block;
     }
 
     #complaint-form textarea {
