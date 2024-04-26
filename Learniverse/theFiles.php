@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <?php 
-session_start();
-
+require "session.php";
 
 
 ?>

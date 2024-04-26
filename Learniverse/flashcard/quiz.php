@@ -2,6 +2,7 @@
 <?php
 require_once __DIR__ . '../../vendor/autoload.php';
 session_start();
+require "../customerSupport.php";
 if (isset($_GET['data'])) {
   $flashcardsData = json_decode(urldecode($_GET['data']), true);
   $flashcards = json_encode($flashcardsData['success']);

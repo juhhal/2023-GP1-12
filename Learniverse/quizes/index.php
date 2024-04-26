@@ -2,6 +2,8 @@
 <?php
 require_once __DIR__ . '../../vendor/autoload.php';
 session_start();
+require "../customerSupport.php";
+
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 $userEmail = $_SESSION['email'];
 $query = new MongoDB\Driver\Query(['user_email' => $userEmail]);
