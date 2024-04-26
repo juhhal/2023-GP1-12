@@ -114,7 +114,7 @@
             const head = document.createElement('div');
             head.id = 'cs-head';
             const image = document.createElement('img');
-            image.src = 'images/upper-clouds.png';
+            image.src = '../images/upper-clouds.png';
             head.appendChild(image);
             overlayContent.appendChild(head);
 
@@ -189,7 +189,7 @@
                                 confirmationDIV.id = 'confirmationDIV';
                                 confirmationDIV.innerHTML = '<p>We appreciate your Feedback! <br>Our team will address it as soon as possible.</p>';
                                 const image = document.createElement('img');
-                                image.src = 'images/bottom-clouds.png';
+                                image.src = '../images/bottom-clouds.png';
                                 bottom.appendChild(image);
                                 overlayContent.style.paddingBottom = "1px";
                                 overlayContent.insertBefore(confirmationDIV, bottom); // Append the confirmation message to the document

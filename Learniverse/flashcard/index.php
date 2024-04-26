@@ -2,7 +2,7 @@
 
 if (!isset($_SESSION)) {
   session_start();
-  require "customerSupport.php";
+  require "../customerSupport.php";
 }
 // ini_set('display_errors', '0'); // Turn off error displaying
 // error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notices
