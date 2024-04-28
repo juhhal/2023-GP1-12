@@ -3,7 +3,6 @@ session_start();
 error_reporting(0);
 require 'jwt.php';
 require_once __DIR__ . '/vendor/autoload.php';
-require "customerSupport.php";
 
 // Create a MongoDB client
 $connection = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
@@ -46,6 +45,14 @@ if (isset($_SESSION['email'])) {
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="manifest" href="favicon_io/site.webmanifest">
     <script src="jquery.js"></script>
+    <?php if(isset($_SESSION['email'])){?>
+<!-- CUSTOMER SUPPORT STYLESHEET -->
+<script src="../customerSupport.js"></script>
+<link rel="stylesheet" href="../customerSupport.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <?php 
+    }
+    ?>
     <script>
         $(document).ready(function() {
             if (<?php echo isset($_SESSION['email']) ? 1 : 0 ?>) {

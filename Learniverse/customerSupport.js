@@ -1,109 +1,4 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<style>
-    #CSoverlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    }
-
-    #CSoverlay-content {
-        color:black;
-        background-color: white;
-        padding: 1px 20px 20px;
-        border-radius: 5px;
-        max-width: 60%;
-        max-height: 80%;
-        text-align: center;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    }
-
-    #cs-head {
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%;
-        /* height: 30%; */
-        /* border: solid red ; */
-    }
-
-    #cs-bottom {
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%;
-        /* height: 30%; */
-    }
-
-    #cs-head img {
-        width: 100%;
-        /* height: 5%; */
-    }
-
-    #cs-bottom img {
-        width: 100%;
-        /* height: 3%; */
-    }
-
-    #complaint-form {
-        display: block;
-    }
-
-    #complaint-form textarea {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 70%;
-        max-width: 90%;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        padding: 1%;
-        clear: both;
-        border-radius: 5px;
-    }
-
-    #complaint-form textarea:focus {
-        outline: none;
-        /* Remove default focus outline */
-        box-shadow: 0 0 5px 1px rgba(0, 0, 255, 0.2);
-        /* Apply a blue box shadow when focused */
-    }
-
-    #cs-submit {
-        background-color: #fdae9b;
-        /* float: right; */
-        margin-top: 5%;
-        padding: 0.5rem 2rem;
-        height: fit-content;
-        border-radius: 10px;
-        border: none;
-        /* Remove borders */
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        /* Soft shadow for depth */
-        transition: background-color 0.3s, box-shadow 0.3s;
-        /* Smooth transition for hover effects */
-    }
-
-    #cs-submit:hover {
-        cursor: pointer;
-        background-color: #ec947e;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
-    }
-
-    #confirmationDIV {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        line-height: 2rem;
-        font-size: 1.2rem;
-        margin-bottom: 5%;
-    }
-</style>
-
-<script>
-    function customerSupport() {
+function customerSupport() {
         const overlay = document.getElementById("CSoverlay");
         if (overlay !== null) {
             if (overlay.style.display != "none")
@@ -159,7 +54,7 @@
             // Add event listener to hide the overlay when clicked outside
             document.addEventListener('click', function(event) {
                 if (event.target === overlay) {
-                    overlay.style.display = 'none';
+                    overlay.remove();
                 }
             });
 
@@ -213,4 +108,3 @@
             });
         }
     }
-</script>

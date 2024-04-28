@@ -97,6 +97,11 @@ function getFilesByUserId($userId, $FileCollection) {
   <!-- PROFILE STYLESHEET -->
   <link rel="stylesheet" href="profile.css">
 
+  <!-- CUSTOMER SUPPORT STYLESHEET -->
+  <script src="../customerSupport.js"></script>
+    <link rel="stylesheet" href="../customerSupport.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
   <!-- Custom stylesheet -->
   <link href="css/style.css" rel="stylesheet" />
   <!-- Sweetalert2 -->

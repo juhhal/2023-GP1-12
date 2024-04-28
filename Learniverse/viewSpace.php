@@ -64,6 +64,10 @@ $admin = $result->toArray()[0];
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <!-- CUSTOMER SUPPORT STYLESHEET -->
+    <script src="../customerSupport.js"></script>
+    <link rel="stylesheet" href="../customerSupport.css">
+
     <!-- calendar -->
     <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
     <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>

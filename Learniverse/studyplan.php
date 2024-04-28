@@ -28,6 +28,10 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- CUSTOMER SUPPORT STYLESHEET -->
+    <script src="../customerSupport.js"></script>
+    <link rel="stylesheet" href="../customerSupport.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Include FullCalendar JS & CSS library -->
     <link href="js/fullcalendar/lib/main.css" rel="stylesheet" />
     <script src="js/fullcalendar/lib/main.js"></script>

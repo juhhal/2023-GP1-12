@@ -2,7 +2,6 @@
 <?php
 require_once __DIR__ . '../../vendor/autoload.php';
 session_start();
-require "../customerSupport.php";
 
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 $userEmail = $_SESSION['email'];
@@ -119,6 +118,11 @@ if(isset($_GET['files'])) {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- CUSTOMER SUPPORT STYLESHEET -->
+<script src="../customerSupport.js"></script>
+    <link rel="stylesheet" href="../customerSupport.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
 <style>
         /* Style for the loading overlay */
         .overlay {
