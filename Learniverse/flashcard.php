@@ -3,7 +3,6 @@
 if (!isset($_SESSION)) {
   session_start();
 }
-require "customerSupport.php";
 
 // ini_set('display_errors', '0'); // Turn off error displaying
 // error_reporting(E_ERROR | E_PARSE); // Report only errors, not warnings or notices
@@ -101,7 +100,7 @@ function getFilesByUserId($userId, $FileCollection) {
   <script src="../customerSupport.js"></script>
     <link rel="stylesheet" href="../customerSupport.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+
   <!-- Custom stylesheet -->
   <link href="css/style.css" rel="stylesheet" />
   <!-- Sweetalert2 -->

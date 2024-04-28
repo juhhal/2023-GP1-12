@@ -1,5 +1,4 @@
 <?php session_start();
-require 'customerSupport.php';
 
 $guest_account = null;
 //check if user is a guest to hide the profile menu

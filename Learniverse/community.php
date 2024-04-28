@@ -1,6 +1,5 @@
 <?php
 session_start();
-require 'customerSupport.php';
 
 //check if user is a guest to hide the profile menu
 if (!isset($_SESSION['email'])) {
@@ -58,7 +57,7 @@ if (isset($_SESSION['filteredSearch'])) {
     <script src="../customerSupport.js"></script>
     <link rel="stylesheet" href="../customerSupport.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
         $(document).ready(function() {
