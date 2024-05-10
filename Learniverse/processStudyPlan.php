@@ -1,5 +1,8 @@
 <?php
 require "session.php";
+putenv('PYTHONPATH=/home/master/.local/lib/python3.9/site-packages:' . getenv('PYTHONPATH'));
+require_once __DIR__ . '/vendor/autoload.php';
+
 //establish connection
 $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
 //create a bulk writer to update data in the db
@@ -81,7 +84,6 @@ if (isset($_POST['new-plan-name'])) {
         }
     }
 
-
     $filter = [
         'user_id' => $_SESSION['email'],
         'List.start' => [
@@ -152,12 +154,21 @@ if (isset($_POST['new-plan-name'])) {
         } else {
             // Construct the command to call the Python script with the file path as an argument
             $previousEventsJson = escapeshellarg(json_encode($previousEvents));
-            $generate_command = "python3 python/StudyPlanner.py '" . escapeshellarg($tempFilePath) . "' '" . escapeshellarg($start) . "' '" . escapeshellarg($end) . "' " . $previousEventsJson;
-            // Execute the command and capture output
-            exec($generate_command, $plan, $resultsCode);
-            if (isset($plan[0]) && trim($plan[0]) !== '') {
-                $temp_file_path = trim($plan[0]);
-                $plan_data = json_decode(file_get_contents($temp_file_path), true);
+
+            $text = $fullText;
+            $client = OpenAI::client($ApiKey);
+
+            $result = $client->chat()->create([
+                'model' => 'gpt-3.5-turbo-0125', // Choose the desired OpenAI model
+                'response_format' => ['type' => 'json_object'],
+                'messages' => [
+                    ['role' => 'system', 'content' => "As a study planner, your task is to create a study plan by dividing all the main topics from the user content without changing their order, every new lecture has (warning new lecture) flag, considering my calendar events for the dates: from $start to $end. Please ensure that the study plan takes into account the existing calendar events but does not include them in the response:$previousEventsJson. count how many events are for each day and Distribute the topics in a way that days with higher events count have less work, and each day must have only one study plan do not leave empty days. Provide the response in JSON format following this structure: 'study_plan(date, title, description)' where 'date' represents the study date, 'title' is the title of the study plan, and 'description' one sentence that explains the main topics for that day."],
+                    ["role" => "user", "content" => $text]
+                ],
+            ]);
+            // exec($generate_command, $plan, $resultsCode);
+            if ($result) {
+                $plan_data = json_decode($result->choices[0]->message->content, true);
                 $jsonData = $plan_data['study_plan'];
             } else {
                 echo "Python script did not return any output.";
@@ -169,17 +180,33 @@ if (isset($_POST['new-plan-name'])) {
 
     //////DON'T COPY THIS SECTION FOR REGENERATING//////
     // Define file name and path
-    $fileName = "" . uniqid() . ".txt";
-    $filePath = "studyplan/" . $fileName;
-    // Write content to file
-    file_put_contents($filePath, $fullText);
+    $newFileName = "$planID.pdf";
 
-    // New file name with .pdf extension
-    $newFileName = "" . $planID . ".pdf";
-    $newFilePath = "studyplan/" . $newFileName;
+    // Create a new FPDF instance
+    $pdf = new FPDF();
 
-    // Rename the file
-    rename($filePath, $newFilePath);
+    // Add a page
+    $pdf->AddPage();
+
+    // Set font
+    $pdf->SetFont('Arial', '', 12); // Font, style, size
+
+    // Write text to PDF
+    $pdf->MultiCell(0, 10, $fullText);
+
+    // Define directory path
+    $directory = 'studyplan/';
+
+    // Create the directory if it doesn't exist
+    if (!is_dir($directory)) {
+        mkdir($directory, 0777, true);
+    }
+
+    // Set the file path
+    $filePath = $directory . $newFileName;
+
+    // Output the PDF to the file
+    $pdf->Output($filePath, 'F');
 
 
 
@@ -475,12 +502,20 @@ if (isset($_POST['new-plan-name'])) {
 
     // Construct the command to call the Python script with the file path as an argument
     $previousEventsJson = escapeshellarg(json_encode($previousEvents));
-    $generate_command = "python3 python/StudyPlanner.py '" . escapeshellarg($tempFilePath) . "' '" . escapeshellarg($start) . "' '" . escapeshellarg($end) . "' " . $previousEventsJson;
-    // Execute the command and capture output
-    exec($generate_command, $plan, $resultsCode);
-    if (isset($plan[0]) && trim($plan[0]) !== '') {
-        $temp_file_path = trim($plan[0]);
-        $plan_data = json_decode(file_get_contents($temp_file_path), true);
+    $text = callPythonScript($tempFilePath);
+    $client = OpenAI::client($ApiKey);
+
+    $result = $client->chat()->create([
+        'model' => 'gpt-3.5-turbo-0125', // Choose the desired OpenAI model
+        'response_format' => ['type' => 'json_object'],
+        'messages' => [
+            ['role' => 'system', 'content' => "As a study planner, your task is to create a study plan by dividing all the main topics from the user content without changing their order, every new lecture has (warning new lecture) flag, considering my calendar events for the dates: from $start to $end. Please ensure that the study plan takes into account the existing calendar events but does not include them in the response:$previousEventsJson. count how many events are for each day and Distribute the topics in a way that days with higher events count have less work, and each day must have only one study plan do not leave empty days. Provide the response in JSON format following this structure: 'study_plan(date, title, description)' where 'date' represents the study date, 'title' is the title of the study plan, and 'description' one sentence that explains the main topics for that day."],
+            ["role" => "user", "content" => $text]
+        ],
+    ]);
+    // exec($generate_command, $plan, $resultsCode);
+    if ($result) {
+        $plan_data = json_decode($result->choices[0]->message->content, true);
         $jsonData = $plan_data['study_plan'];
         $studyObjects = [];
         $studyPlanEvent = new MongoDB\Driver\BulkWrite;
@@ -549,7 +584,7 @@ if (isset($_POST['new-plan-name'])) {
             echo "filed to add regenerated plan events to plan calendar";
         exit;
     } else {
-        echo "Python script did not return any output.";
+        echo "Python script did not return any output.\n$text";
     }
 } elseif (isset($_POST['changeSaved'])) {
     $planID = $_POST['planID'];
@@ -573,4 +608,4 @@ if (isset($_POST['new-plan-name'])) {
     } else echo "plan saved status failed to update";
 }
 
-// header("Location:studyplan.php");
+header("Location:studyplan.php");
