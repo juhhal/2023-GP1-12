@@ -443,22 +443,24 @@ if (isset($_FILES['fileUpload'])) {
             // Failed to write to the temporary file
             echo "Failed to write to temporary file.";
         } else {
-            // Construct the command to call the Python script with the file path as an argument
-            $flashcard_command = "python3 ../python/flashcards.py '" . $tempFilePath . "'";
-            $content = array();
-            $resultsCode = null;
-            // Execute the command and capture output
-            exec($flashcard_command, $content, $resultsCode);
-            // Check if the command executed successfully
-            if ($resultsCode === 0) {
+            $text = $extracted_text;
+            $client = OpenAI::client($ApiKey);
+            $result = $client->chat()->create([
+                'model' => 'gpt-3.5-turbo-0125', // Choose the desired OpenAI model
+                'response_format' => ['type' => 'json_object'],
+                'messages' => [
+                    ['role' => 'system', 'content' => "You are a 10 Flashcards summarizer designed to output JSON and never return empty response, write in this format (flashcards) that includes flashcard number (for example: card1), description of important concepts or definitions (content)[Do not include the answer in the content], (answer: name of the concept or term)[Do not include the answer in the content]."],
+                    ["role" => "user", "content" => $text]
+                ],
+            ]);
+            if ($result) {
                 // Read the contents of the temporary file
-                $temp_file_path = trim($content[0]);
-                $flashcard_data = json_decode(file_get_contents($temp_file_path), true);
+                $flashcard_data = json_decode($result->choices[0]->message->content, true);
                 // Call the insertSummary function to store the summary in the database
                 insertFlashcard($_SESSION['email'], $file_name, $flashcard_data, $flashcardCollection);
             } else {
                 // Output an error message
-                echo "Error executing Python script7: $resultsCode";
+                echo "Error executing Python script7:";
             }
             // Clean up: Delete the temporary file
             unlink($tempFilePath);
@@ -704,16 +706,19 @@ if (isset($_POST['flashcardFile'])) {
             echo "Failed to write to temporary file.";
         } else {
             // Construct the command to call the Python script with the file path as an argument
-            $flashcard_command = "python3 ../python/flashcards.py '" . $tempFilePath . "'";
-            $content = array();
-            $resultsCode = null;
-            // Execute the command and capture output
-            exec($flashcard_command, $content, $resultsCode);
-            // Check if the command executed successfully
-            if ($resultsCode === 0) {
+            $text = $extracted_text;
+            $client = OpenAI::client($ApiKey);
+            $result = $client->chat()->create([
+                'model' => 'gpt-3.5-turbo-0125', // Choose the desired OpenAI model
+                'response_format' => ['type' => 'json_object'],
+                'messages' => [
+                    ['role' => 'system', 'content' => "You are a 10 Flashcards summarizer designed to output JSON and never return empty response, write in this format (flashcards) that includes flashcard number (for example: card1), description of important concepts or definitions (content)[Do not include the answer in the content], (answer: name of the concept or term)[Do not include the answer in the content]."],
+                    ["role" => "user", "content" => $text]
+                ],
+            ]);
+            if ($result) {
                 // Read the contents of the temporary file
-                $temp_file_path = trim($content[0]);
-                $flashcard_data = json_decode(file_get_contents($temp_file_path), true);
+                $flashcard_data = json_decode($result->choices[0]->message->content, true);
                 // Call the insertSummary function to store the summary in the database
                 insertFlashcard($_SESSION['email'], $file_name, $flashcard_data, $flashcardCollection);
             } else {
