@@ -23,6 +23,8 @@ if ($operation === 'addTask') {
     $taskDesc = $_POST['description'];
     $taskDue = $_POST['due'];
     $taskAssignee = $_POST['assignee'];
+    $dateTime = new DateTime();
+    $creationDate = $dateTime->format('Y-m-dTH:i');
     $taskID = uniqid();
     // Retrieve task data and create task object
     $task = [
@@ -32,10 +34,10 @@ if ($operation === 'addTask') {
         "description" => $taskDesc,
         "due" => $taskDue,
         "checked" => false,
+        "creationDate" => $creationDate,
         "assignee" => $taskAssignee,
         "lastEditedBy" => ""
     ];
-
 
     // Target the space of the task
     $bulkWrite->update(
