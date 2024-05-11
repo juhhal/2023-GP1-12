@@ -1,0 +1,205 @@
+html {
+  font-size: 100%;
+  width: 99%;
+  height: 99%;
+  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+    "sans-serif";
+  color: #000e23;
+  background-color: #faf7ff;
+}
+
+@media only screen and (max-width: 991px) {
+  .nav__menu {
+    visibility: hidden;
+  }
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
+
+.tab button {
+  background-color: inherit;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: background-color 0.3s;
+  font-size: 18px;
+  width: auto;
+  flex-grow: 1;
+  box-sizing: border-box;
+}
+
+.tab button:hover {
+  background-color: #ddd;
+}
+
+.tab button.active {
+  background-color: #bf97d8;
+}
+
+.tabcontent {
+  display: none;
+  padding: 20px;
+  overflow-x: hidden;
+  max-width: calc(100% - 32px); /* Subtract padding and border widths */
+  margin: 0 auto;
+}
+
+.tablinks {
+  flex: 1;
+  /* Distribute the available space equally among the buttons */
+  text-align: center;
+  background-color: lightgray;
+  padding: 10px;
+  cursor: pointer;
+  border: 0;
+  width: 200px;
+  background: #faf7ff;
+  font-weight: 600;
+  border: 1px solid #bf97d8;
+}
+.tablinks.active {
+  background-color: #bf97d8;
+  color: white;
+}
+
+/* Community Tab*/
+
+.reports {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+}
+
+.deleteBTN {
+  float: right;
+  width: 10%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.date {
+  display: block;
+  color: grey;
+  font-size: 12px;
+  float: right;
+}
+
+.deleteBTN img {
+  width: 80%; /* Adjust the width to increase or decrease the image size */
+  display: inline-block;
+  margin-right: 1%;
+  filter: opacity(0.6);
+}
+
+.deleteBTN img:hover,
+.viewReports:hover {
+  filter: opacity(1);
+  cursor: pointer;
+}
+
+.viewReports {
+  margin-right: 25px;
+  font-size: 10px; /* Adjust the font size as desired */
+  padding: 5px 10px; /* Adjust the padding as desired */
+}
+
+.deletePost img,
+.deleteRaw img {
+  vertical-align: middle;
+}
+
+/*End Community Tab*/
+
+/*Customer Suport Tab*/
+#complaintTitle:hover {
+  filter: opacity(1);
+  cursor: pointer;
+}
+
+#reply {
+  width: 100%;
+  height: 150px;
+  resize: none;
+  margin-bottom: 10px;
+}
+
+#send {
+  display: none;
+}
+
+.complaints {
+  margin-bottom: 20px;
+}
+
+.complaints #complaintTitle {
+  display: inline-block;
+}
+
+.complaint-date {
+  display: block;
+  color: grey;
+  font-size: 12px;
+}
+
+.complaints .delete-solved {
+  display: inline-block;
+  float: right;
+}
+
+.delete-solved {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.delete-solved img {
+  width: 8%; /* Adjust the width to increase or decrease the image size */
+  filter: opacity(0.6);
+}
+
+.delete-solved img:hover {
+  filter: opacity(1);
+  cursor: pointer;
+}
+/*End Customer Suport Tab*/
+
+/*Overlay*/
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.251);
+  /* Adjust the opacity as desired */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 40%;
+}
+
+.modal button {
+  margin-left: 5%;
+  display: none;
+}
+/*End overlay*/
