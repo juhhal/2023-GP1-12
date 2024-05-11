@@ -64,10 +64,6 @@ $admin = $result->toArray()[0];
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <!-- CUSTOMER SUPPORT STYLESHEET -->
-    <script src="../customerSupport.js"></script>
-    <link rel="stylesheet" href="../customerSupport.css">
-
     <!-- calendar -->
     <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
     <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
@@ -948,7 +944,7 @@ $admin = $result->toArray()[0];
 
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
+            <ul class="tool_list">
                 <li class="tool_item">
                     <a href="workspace.php"> Calendar & To-Do
                     </a>
@@ -1046,6 +1042,9 @@ $admin = $result->toArray()[0];
                     <h3>Tasks</h3>
                     <div class="tasksContainer">
                         <?php foreach ($space->tasks as $task) {
+                             $dateTime = new DateTime($task->creationDate);
+                             $creationDate = $dateTime->format('Y-m-d \a\t h:i A');
+                            
                             $due = "";
                             if ($task->due != "") {
                                 $dateTime = new DateTime($task->due);
@@ -1057,6 +1056,7 @@ $admin = $result->toArray()[0];
                                     <input class="taskID" type="hidden" readonly value="<?php echo $task->taskID ?>" name="taskID">
                                     <input type="checkbox" id="<?php echo $task->taskID ?>" name="taskCheck" class="taskCheck" <?php echo ($task->checked) ? "checked" : ""; ?> onchange="checkTask('<?php echo $task->taskID ?>')">
                                     <span class="taskName"><?php echo $task->task_name ?></span>
+                                    <input class="creationDate" type="hidden" readonly value="<?php echo $creationDate ?>" name="creationDate">
                                     <span class="more"><i class="fa-solid fa-ellipsis-vertical"></i></span>
                                 </span>
                                 <span class="creator"><?php
@@ -1169,6 +1169,7 @@ $admin = $result->toArray()[0];
                                     </div>
                                     <div class="creator-editor">
                                         <div class="creator"></div>
+                                        <div class="creationDate"></div>
                                         <div class="lastEditedBy"></div>
                                     </div>
                                     <div class="cancel-submit-container">
@@ -1235,6 +1236,7 @@ $admin = $result->toArray()[0];
                                 var assignee = taskDiv.find(".assignee").val();
                                 var description = taskDiv.find(".description").text().trim();
                                 var taskID = taskDiv.find(".taskID").val();
+                                var taskCreationDate = taskDiv.find(".creationDate").val();
                                 var taskCheck = taskDiv.find(".taskCheck").prop("checked");
 
                                 // Fill the overlay fields with the values
@@ -1245,6 +1247,8 @@ $admin = $result->toArray()[0];
                                 $("#add-task-form .assignee-selector").val(assignee);
                                 $("#add-task-form #taskCheck").prop("checked", taskCheck);
                                 $("#add-task-form .creator").text("Creator: " + creator);
+                                $("#add-task-form .creationDate").text("Creation Date: " + taskCreationDate);
+                                
                                 if (editor != "") {
                                     $("#add-task-form .lastEditedBy").text("Last Edited By: " + editor);
                                     $("#add-task-form .lastEditedBy").show();
