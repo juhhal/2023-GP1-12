@@ -37,11 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dataURL = json_decode($response);
     $roomUrl = $dataURL->{'roomUrl'};
     $hostURL = $dataURL->{'hostRoomUrl'};
+    $meetingID = $dataURL->{'meetingId'};
 
     $roomData = [
       "message" => "success",
       "roomUrl" => $roomUrl,
-      "hostRoomUrl" => $hostURL
+      "hostRoomUrl" => $hostURL,
+      "meetingID" => $meetingID
     ];
     echo json_encode($roomData);
   }

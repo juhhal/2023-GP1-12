@@ -203,3 +203,23 @@ html {
   display: none;
 }
 /*End overlay*/
+/*Dashboard*/
+#Dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#Dashboard iframe {
+  margin: 10px;
+  flex-basis: calc(40% - 20px);
+  box-sizing: border-box;
+}
+#Dashboard iframe:nth-child(2n-1) {
+  margin-left: 6%;
+}
+
+#Dashboard iframe:nth-child(2n) {
+  margin-right: 6%;
+}
+/*Dashboard*/

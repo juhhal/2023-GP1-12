@@ -23,9 +23,9 @@ require 'session.php'; ?>
 
   <!-- CUSTOMER SUPPORT STYLESHEET -->
   <script src="../customerSupport.js"></script>
-    <link rel="stylesheet" href="../customerSupport.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+  <link rel="stylesheet" href="../customerSupport.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
   <!-- <script src="endpoint.js" type='text/javascript'></script> -->
 
   <!-- SHOUQ SECTION: -->
@@ -258,45 +258,45 @@ require 'session.php'; ?>
 
   <main>
     <div id="tools_div">
-    <ul class="tool_list">
-                <li class="tool_item">
-                    <a href="workspace.php"> Calendar & To-Do
-                    </a>
-                </li>
-                <li class="tool_item">
-                    <a href="theFiles.php"> My Files</a>
-                </li>
-                <li class="tool_item">
-                    <a href="quizes/index.php"> Quizzes</a>
-                </li>
-                <li class="tool_item">
-                    <a href="flashcard.php"> Flashcards</a>
-                </li>
-                <li class="tool_item">
-                    <a href="summarization/summarization.php"> Summarization</a>
-                </li>
-                <li class="tool_item">
-                    <a href="studyplan.php"> Study Plan</a>
-                </li>
-                <li class="tool_item"><a href="Notes/notes.php">
-                        Notes</a>
-                </li>
-                <li class="tool_item">
-                    <a href="pomodoro.php">
-                        Pomodoro</a>
-                </li>
-                <li class="tool_item"><a href="gpa.php">
-                        GPA Calculator</a>
-                </li>
-                <li class="tool_item"><a href="sharedspace.php">
-                        Shared spaces</a></li>
-                <li class="tool_item"><a href="meetingroom.php">
-                        Meeting Room</a>
-                </li>
-                <li class="tool_item"><a href="community.php">
-                        Community</a>
-                </li>
-            </ul>
+      <ul class="tool_list">
+        <li class="tool_item">
+          <a href="workspace.php"> Calendar & To-Do
+          </a>
+        </li>
+        <li class="tool_item">
+          <a href="theFiles.php"> My Files</a>
+        </li>
+        <li class="tool_item">
+          <a href="quizes/index.php"> Quizzes</a>
+        </li>
+        <li class="tool_item">
+          <a href="flashcard.php"> Flashcards</a>
+        </li>
+        <li class="tool_item">
+          <a href="summarization/summarization.php"> Summarization</a>
+        </li>
+        <li class="tool_item">
+          <a href="studyplan.php"> Study Plan</a>
+        </li>
+        <li class="tool_item"><a href="Notes/notes.php">
+            Notes</a>
+        </li>
+        <li class="tool_item">
+          <a href="pomodoro.php">
+            Pomodoro</a>
+        </li>
+        <li class="tool_item"><a href="gpa.php">
+            GPA Calculator</a>
+        </li>
+        <li class="tool_item"><a href="sharedspace.php">
+            Shared spaces</a></li>
+        <li class="tool_item"><a href="meetingroom.php">
+            Meeting Room</a>
+        </li>
+        <li class="tool_item"><a href="community.php">
+            Community</a>
+        </li>
+      </ul>
     </div>
     <div class="workarea">
       <div class="workarea_item">
@@ -322,6 +322,7 @@ require 'session.php'; ?>
           </div>
         </div>
         <div class="allMeetings">
+
           <!-- <div id="runningMeetings">
             <h2>Active Rooms</h2>
             <div class="cont">
@@ -336,8 +337,33 @@ require 'session.php'; ?>
             <h2>Shared Spaces Rooms</h2>
             <div id="spaceRooms">
               <?php
+              $jsonPayload = file_get_contents('php://input');
+              if (!empty($jsonPayload)) {
+                echo "in";
+                $data = json_decode($jsonPayload, true);
+                $eventType = $data['type'];
+                $meetingId = $data['data']['meetingId'];
+
+                // Define your logic to update the space status
+                if ($eventType === 'room.session.started') {
+                  // Update the span with id=$meetingID to active
+                  echo "<script>document.getElementById('$meetingId').classList.remove('inactive');document.getElementById('$meetingId').classList.add('active');</script>";
+                  echo "<script>document.getElementById('$meetingId').textContent = 'Active <i class='fa-solid fa-podcast'></i>';</script>";
+                } elseif ($eventType === 'room.session.ended') {
+                  // Update the span with id=$meetingID to inactive
+                  echo "<script>document.getElementById('$meetingId').classList.remove('active');document.getElementById('$meetingId').classList.add('inactive');</script>";
+                  echo "<script>document.getElementById('$meetingId').textContent = 'Inactive';</script>";
+                } elseif ($eventType === 'room.client.joined') {
+                  // Handle missing properties
+                  echo 'it works';
+                } else {
+                  echo 'Missing required properties in the payload';
+                  exit;
+                }
+              }
+
               $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHFD1OQWsPA@cluster0.biq1icd.mongodb.net/");
-              //get sapces where the active user is an admin of
+              //get spaces where the active user is an admin of
               $filter = ['admin' => $_SESSION['email']];
               // MongoDB query
               $query = new MongoDB\Driver\Query($filter);
@@ -356,12 +382,10 @@ require 'session.php'; ?>
                   <span class="spacesTitle">Owned Spaces</span>
                 <?php
                 foreach ($spaces as $space) {
-                  if($space['name']==="Digital Forensics Team")
-                  echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.open(\"spacemeeting.php?room=" . $space['hostUrl'] . "&space=" . $space['name'] . "%27s&host=true&invite=".$space['roomUrl']."\")' class='spaceDiv' title='" . $space['name'] . "'><i class='fa-solid fa-video'></i> <span>" . $space['name'] . "</span><span class='active'>Active <i class='fa-solid fa-podcast'></i></span></span></div></div>";
-                else echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.open(\"spacemeeting.php?room=" . $space['hostUrl'] . "&space=" . $space['name'] . "%27s&host=true&invite=".$space['roomUrl']."\")' class='spaceDiv' title='" . $space['name'] . "'><i class='fa-solid fa-video'></i> <span>" . $space['name'] . "</span><span class='inactive'>Inactive</span></span></div></div>";
-
+                  echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.open(\"spacemeeting.php?room=" . $space['hostUrl'] . "&space=" . $space['name'] . "%27s&host=true&invite=" . $space['roomUrl'] . "\")' class='spaceDiv' title='" . $space['name'] . "'><i class='fa-solid fa-video'></i> <span>" . $space['name'] . "</span><span id ='" . $space['meetingID'] . "' class='inactive'>Inactive</span></span></div></div>";
                 }
-              } ?>
+              }
+                ?>
                 </div>
                 <div id="otherSpaces">
                   <?php
@@ -383,7 +407,7 @@ require 'session.php'; ?>
                       $query = new MongoDB\Driver\Query(['email' => $space['admin']]);
                       $adminCursor = $manager->executeQuery('Learniverse.users', $query);
                       $admin = $adminCursor->toArray()[0];
-                      echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.open(\"spacemeeting.php?room=" . $space['roomUrl'] . "&space=" . $space['name'] . "%27s&host=false\")' class='spaceDiv' title='" . $space['name'] . "'><i class='fa-solid fa-video'></i> <span>" . $space['name'] . "</span><span class='inactive'>Inactive</span></span></div></div>";
+                      echo "<div class='cont'><div title='space color' class='spaceColor' style='background-color:" . $space['color'] . ";'></div><div onclick='window.open(\"spacemeeting.php?room=" . $space['roomUrl'] . "&space=" . $space['name'] . "%27s&host=false\")' class='spaceDiv' title='" . $space['name'] . "'><i class='fa-solid fa-video'></i> <span>" . $space['name'] . "</span><span id ='" . $space['meetingID'] . "' class='inactive'>Inactive</span></span></div></div>";
                     }
                   }
                   ?>

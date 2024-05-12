@@ -50,6 +50,7 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
         $dataURL = json_decode($response);
         $roomUrl = $dataURL->{'roomUrl'};
         $hostURL = $dataURL->{'hostRoomUrl'};
+        $meetingID = $dataURL->{'meetingId'};
     }
     // Create space object
     $space = [
@@ -64,6 +65,7 @@ if (isset($_POST['spaceName']) && $_POST['spaceName'] != "") {
         'feed' => [],
         'hostUrl' => $hostURL,
         'roomUrl' => $roomUrl,
+        'meetingID' => $meetingID,
         'logUpdates' => []
     ];
     $bulkWrite->insert($space);

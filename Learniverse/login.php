@@ -1,5 +1,6 @@
 <?php
-session_start(); 
+$_SESSION['email'] = '442202992@student.ksu.edu.sa';
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,8 +39,13 @@ session_start();
                     dataType: 'json',
                     success: function(response) {
                         if (response.message === "success") {
-                            // Redirect to the workspace page
-                            window.location.href = "workspace.php";
+                            if (response.type === "user") {
+                                // Redirect to the workspace page
+                                window.location.href = "workspace.php";
+                            } else {
+                                // Redirect to the admin page
+                                window.location.href = "adminDashboard.php";
+                            }
                         } else {
                             // Display failure message
                             $('#response').text(response.message);
@@ -85,9 +91,9 @@ session_start();
         </div>
     </div>
     <div class="split right">
-    <img src = "images/login.png" alt = 'Advertising picture'>
+        <img src="images/login.png" alt='Advertising picture'>
         <div class="centered">
-            <p id = "content"> The future of education is here, and it's exciting, inclusive, and tailored just for you. Set your course, explorer, and let's reach for the stars together</p>
+            <p id="content"> The future of education is here, and it's exciting, inclusive, and tailored just for you. Set your course, explorer, and let's reach for the stars together</p>
         </div>
     </div>
 </body>

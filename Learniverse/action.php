@@ -10,6 +10,7 @@ $connection = new MongoDB\Client("mongodb+srv://learniversewebsite:032AZJHFD1OQW
 // Select the database and collection
 $database = $connection->Learniverse;
 $Usercollection = $database->users;
+$Admincollection = $database->admins;
 
 // Initialize variables
 $email = "";
@@ -26,12 +27,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     } else {
         // Perform login validation
+        $admin = $Admincollection->findOne(['email' => $email, 'password' => $password]);
         $user = $Usercollection->findOne(['email' => $email, 'password' => $password]);
 
-        if ($user) {
+        if ($admin) {
+            $_SESSION['email'] = $admin['email'];
+            // Successful login
+            echo json_encode([
+                'message' => "success",
+                'type' => 'admin'
+            ]);
+            exit();
+        } elseif ($user) {
             $_SESSION['email'] = $user['email'];
             // Successful login
-            echo json_encode(['message' => "success"]);
+            echo json_encode([
+                'message' => "success",
+                'type' => 'user'
+            ]);
             exit();
         } else {
             // Invalid email or password
