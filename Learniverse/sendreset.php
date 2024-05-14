@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail->setFrom('Learniverse.website@gmail.com');
             $mail->addAddress($user['email']);
             $mail->Subject = 'Reset Your Learniverse Password';
-            $mail->Body = "Dear Learniverse Admin,\n\nWe received a request to reset your Learniverse account password. To complete this process, please click on the link below:\n\nhttp://localhost:3000/passwordchange.php?token=" . $jwttoken . "\n\nOnce you click the link, you will be prompted to create a new password. Please choose a strong and unique password to ensure the security of your account.\n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
+            $mail->Body = "Dear Learniverse Admin,\n\nWe received a request to reset your Learniverse account password. To complete this process, please click on the link below:\n\nhttps://www.learniverse.website/passwordchange.php?token=" . $jwttoken . "\n\nOnce you click the link, you will be prompted to create a new password. Please choose a strong and unique password to ensure the security of your account.\n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
 
             // Send the email
             if ($mail->send()) {
@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail->setFrom('Learniverse.website@gmail.com');
         $mail->addAddress($user['email']);
         $mail->Subject = 'Reset Your Learniverse Password';
-        $mail->Body = "Dear Learniverse User,\n\nWe received a request to reset your Learniverse account password. To complete this process, please click on the link below:\n\nhttp://localhost:3000/passwordchange.php?token=" . $jwttoken . "\n\nOnce you click the link, you will be prompted to create a new password. Please choose a strong and unique password to ensure the security of your account.\n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
+        $mail->Body = "Dear Learniverse User,\n\nWe received a request to reset your Learniverse account password. To complete this process, please click on the link below:\n\nhttps://www.learniverse.website/passwordchange.php?token=" . $jwttoken . "\n\nOnce you click the link, you will be prompted to create a new password. Please choose a strong and unique password to ensure the security of your account.\n\nThank you for using Learniverse.\n\nSincerely,\nThe Learniverse Team";
 
         // Send the email
         if ($mail->send()) {
