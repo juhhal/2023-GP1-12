@@ -139,11 +139,65 @@ if ($operation === "accept") {
             ]]]
         );
         $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
+
+        //clean the kicked member calendar of any related events to the space
+        $cleanCalendar = new MongoDB\Driver\BulkWrite();
+        // Specify the filter to identify the document
+        $filter = ['user_id' => $member];
+
+        // Set up the update operation to remove the matching objects from the "List" array
+        $update = [
+            '$pull' => [
+                'List' => ['referenceID' => new MongoDB\BSON\Regex($spaceid, 'i')]
+            ]
+        ];
+
+        // Add the update operation to the bulk write instance
+        $cleanCalendar->update($filter, $update);
+
+        // Execute the bulk write operation
+        $manager->executeBulkWrite('Learniverse.calendar', $cleanCalendar);
     } else {
         echo "failed to process member leave";
     }
 } else if ($operation === "deleteSpace") {
     header("Location:sharedspace.php");
+    //clean calendars of any eevents related to the space
+    //1-admin calendar
+    $cleanCalendar = new MongoDB\Driver\BulkWrite();
+    // Specify the filter to identify the document
+    $f = ['user_id' => $adminEmail];
+
+    // Set up the update operation to remove the matching objects from the "List" array
+    $update = [
+        '$pull' => [
+            'List' => ['referenceID' => new MongoDB\BSON\Regex($spaceid, 'i')]
+        ]
+    ];
+
+    // Add the update operation to the bulk write instance
+    $cleanCalendar->update($f, $update);
+
+
+    //2-members calendar
+    foreach ($space->members as $member) {
+        $f = ['user_id' => $member->email];
+
+        // Set up the update operation to remove the matching objects from the "List" array
+        $update = [
+            '$pull' => [
+                'List' => ['referenceID' => new MongoDB\BSON\Regex($spaceid, 'i')]
+            ]
+        ];
+
+        // Add the update operation to the bulk write instance
+        $cleanCalendar->update($f, $update);
+    }
+
+    // Execute the bulk write operation
+    $manager->executeBulkWrite('Learniverse.calendar', $cleanCalendar);
+
+    //3- delete the space
     // Add the update operations to the bulk write operation
     $bulkWrite->delete($filter, ['limit' => 0]);
     $result = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulkWrite);
