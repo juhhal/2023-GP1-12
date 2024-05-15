@@ -24,8 +24,8 @@ $manager = new MongoDB\Driver\Manager("mongodb+srv://learniversewebsite:032AZJHF
 
     <!-- rich text editor -->
     <!-- Place the first <script> tag in your HTML's <head> -->
-    <script src="https://cdn.tiny.cloud/1/gsiinb9juoqfd3bijtmtuv2okor08szu6k5fpk5fewgitl9q/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-
+    <script src="https://cdn.tiny.cloud/1/as76x4qft1snhl50948ly5wvm8cayblgwl2cncshde8gybr4/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
