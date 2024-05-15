@@ -36,7 +36,7 @@ $FOLDERS = json_decode(json_encode($result_json), true);
   <link rel="manifest" href="../favicon_io/site.webmanifest">
   <link rel="stylesheet" href="index.css">
   <script src="../jquery.js"></script>
-  <script src="https://cdn.tiny.cloud/1/jqchvmrvo8t50p8bodpapx40rcckse9f6slian9li7d12hvs/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <script src="https://cdn.tiny.cloud/1/as76x4qft1snhl50948ly5wvm8cayblgwl2cncshde8gybr4/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
       tinymce.init({
