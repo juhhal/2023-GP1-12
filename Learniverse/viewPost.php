@@ -54,8 +54,8 @@ if ($matchedDocument) {
     <script src="jquery.js"></script>
 
     <!-- Place the first <script> tag in your HTML's <head> -->
-    <script src="https://cdn.tiny.cloud/1/e8h8gh1syzmbf6ll5p6ekbp90u4p2gal5m68fgoocwttoaai/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-
+    <script src="https://cdn.tiny.cloud/1/as76x4qft1snhl50948ly5wvm8cayblgwl2cncshde8gybr4/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    
     <!-- Sweetalert2 -->
     <script src="js/sweetalert2.all.min.js"></script>
 
