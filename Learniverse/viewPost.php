@@ -55,7 +55,6 @@ if ($matchedDocument) {
 
     <!-- Place the first <script> tag in your HTML's <head> -->
     <script src="https://cdn.tiny.cloud/1/as76x4qft1snhl50948ly5wvm8cayblgwl2cncshde8gybr4/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-    
     <!-- Sweetalert2 -->
     <script src="js/sweetalert2.all.min.js"></script>
 
@@ -67,7 +66,37 @@ if ($matchedDocument) {
     <script src="../customerSupport.js"></script>
     <link rel="stylesheet" href="../customerSupport.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    </script>
+
+    <!-- style for autocomplete search -->
+    <style>
+        /* autocomplete-list search */
+        #autocomplete-list {
+            position: absolute;
+            display: block;
+            width: 25%;
+            background-color: #ffffff;
+            color: grey;
+            left: 49%;
+            top: 79%;
+            box-sizing: border-box;
+        }
+
+        #autocomplete-list option {
+            z-index: 5;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-wrap: nowrap;
+            font-size: 0.9rem;
+            display: block;
+            box-sizing: border-box;
+            margin: 2%;
+        }
+
+        #autocomplete-list option:hover {
+            color: #000e23;
+            cursor: pointer;
+        }
+    </style>
     <!-- SHOUQ SECTION: -->
     <script type='text/javascript'>
         $(document).ready(function() {
@@ -274,6 +303,30 @@ if ($matchedDocument) {
         window.addEventListener('unload', function(event) {
             <?php unset($_SESSION['filteredSearch']) ?>
         });
+
+        function suggestTitles(searchTerm) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var suggestions = JSON.parse(this.responseText);
+                    var autocompleteList = document.getElementById("autocomplete-list");
+                    autocompleteList.innerHTML = ""; // Clear previous suggestions
+                    for (var i = 0; i < suggestions.length; i++) {
+                        var suggestion = suggestions[i];
+                        var option = document.createElement("option");
+                        option.innerText = suggestion;
+                        option.title = suggestion;
+                        option.onclick = function() {
+                            document.getElementById("search").value = this.innerText;
+                            document.getElementById("searchCommunity").submit();
+                        };
+                        autocompleteList.appendChild(option);
+                    }
+                }
+            };
+            xmlhttp.open("GET", "autosuggest.php?searchTerm=" + searchTerm, true);
+            xmlhttp.send();
+        }
     </script>
 </head>
 
@@ -325,7 +378,7 @@ if ($matchedDocument) {
                     <label for="search">Search community</label>
                     <div class="tooltip">
                         <input id="search" name="searchTerm" type="search" placeholder='<?php if (isset($_GET['searchTerm'])) echo $_GET['searchTerm'];
-                                                                                        else echo "Search..."; ?>' autocomplete="off" />
+                                                                                        else echo "Search..."; ?>' autocomplete="off" onkeyup="suggestTitles(this.value)" />
                         <button type="submit">Go</button>
                         <div class="tooltiptext">
                             <b>Quantum Theory</b> <i>search for titles containing Quantum Theory</i><br>
@@ -336,6 +389,7 @@ if ($matchedDocument) {
                     </div>
                 </form>
                 <span id="clearSearch" title="Clear Search" onclick="location.reload();">Clear Search</span>
+                <datalist id="autocomplete-list"></datalist>
                 <?php
                 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -387,7 +441,7 @@ if ($matchedDocument) {
 
     <main>
         <div id="tools_div">
-        <ul class="tool_list">
+            <ul class="tool_list">
                 <li class="tool_item">
                     <a href="workspace.php"> Calendar & To-Do
                     </a>
