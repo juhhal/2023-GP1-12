@@ -301,7 +301,7 @@ if (isset($_SESSION['filteredSearch'])) {
                     <label for="search">Search Community</label>
                     <div class="tooltip">
                         <input id="search" name="searchTerm" type="search" placeholder='<?php if (isset($_GET['searchTerm'])) echo $_GET['searchTerm'];
-                                                                                        else echo "Search..."; ?>' autocomplete="off" autocomplete="off" onkeyup="suggestTitles(this.value)" />
+                                                                                        else echo "Search..."; ?>' autocomplete="off" onkeyup="suggestTitles(this.value)" />
                         <button type="submit">Go</button>
                         <div class="tooltiptext">
                             <b>Quantum Theory</b> <i>search for titles containing Quantum Theory</i><br>
