@@ -24,7 +24,7 @@ if ($operation === 'addTask') {
     $taskDue = $_POST['due'];
     $taskAssignee = $_POST['assignee'];
     $dateTime = new DateTime();
-    $creationDate = $dateTime->format('Y-m-dTH:i');
+    $creationDate = $dateTime->format('Y-m-d\TH:i');
     $taskID = uniqid();
     // Retrieve task data and create task object
     $task = [
@@ -110,7 +110,6 @@ if ($operation === 'addTask') {
             }
         }
         $log = $manager->executeBulkWrite("Learniverse.sharedSpace", $bulk);
-        echo $taskID;
         if ($taskDue != "") { //add the timed task to the calendar
             $task = $taskName;
             $due = $taskDue;
@@ -153,13 +152,12 @@ if ($operation === 'addTask') {
                 $output = [
                     'status' => 1
                 ];
-                header("Location:workspace.php");
             } else {
-                header("Location:workspace.php");
                 echo json_encode(['error' => 'Event Add request failed!']);
             }
             exit();
         }
+        echo $taskID;
     } else {
         echo "Failed to add task";
     }
