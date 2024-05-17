@@ -302,19 +302,30 @@ $allReports = $cursor->toArray();
                   href='#'
                   class='text-muted'
                   onclick=\"DeletePost('" . $postId . "', '" . $report->_id . "')\"
+                  title='Delete Post'
                 >
                   <i class='bi bi-trash'></i>
                 </a>
-               
+
                 <a
                   href='#'
                   class='text-muted'
                   data-bs-toggle='modal'
                   data-bs-target='#viewReportsModal'
                   onclick=\"viewReports('" . $postId . "')\"
+                  title='View Reports'
                 >
                   <i class='bi bi-eye'></i>
                 </a>
+
+                <a
+                href='#'
+                class='text-muted'
+                onclick=\"DeleteRaw('" . $report->_id . "')\"
+                title='Delete Report'
+              >
+                <i class='bi bi-trash text-danger'></i>
+              </a>
               </div>
             </td>
           </tr>
