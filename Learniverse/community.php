@@ -45,6 +45,7 @@ if (isset($_SESSION['filteredSearch'])) {
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="manifest" href="favicon_io/site.webmanifest">
     <script src="jquery.js"></script>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
 
     <!-- Sweetalert2 -->
     <script src="js/sweetalert2.all.min.js"></script>

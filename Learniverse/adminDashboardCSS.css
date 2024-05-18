@@ -223,3 +223,39 @@ html {
   margin-right: 6%;
 }
 /*Dashboard*/
+
+@media only screen and (max-width: 768px) {
+  main {
+    margin-top: 12% !important;
+  }
+  .tabs {
+    flex-direction: column;
+    margin: 0 15px;
+  }
+  .tablinks {
+    width: 100%;
+  }
+  #Dashboard iframe {
+    flex-basis: 100%;
+    margin: 10px 0;
+  }
+  #Dashboard iframe:nth-child(2n-1) {
+    margin-left: 0;
+  }
+
+  #Dashboard iframe:nth-child(2n) {
+    margin-right: 0;
+  }
+
+  #Community {
+    overflow-x: scroll;
+  }
+
+  #Community table td {
+    min-width: 150px;
+  }
+
+  #customerReport .row {
+    gap: 10px;
+  }
+}

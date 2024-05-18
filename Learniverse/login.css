@@ -1,42 +1,68 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v8.4.14,
+* Autoprefixer: v10.4.7
+* Browsers: last 4 version
+*/
+
 body {
   width: 100%;
   height: 100%;
 }
 
 h1 {
-  margin : 20px 0;
+  margin: 20px 0;
   text-align: center;
-} 
+}
 
 h6 {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
   flex-direction: row;
-}  
+}
 
 h6:before,
 h6:after {
   content: "";
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1;
   flex: 1 1;
   border-bottom: 1px solid #000;
   margin: auto;
 }
 form {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
   flex: 1;
   max-width: 70%;
   border-radius: 10px;
   background-color: #fffdfd;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;  
+  -webkit-box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   margin: auto auto;
   padding: 30px;
 }
 
 .form-row {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
 }
 
 .input-group {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
   flex: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
   margin: 10px 5px;
 }
@@ -69,27 +95,34 @@ form {
   border-radius: 0.5rem;
   padding: 15%, 20%;
   cursor: pointer;
+  -webkit-box-shadow: 0 1px 6px rgba(133, 138, 167, 0.15);
   box-shadow: 0 1px 6px rgba(133, 138, 167, 0.15);
   font-size: 1rem;
   text-transform: uppercase;
-  font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+    sans-serif;
   text-align: center;
   font-weight: bold;
   display: block;
 }
-label, h1, .signup, .forgot {
-  font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
-
+label,
+h1,
+.signup,
+.forgot {
+  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+    sans-serif;
 }
-h2{
+h2 {
   text-align: center;
 }
-#login{
+#login {
   background-color: #fdae9b;
   border: 2px solid #fdae9b;
 }
 
 .button:hover {
+  -webkit-transform: scale(1.05);
+  -ms-transform: scale(1.05);
   transform: scale(1.05);
 }
 
@@ -97,12 +130,12 @@ p {
   text-align: center;
 }
 
-a{
-  color: #8181D5;
+a {
+  color: #8181d5;
 }
 
-a:hover{
-  color: #DDB4F7;
+a:hover {
+  color: #ddb4f7;
 }
 
 .split {
@@ -117,16 +150,16 @@ a:hover{
 
 .left {
   left: 0;
-  background-color: #Faf7ff;
+  background-color: #faf7ff;
   width: 30%;
 }
 
-.right{
+.right {
   right: 0;
-  background-color: #C0A0CD;
+  background-color: #c0a0cd;
 }
 
-.right img{
+.right img {
   width: 40%;
   height: 60%;
   position: fixed;
@@ -135,14 +168,15 @@ a:hover{
   bottom: 45%;
   right: 80%;
 }
-.right .centered p{
+.right .centered p {
   position: fixed;
   bottom: 80%;
   right: 43%;
   left: 33%;
   top: 8%;
   font-size: 180%;
-  font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', 'sans-serif';
+  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+    "sans-serif";
   color: white;
   text-align: left;
   font-weight: bold;
@@ -150,37 +184,61 @@ a:hover{
 }
 
 .logo {
-  width:10%;
+  width: 10%;
   display: block;
   margin: 0 auto 0 auto;
 }
 
 #google {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
   width: fit-content;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-line-pack: center;
   align-content: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
   text-decoration: none;
   color: black;
-  padding : 20px;
+  padding: 20px;
   background: white;
   border-radius: 0.5rem;
   font-size: 1vw;
   text-transform: uppercase;
-  font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+    sans-serif;
   text-align: center;
   font-weight: bold;
 }
 #google:hover {
+  -webkit-transform: scale(1.05);
+  -ms-transform: scale(1.05);
   transform: scale(1.05);
 }
 #google img {
   height: 2vh;
   position: inline;
-
 }
 
-#google p{
+#google p {
   /*margin: 0 !important;*/
   margin: 0px 20px !important;
+}
+
+/* Base styles: your existing CSS */
+/* (Your existing CSS here...) */
+@media screen and (max-width: 450px) {
+  /* Similar adjustments for slightly larger screens like iPhone Plus models */
+  .right {
+    display: none;
+  }
+
+  .left {
+    width: 100%;
+  }
+
+  /* Additional style adjustments can be added here if needed */
 }

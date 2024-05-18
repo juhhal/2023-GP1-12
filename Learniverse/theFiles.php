@@ -22,6 +22,8 @@ require "session.php";
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
 
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
     <!-- CUSTOMER SUPPORT STYLESHEET -->
     <script src="../customerSupport.js"></script>
     <link rel="stylesheet" href="../customerSupport.css">

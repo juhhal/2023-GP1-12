@@ -186,3 +186,90 @@ footer {
     letter-spacing: 0.1em;
     padding: 1% 0 2%;
 }
+
+@media only screen and (max-width: 991px) {
+    .header_logo img {
+        width: 40%;
+        display: block;
+        margin: 12% 12% 5% 12%;
+    }
+
+    .header_logo div {
+        font-size: 1.25rem;
+        margin: auto;
+    }
+
+    .header_nav {
+        margin-right: auto;
+        margin-left: 3%;
+    }
+
+    .nav__menu {
+        margin-left: 5%;
+        width: 100%;
+        margin-right: 0.5%;
+    }
+
+    .nav__menu li {
+        display: inline-block;
+        margin-right: 3rem;
+    }
+
+    .nav__menu a {
+        text-decoration: none;
+        color: #000e23;
+    }
+
+    .nav__menu a:hover {
+        color: #fdae9b;
+    }
+
+    .active a {
+        color: #fdae9b;
+    }
+
+    .BTN {
+        float: right;
+        margin-left: auto;
+        margin-right: 5%;
+        width: 10%;
+    }
+
+    .BTN button {
+        width: 5rem;
+        height: 3rem;
+        background-color: #fdae9b;
+        border-radius: 0.5rem;
+        border: 2px solid #fdae9b;
+        padding: 15%, 20%;
+        cursor: pointer;
+        box-shadow: 0 1px 6px rgba(61, 65, 84, 0.15);
+        font-size: 1rem;
+        font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+    }
+
+    .BTN button:hover {
+        background-color: #Faf7ff;
+        color: #fdae9b;
+    }
+
+    footer {
+        background-color: #bf97d8;
+        margin: 5% 0 0;
+        color: #Faf7ff;
+    }
+
+    .footer-div {
+        width: 20%;
+        display: inline-block;
+        margin-left: 15%;
+    }
+
+    #contacts {
+        margin-left: 9%;
+    }
+
+    .footer-div h4 {
+        font-weight: normal;
+        text-align: center;
+    }

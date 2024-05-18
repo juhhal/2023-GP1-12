@@ -225,7 +225,7 @@ html {
   cursor: pointer;
 }
 
-.todolist input[type="checkbox"]:checked+label {
+.todolist input[type="checkbox"]:checked + label {
   accent-color: #fdae9b;
   text-decoration: line-through;
   font-style: italic;
@@ -393,7 +393,6 @@ html {
 
 .fc-button:not(:disabled) {
   background-color: #bf97d8 !important;
-
 }
 
 .fc .fc-button-primary:not(:disabled):active,
@@ -407,7 +406,43 @@ html {
   font-weight: bold;
 }
 
-.spaceName:hover{
+.spaceName:hover {
   cursor: pointer;
   text-decoration: underline;
+}
+
+@media only screen and (max-width: 991px) {
+  #tools_div {
+    display: none;
+  }
+
+  .workarea {
+    display: block;
+  }
+
+  .workarea_item {
+    width: 100%;
+  }
+
+  #todo_area {
+    width: 100%;
+    margin-top: 2%;
+    margin-right: 3%;
+    margin-left: 0;
+  }
+
+  #calendar_area {
+    width: 100%;
+    margin-left: 2%;
+  }
+
+  .fc-header-toolbar {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  main {
+    margin-top: 10% !important;
+    overflow-x: hidden;
+  }
 }

@@ -41,6 +41,9 @@ $allReports = $cursor->toArray();
     <link rel="manifest" href="favicon_io/site.webmanifest">
     <script src="jquery.js"></script>
 
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- PROFILE STYLESHEET -->
     <link rel="stylesheet" href="profile.css">
     <!-- Sweetalert2 -->
@@ -181,7 +184,7 @@ $allReports = $cursor->toArray();
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
-            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).style.display = "flex";
             evt.currentTarget.className += " active";
         }
     </script>
@@ -298,14 +301,16 @@ $allReports = $cursor->toArray();
 
             <td data-label=' class='text-end'>
               <div>
+             
                 <a
                   href='#'
-                  class='text-muted'
-                  onclick=\"DeletePost('" . $postId . "', '" . $report->_id . "')\"
-                  title='Delete Post'
+                  class='text-danger'
+                  onclick='openDeleteModal(\"" . $postId . "\", \"" . $report->_id . "\")'
+                  title='Delete Post and Report'
                 >
                   <i class='bi bi-trash'></i>
-                </a>
+                  </a>
+
 
                 <a
                   href='#'
@@ -317,15 +322,6 @@ $allReports = $cursor->toArray();
                 >
                   <i class='bi bi-eye'></i>
                 </a>
-
-                <a
-                href='#'
-                class='text-muted'
-                onclick=\"DeleteRaw('" . $report->_id . "')\"
-                title='Delete Report'
-              >
-                <i class='bi bi-trash text-danger'></i>
-              </a>
               </div>
             </td>
           </tr>
@@ -362,25 +358,100 @@ $allReports = $cursor->toArray();
         </div>
 
         <div id="customerReport" class="tabcontent">
-            <?php
-            $query = new MongoDB\Driver\Query(["status" => "unresolved"]);
-            $cursor = $manager->executeQuery('Learniverse.complaint', $query);
-            $complaints = $cursor->toArray();
-
-            if (empty($complaints)) {
-                echo "<h4 style='margin: 20px 0;'>No unresolved complaints to display.</h4>";
-            } else {
-                echo "<h4 style='margin: 20px 0;'>Unresolved complaints</h4>";
-                echo "<div class='row'>";
-                foreach ($complaints as $complaint) {
-                    $data = array(
-                        "email" => $complaint->user
-                    );
-
-                    $fetch = $Usercollection->findOne($data);
-
-                    echo
-                    "<div class='col-md-4' id='complaint" . $complaint->complaintID . "'>
+            <div>
+              <?php
+              $query = new MongoDB\Driver\Query(["status" => "unresolved"]);
+              $cursor = $manager->executeQuery('Learniverse.complaint', $query);
+              $complaints = $cursor->toArray();
+              if (empty($complaints)) {
+                  echo "<h4 style='margin: 20px 0;'>No unresolved complaints to display.</h4>";
+              } else {
+                  echo "<h4 style='margin: 20px 0;'>Unresolved complaints</h4>";
+                  echo "<div class='row'>";
+                  foreach ($complaints as $complaint) {
+                      $data = array(
+                          "email" => $complaint->user
+                      );
+                      $fetch = $Usercollection->findOne($data);
+                      echo
+                      "<div class='col-md-4' id='complaint" . $complaint->complaintID . "'>
+                      <div class='card'>
+                        <div class='card-body'>
+                          <h5 class='card-title'>Ticket #" . $complaint->complaintID . "</h5>
+                          <h6 class='card-subtitle mb-2 text-muted'>Customer: " . $fetch['firstname'] . " " . $fetch['lastname'] . "</h6>
+                          <p class='card-text'><strong>Date:</strong> " . $complaint->date . "</p>
+                          <p class='card-text'>
+                            Issue: " . $complaint->complaint . "
+                          </p>
+                          <p class='card-text'><strong>Status:</strong> " . $complaint->status . "</p>
+                          <div style='display: flex; align-items:center; gap:10px'>
+                          <button href='#' class='card-link btn btn-primary m-0 w-100' data-bs-toggle='modal' data-bs-target='#ticketModal' onclick=\"viewDetails('" . $complaint->complaintID . "')\">
+                            View Details
+                          </button>
+                          <button href='#' class='card-link btn btn-danger m-0 w-100' onclick=\"deleteComplaint(event, '" . $complaint->complaintID . "')\">Delete</button>
+                          </div>
+                        </div>
+                      </div>
+                      </div>";
+                  }
+                  echo "</div>";
+              }
+              $query = new MongoDB\Driver\Query(["status" => "pending"]);
+              $cursor = $manager->executeQuery('Learniverse.complaint', $query);
+              $complaints = $cursor->toArray();
+              if (empty($complaints)) {
+                  echo "<h4 style='margin: 20px 0;'>No pending complaints to display.</h4>";
+              } else {
+                  echo "<h4 style='margin: 20px 0;'>Pending complaints</h4>";
+                  echo "<div class='row'>";
+                  foreach ($complaints as $complaint) {
+                      // Select the database and collection
+                      $database = $connection->Learniverse;
+                      $Usercollection = $database->users;
+                      $data = array(
+                          "email" => $complaint->user
+                      );
+                      $fetch = $Usercollection->findOne($data);
+                      echo "
+                      <div class='col-md-4' id='complaint" . $complaint->complaintID . "'>
+                      <div class='card'>
+                        <div class='card-body'>
+                          <h5 class='card-title
+                          '>Ticket #" . $complaint->complaintID . "</h5>
+                          <h6 class='card-subtitle mb-2 text-muted'>Customer: " . $fetch['firstname'] . " " . $fetch['lastname'] . "</h6>
+                          <p class='card-text'><strong>Date:</strong> " . $complaint->date . "</p>
+                          <p class='card-text'>
+                            Issue: " . $complaint->complaint . "
+                          </p>
+                          <p class='card-text'><strong>Status:</strong> " . $complaint->status . "</p>
+                          <div style='display: flex; align-items:center; gap:10px'>
+                          <button href='#' class='card-link btn btn-danger m-0 w-100' onclick=\"deleteComplaint(event, '" . $complaint->complaintID . "')\">Delete</button>
+                          <button href='#' class='card-link btn btn-success m-0 w-100' onclick=\"changeStatus('solved', '" . $complaint->complaintID . "')\">Resolve</button>
+                          </div>
+                        </div>
+                      </div>
+                      </div>";
+                  }
+                  echo "</div>";
+              }
+              $query = new MongoDB\Driver\Query(["status" => "solved"]);
+              $cursor = $manager->executeQuery('Learniverse.complaint', $query);
+              $complaints = $cursor->toArray();
+              if (empty($complaints)) {
+                  echo "<h4 style='margin: 20px 0;'>No Resolved complaints to display.</h4>";
+              } else {
+                  echo "<h4 style='margin: 20px 0;'>Resolved complaints</h4>";
+                  echo "<div class='row'>";
+                  foreach ($complaints as $complaint) {
+                      // Select the database and collection
+                      $database = $connection->Learniverse;
+                      $Usercollection = $database->users;
+                      $data = array(
+                          "email" => $complaint->user
+                      );
+                      $fetch = $Usercollection->findOne($data);
+                      echo "
+                    <div class='col-md-4' id='complaint" . $complaint->complaintID . "'>
                     <div class='card'>
                       <div class='card-body'>
                         <h5 class='card-title'>Ticket #" . $complaint->complaintID . "</h5>
@@ -391,103 +462,16 @@ $allReports = $cursor->toArray();
                         </p>
                         <p class='card-text'><strong>Status:</strong> " . $complaint->status . "</p>
                         <div style='display: flex; align-items:center; gap:10px'>
-                        <button href='#' class='card-link btn btn-primary m-0 w-100' data-bs-toggle='modal' data-bs-target='#ticketModal' onclick=\"viewDetails('" . $complaint->complaintID . "')\">
-                          View Details
-                        </button>
                         <button href='#' class='card-link btn btn-danger m-0 w-100' onclick=\"deleteComplaint(event, '" . $complaint->complaintID . "')\">Delete</button>
                         </div>
                       </div>
                     </div>
                     </div>";
-                }
-                echo "</div>";
-            }
-
-            $query = new MongoDB\Driver\Query(["status" => "pending"]);
-            $cursor = $manager->executeQuery('Learniverse.complaint', $query);
-            $complaints = $cursor->toArray();
-
-            if (empty($complaints)) {
-                echo "<h4 style='margin: 20px 0;'>No pending complaints to display.</h4>";
-            } else {
-                echo "<h4 style='margin: 20px 0;'>Pending complaints</h4>";
-                echo "<div class='row'>";
-                foreach ($complaints as $complaint) {
-                    // Select the database and collection
-                    $database = $connection->Learniverse;
-                    $Usercollection = $database->users;
-
-                    $data = array(
-                        "email" => $complaint->user
-                    );
-
-                    $fetch = $Usercollection->findOne($data);
-
-                    echo "
-                    <div class='col-md-4' id='complaint" . $complaint->complaintID . "'>
-                    <div class='card'>
-                      <div class='card-body'>
-                        <h5 class='card-title
-                        '>Ticket #" . $complaint->complaintID . "</h5>
-                        <h6 class='card-subtitle mb-2 text-muted'>Customer: " . $fetch['firstname'] . " " . $fetch['lastname'] . "</h6>
-                        <p class='card-text'><strong>Date:</strong> " . $complaint->date . "</p>
-                        <p class='card-text'>
-                          Issue: " . $complaint->complaint . "
-                        </p>
-                        <p class='card-text'><strong>Status:</strong> " . $complaint->status . "</p>
-                        <div style='display: flex; align-items:center; gap:10px'>
-                        <button href='#' class='card-link btn btn-danger m-0 w-100' onclick=\"deleteComplaint(event, '" . $complaint->complaintID . "')\">Delete</button>
-                        <button href='#' class='card-link btn btn-success m-0 w-100' onclick=\"changeStatus('solved', '" . $complaint->complaintID . "')\">Resolve</button>
-                        </div>
-                      </div>
-                    </div>
-                    </div>";
-                }
-                echo "</div>";
-            }
-
-
-            $query = new MongoDB\Driver\Query(["status" => "solved"]);
-            $cursor = $manager->executeQuery('Learniverse.complaint', $query);
-            $complaints = $cursor->toArray();
-
-            if (empty($complaints)) {
-                echo "<h4 style='margin: 20px 0;'>No Resolved complaints to display.</h4>";
-            } else {
-                echo "<h4 style='margin: 20px 0;'>Resolved complaints</h4>";
-                echo "<div class='row'>";
-                foreach ($complaints as $complaint) {
-                    // Select the database and collection
-                    $database = $connection->Learniverse;
-                    $Usercollection = $database->users;
-
-                    $data = array(
-                        "email" => $complaint->user
-                    );
-
-                    $fetch = $Usercollection->findOne($data);
-
-                    echo "
-                  <div class='col-md-4' id='complaint" . $complaint->complaintID . "'>
-                  <div class='card'>
-                    <div class='card-body'>
-                      <h5 class='card-title'>Ticket #" . $complaint->complaintID . "</h5>
-                      <h6 class='card-subtitle mb-2 text-muted'>Customer: " . $fetch['firstname'] . " " . $fetch['lastname'] . "</h6>
-                      <p class='card-text'><strong>Date:</strong> " . $complaint->date . "</p>
-                      <p class='card-text'>
-                        Issue: " . $complaint->complaint . "
-                      </p>
-                      <p class='card-text'><strong>Status:</strong> " . $complaint->status . "</p>
-                      <div style='display: flex; align-items:center; gap:10px'>
-                      <button href='#' class='card-link btn btn-danger m-0 w-100' onclick=\"deleteComplaint(event, '" . $complaint->complaintID . "')\">Delete</button>
-                      </div>
-                    </div>
-                  </div>
-                  </div>";
-                }
-                echo "</div>";
-            }
-            ?>
+                  }
+                  echo "</div>";
+              }
+              ?>
+            </div>
         </div>
 
         <script>
@@ -575,9 +559,81 @@ $allReports = $cursor->toArray();
 
         const reports = <?php echo json_encode($allReports); ?>;
 
-        console.log({
-            reports
-        })
+        let currentPostId = null;
+let currentReportId = null;
+
+function openDeleteModal(postId, reportId) {
+    currentPostId = postId;
+    currentReportId = reportId;
+
+    const deleteOptions = document.getElementById('deleteOptions');
+    deleteOptions.innerHTML = `
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="deletePostCheck">
+            <label class="form-check-label" for="deletePostCheck">
+                Delete Post
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="deleteReportCheck">
+            <label class="form-check-label" for="deleteReportCheck">
+                Delete Report
+            </label>
+        </div>
+    `;
+
+    $('#deletePostModal').modal('show');
+}
+
+function confirmDelete() {
+    const deletePost = document.getElementById('deletePostCheck').checked;
+    const deleteReport = document.getElementById('deleteReportCheck').checked;
+
+    if (deletePost) {
+        deletePostFunction(currentPostId, currentReportId);
+    }
+
+    if (deleteReport) {
+        deleteReportFunction(currentPostId,currentReportId);
+    }
+
+    $('#deletePostModal').modal('hide');
+}
+
+function deletePostFunction(postId, reportId) {
+  $.ajax({
+                url: 'deleteRaw.php',
+                type: 'POST',
+                data: {
+                    reportId: reportId
+                },
+                success: function(response) {
+                    if (response.status === "success") {
+                        $('#post' + reportId).remove();
+                    }
+                }
+            });
+}
+
+function deleteReportFunction(postId, reportId) {
+  $.ajax({
+                            url: 'deleteReport.php',
+                            type: 'POST',
+                            data: {
+                                postId: postId
+                            },
+                            success: function(response) {
+                                if (response.status === "success") {
+                                    Swal.fire("Deleted!", response.message, "success").then(() => {
+                                        DeleteRaw(reportId);
+                                    });
+                                } else {
+                                    Swal.fire("Error!", response.message, "error");
+                                }
+                            }
+                        });
+}
+
     </script>
 
     <div class="modal fade bg-transparent" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
@@ -639,6 +695,27 @@ $allReports = $cursor->toArray();
         </div>
     </div>
 
+    <div class="modal fade bg-transparent" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePostModalLabel">Delete Post and Report</h5>
+                <button type="button" class="btn btn-neutral" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this post and/or report? This action cannot be undone.</p>
+                <div id="deleteOptions">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: fit-content;">Close</a>
+                <a type="button" class="btn btn-danger" onclick="confirmDelete()" style="width: fit-content;">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 

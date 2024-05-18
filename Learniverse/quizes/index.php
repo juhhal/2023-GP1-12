@@ -103,6 +103,7 @@ if (isset($_GET['file'])) {
 
   <!-- SweetAlert2 JavaScript -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
 
   <!-- CUSTOMER SUPPORT STYLESHEET -->
   <script src="../customerSupport.js"></script>

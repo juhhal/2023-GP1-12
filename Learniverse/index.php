@@ -44,6 +44,7 @@ if (isset($_SESSION['email'])) {
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="manifest" href="favicon_io/site.webmanifest">
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
     <script src="jquery.js"></script>
     <?php if(isset($_SESSION['email'])){?>
 <!-- CUSTOMER SUPPORT STYLESHEET -->

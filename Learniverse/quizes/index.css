@@ -505,8 +505,6 @@ input[type="file"] {
   font-weight: 500;
   display: block;
   position: relative;
-
-
 }
 #num-of-files {
   font-weight: 400;
@@ -658,4 +656,108 @@ ul {
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
+}
+
+@media only screen and (max-width: 991px) {
+  .container {
+    display: block;
+    margin-top: 87px;
+  }
+
+  .summary-wrapper {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #generateBtn {
+    margin: 0 !important;
+  }
+
+  .intro-card {
+    padding: 20px;
+  }
+
+  .intro-card h2 {
+    font-size: 25px;
+  }
+
+  .intro-card h4 {
+    font-size: 20px;
+  }
+
+  .intro-card p {
+    font-size: 20px;
+  }
+
+  .intro-card div {
+    padding: 10px;
+  }
+
+  .intro-card a div h4 {
+    font-size: 18px;
+  }
+
+  .intro-card a div p {
+    font-size: 14px;
+  }
+
+  .intro-card img {
+    width: 25px;
+    height: 25px;
+  }
+
+  .intro-card a {
+    margin-top: 20px;
+  }
+
+  .intro-card a div {
+    padding: 10px;
+  }
+
+  .intro-card a div h4 {
+    font-size: 18px;
+  }
+
+  .intro-card a div p {
+    font-size: 14px;
+  }
+
+  .questions-modal {
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .questions-modal h2 {
+    font-size: 25px;
+  }
+
+  .questions-modal .question h5 {
+    font-size: 14px;
+  }
+
+  .questions-modal .question p {
+    font-size: 12px;
+  }
+
+  .questions-modal img {
+    width: 25px;
+    height: 25px;
+  }
+
+  .questions-modal .question {
+    margin-bottom: 20px;
+  }
+
+  .questions-modal .question:last-child {
+    margin-bottom: 0;
+  }
+
+  .questions-modal .question p {
+    margin-bottom: 10px;
+  }
+
+  .questions-modal .question:last-child p {
+    margin-bottom: 0;
+  }
 }

@@ -278,3 +278,44 @@ input {
   margin-top: 30px;
   font-weight: 600;
 }
+
+@media (max-width: 768px) {
+  .question-container {
+    padding: 0 20px;
+  }
+
+  .question-text {
+    font-size: 16px;
+  }
+
+  .answer-container {
+    padding: 16px;
+  }
+
+  .action-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .next-btn,
+  .result-btn {
+    width: 100%;
+  }
+
+  .result-container .result-card .result {
+    font-size: 16px;
+  }
+
+  .result-container .result-card .info {
+    font-size: 16px;
+  }
+
+  .result-container .result-card .result div {
+    width: 12px;
+    height: 12px;
+  }
+
+  .back-btn {
+    width: 100%;
+  }
+}
