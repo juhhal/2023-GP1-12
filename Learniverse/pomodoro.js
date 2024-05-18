@@ -492,7 +492,6 @@ $(document).ready(function() {
               } else {
                   // Display failure message
                   $('#response').text(response.message);
-                  alert('in');
               }
           }
       });
