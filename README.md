@@ -15,7 +15,7 @@ We believe that Learniverse can help students achieve their wanted goals and gra
 
 <h3>Technology</h3>
 The platforms that we will use to develop the project: <br>
-NetBeans IDE, Visual Studio Code, GoogleColab, Django web framework <br>
+Visual Studio Code <br>
 To implement the website interfaces, we will use the following languages:<br>
 Html, CSS, JavaScript <br>
 <br>
@@ -24,7 +24,7 @@ Python, PHP<br>
 <br>
 There are also additional tools that we will use to complete this project:<br>
 MongoDB to create and manage the database<br>
-OpenAI API to implement the AI generated tools (summaries, quizzes, flashcards), Zoom API to facilitate meetings in the shared space, Google Calendar API<br>
+OpenAI API to implement the AI generated tools (summaries, quizzes, flashcards), Whereby API to facilitate meetings in the shared space, and TinyMCE for text editors.<br>
 
 <h3>Launching Instructions</h3>
 To launch this project, you need to set up a suitable environment for MongoDB and PHP by installing the following:<br>
