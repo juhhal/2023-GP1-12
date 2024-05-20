@@ -31,4 +31,7 @@ To launch this project, you need to set up a suitable environment for MongoDB an
 MongoDB Community Server<br>
 Composer<br>
 PHP Library of MongoDB<br>
-Homebrew (for Mac users)<br>
+Homebrew (for Mac users)
+<br>
+
+https://github.com/juhhal/2023-GP1-12
